@@ -1,0 +1,12 @@
+{
+    "key": {"category": "master","sounds": [{"name": "key","stream": false}]},
+    "cameraclack": {"category": "master","sounds": ["cameraclack1","cameraclack2","cameraclack3"]},
+    "page": {"category": "master","sounds": ["page1","page2"]},
+    "learn": {"category": "master","sounds": [{"name": "learn","stream": false}]},
+    "write": {"category": "master","sounds": ["write1","write2"]},
+    "erase": {"category": "master","sounds": [{"name": "erase","stream": false}]},
+    "hhoff": {"category": "master","sounds": [{"name": "hhoff","stream": false}]},
+    "hhon": {"category": "master","sounds": [{"name": "hhon","stream": false}]},
+    "whispers": {"category": "master","sounds": [{"name": "whispers","stream": false}]}
+ }
+ 

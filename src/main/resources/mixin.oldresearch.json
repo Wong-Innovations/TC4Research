@@ -1,0 +1,13 @@
+{
+  "package": "com.wonginnovations.oldresearch.core.mixin",
+  "refmap": "mixins.oldresearch.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ThaumcraftCraftingManagerAccessor"
+  ],
+  "client": [
+    "GuiAccessor"
+  ]
+}

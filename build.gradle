@@ -61,9 +61,17 @@ repositories {
     maven {
         url = 'https://repo.spongepowered.org/maven'
     }
+    maven {
+        name = 'CurseForge'
+        url = 'https://www.cursemaven.com/'
+    }
 }
 
 dependencies {
+
+    deobfCompile 'curse.maven:thaumcraft-223628:2629023'
+    runtime 'curse.maven:baubles-227083:2518667'
+    compile 'curse.maven:codechickenlib-242818:2779848'
 
     if (project.use_assetmover.toBoolean()) {
         compile 'com.cleanroommc:assetmover:2.0'

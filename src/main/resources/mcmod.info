@@ -1,16 +1,16 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "oldresearch",
+  "name": "TC4 Research Port",
+  "description": "TC4 Research Port for TC6.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["CleanroomMC"],
+  "authorList": ["Wong-Innovations"],
   "credits": "Authors of this project",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["thaumcraft"]
 }
 ]

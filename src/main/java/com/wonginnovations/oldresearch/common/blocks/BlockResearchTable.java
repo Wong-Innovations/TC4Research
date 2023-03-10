@@ -65,6 +65,7 @@ public class BlockResearchTable extends BlockTCDevice implements IBlockFacingHor
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
         TileEntity te = world.getTileEntity(pos);
+//        if (te != null) te.invalidate();
         if (rand.nextInt(5) == 0 && te != null && ((TileResearchTable)te).data != null) {
             double xx = rand.nextGaussian() / 2.0;
             double zz = rand.nextGaussian() / 2.0;

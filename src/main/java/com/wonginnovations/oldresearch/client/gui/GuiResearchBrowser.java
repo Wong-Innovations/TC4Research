@@ -34,6 +34,7 @@ import org.lwjgl.opengl.GL11;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.client.fx.ParticleEngine;
+import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.utils.InventoryUtils;
 
 import java.io.IOException;
@@ -729,7 +730,7 @@ public class GuiResearchBrowser extends GuiScreen {
     }
 
     private void playButtonClick() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, new SoundEvent(new ResourceLocation("oldresearch:cameraclack")), SoundCategory.PLAYERS, 0.4F, 1.0F, false);
+        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.clack, SoundCategory.MASTER, 0.4F, 1.0F, false);
     }
 
     private boolean canUnlockResearch(ResearchItem res) {

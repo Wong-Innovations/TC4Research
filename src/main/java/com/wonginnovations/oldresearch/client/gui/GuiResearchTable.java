@@ -21,6 +21,7 @@ import com.wonginnovations.oldresearch.client.lib.UtilsFX;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +38,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.client.fx.ParticleEngine;
 //import thaumcraft.common.config.ModConfig;
+import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.utils.HexUtils;
 
@@ -207,6 +209,7 @@ public class GuiResearchTable extends GuiContainer {
             UtilsFX.drawCustomTooltip(this, itemRender, this.fontRenderer, Arrays.asList(I18n.format("tile.researchtable.noink.0"), I18n.format("tile.researchtable.noink.1")), gx + 157 - sx, gy + 84, 11);
         }
 
+        this.renderHoveredToolTip(mx, my);
     }
 
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
@@ -680,27 +683,27 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     private void playButtonClick() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, new SoundEvent(new ResourceLocation("oldresearch:cameraclack")), SoundCategory.PLAYERS, 0.4F, 1.0F, false);
+        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.clack, SoundCategory.MASTER, 0.4F, 1.0F, false);
     }
 
     private void playButtonAspect() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, new SoundEvent(new ResourceLocation("oldresearch:hhoff")), SoundCategory.PLAYERS, 0.2F, 1.0F + this.mc.getRenderViewEntity().world.rand.nextFloat() * 0.1F, false);
+        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.hhoff, SoundCategory.MASTER, 0.2F, 1.0F + this.mc.getRenderViewEntity().world.rand.nextFloat() * 0.1F, false);
     }
 
     private void playButtonCombine() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, new SoundEvent(new ResourceLocation("oldresearch:hhon")), SoundCategory.PLAYERS, 0.3F, 1.0F, false);
+        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.hhon, SoundCategory.MASTER, 0.3F, 1.0F, false);
     }
 
     private void playButtonWrite() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, new SoundEvent(new ResourceLocation("oldresearch:write")), SoundCategory.PLAYERS, 0.2F, 1.0F, false);
+        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.write, SoundCategory.MASTER, 0.2F, 1.0F, false);
     }
 
     private void playButtonErase() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, new SoundEvent(new ResourceLocation("oldresearch:erase")), SoundCategory.PLAYERS, 0.2F, 1.0F + this.mc.getRenderViewEntity().world.rand.nextFloat() * 0.1F, false);
+        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.erase, SoundCategory.MASTER, 0.2F, 1.0F + this.mc.getRenderViewEntity().world.rand.nextFloat() * 0.1F, false);
     }
 
     private void playButtonScroll() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, new SoundEvent(new ResourceLocation("oldresearch:key")), SoundCategory.PLAYERS, 0.3F, 1.0F, false);
+        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.key, SoundCategory.MASTER, 0.3F, 1.0F, false);
     }
 
     private void drawOrb(double x, double y) {

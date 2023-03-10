@@ -57,6 +57,7 @@ public class PacketSyncResearch implements IMessage, IMessageHandler<PacketSyncR
         }
 
         GuiResearchBrowser.completedResearch.put(Minecraft.getMinecraft().player.getGameProfile().getName(), message.data);
+
         return null;
     }
 }

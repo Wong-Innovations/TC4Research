@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import thaumcraft.common.lib.SoundsTC;
 
 public class PacketWarpMessage implements IMessage, IMessageHandler<PacketWarpMessage, IMessage> {
     protected int data = 0;
@@ -43,7 +44,7 @@ public class PacketWarpMessage implements IMessage, IMessageHandler<PacketWarpMe
                 if(message.data < 0) {
                     text = I18n.format("tc.removewarp");
                 } else {
-                    Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("oldresearch:whispers")), 0.5F, 1.0F);
+                    Minecraft.getMinecraft().player.playSound(SoundsTC.whispers, 0.5F, 1.0F);
                 }
 
                 PlayerNotifications.addNotification(text);
@@ -52,7 +53,7 @@ public class PacketWarpMessage implements IMessage, IMessageHandler<PacketWarpMe
                 if(message.data < 0) {
                     text = I18n.format("tc.removewarpsticky");
                 } else {
-                    Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("oldresearch:whispers")), 0.5F, 1.0F);
+                    Minecraft.getMinecraft().player.playSound(SoundsTC.whispers, 0.5F, 1.0F);
                 }
 
                 PlayerNotifications.addNotification(text);

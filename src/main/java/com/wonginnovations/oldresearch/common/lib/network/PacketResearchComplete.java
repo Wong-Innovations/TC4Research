@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import thaumcraft.common.lib.SoundsTC;
 
 import java.util.ArrayList;
 
@@ -44,7 +45,7 @@ public class PacketResearchComplete implements IMessage, IMessageHandler<PacketR
             if(message.key.startsWith("@")) {
                 String text = I18n.format("tc.addclue");
                 PlayerNotifications.addNotification("§a" + text);
-                Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("oldresearch:learn")), 0.2F, 1.0F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.1F);
+                Minecraft.getMinecraft().player.playSound(SoundsTC.learn, 0.2F, 1.0F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.1F);
             } else if(!ResearchCategories.getResearch(message.key).isVirtual()) {
                 ClientTickEventsFML.researchPopup.queueResearchInformation(ResearchCategories.getResearch(message.key));
                 GuiResearchBrowser.highlightedItem.add(message.key);

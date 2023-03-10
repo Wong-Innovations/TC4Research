@@ -2,6 +2,7 @@ package com.wonginnovations.oldresearch.common.container;
 
 import java.util.HashMap;
 
+import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -23,24 +24,20 @@ public class ContainerResearchTable extends Container {
         this.player = iinventory.player;
         this.tileEntity = iinventory1;
         this.aspects = Aspect.aspects.keySet().toArray(new String[0]);
-        this.addSlotToContainer(new SlotLimitedByClass(IScribeTools.class, iinventory1, 0, 16, 15));
-        this.addSlotToContainer(new SlotLimitedByItemstack(new ItemStack(Items.PAPER), iinventory1, 1, 224, 16));
+        this.addSlotToContainer(new SlotLimitedByClass(IScribeTools.class, iinventory1, 0, 14, 10));
+        this.addSlotToContainer(new SlotLimitedByItemstack(new ItemStack(ModItems.RESEARCHNOTE), iinventory1, 1, 70, 10));
         this.bindPlayerInventory(iinventory);
     }
 
     protected void bindPlayerInventory(InventoryPlayer inventoryPlayer) {
-        int i;
-        int j;
-        for(i = 0; i < 3; ++i) {
-            for(j = 0; j < 9; ++j) {
-                this.addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 77 + j * 18, 190 + i * 18));
+        for(int i = 0; i < 3; ++i) {
+            for(int j = 0; j < 9; ++j) {
+                this.addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 48 + j * 18, 175 + i * 18));
             }
         }
 
-        for(i = 0; i < 3; ++i) {
-            for(j = 0; j < 3; ++j) {
-                this.addSlotToContainer(new Slot(inventoryPlayer, i + j * 3, 20 + i * 18, 190 + j * 18));
-            }
+        for(int i = 0; i < 9; ++i) {
+            this.addSlotToContainer(new Slot(inventoryPlayer, i, 48 + i * 18, 233));
         }
 
     }

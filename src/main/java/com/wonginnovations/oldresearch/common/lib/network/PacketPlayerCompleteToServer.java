@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.common.lib.SoundsTC;
 
 public class PacketPlayerCompleteToServer implements IMessage, IMessageHandler<PacketPlayerCompleteToServer, IMessage> {
     private String key;
@@ -78,7 +79,7 @@ public class PacketPlayerCompleteToServer implements IMessage, IMessageHandler<P
                         }
                     }
 
-                    world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("oldresearch:learn")), SoundCategory.PLAYERS, 0.75F, 1.0F, false);
+                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.learn, SoundCategory.MASTER, 0.75F, 1.0F, false);
                 } else {
                     player.sendMessage(new TextComponentTranslation(I18n.format("tc.researcherror")));
                 }

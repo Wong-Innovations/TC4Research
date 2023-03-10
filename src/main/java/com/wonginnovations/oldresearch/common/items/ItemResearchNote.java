@@ -17,15 +17,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import thaumcraft.common.lib.SoundsTC;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,7 +38,9 @@ public class ItemResearchNote extends Item implements IModelRegister {
         this.setMaxStackSize(1);
     }
 
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+        ItemStack stack = player.getHeldItem(hand);
         if(!world.isRemote) {
             if(ResearchManager.getData(stack) != null && ResearchManager.getData(stack).isComplete() && !ResearchManager.isResearchComplete(player.getGameProfile().getName(), ResearchManager.getData(stack).key)) {
                 if(ResearchManager.doesPlayerHaveRequisites(player.getGameProfile().getName(), ResearchManager.getData(stack).key)) {
@@ -55,7 +56,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
                     }
 
                     stack.setCount(stack.getCount()-1);
-                    world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("oldresearch:learn")), SoundCategory.PLAYERS, 0.75F, 1.0F, false);
+                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.learn, SoundCategory.MASTER, 0.75F, 1.0F, false);
                 } else {
                     player.sendMessage(new TextComponentTranslation(I18n.format("tc.researcherror")));
                 }
@@ -65,16 +66,16 @@ public class ItemResearchNote extends Item implements IModelRegister {
                     stack.setCount(stack.getCount()-1);
                     EntityItem entityItem = new EntityItem(world, player.posX, player.posY + (double)(player.getEyeHeight() / 2.0F), player.posZ, new ItemStack(ModItems.KNOWLEDGEFRAGMENT, 7 + world.rand.nextInt(3)));
                     world.spawnEntity(entityItem);
-                    world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("oldresearch:erase")), SoundCategory.PLAYERS, 0.75F, 1.0F, false);
+                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.erase, SoundCategory.MASTER, 0.75F, 1.0F, false);
                 } else {
                     stack.setItemDamage(0);
                     stack.setTagCompound(ResearchManager.createNote(stack, key, player.world).getTagCompound());
-                    world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("oldresearch:write")), SoundCategory.PLAYERS, 0.75F, 1.0F, false);
+                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.write, SoundCategory.MASTER, 0.75F, 1.0F, false);
                 }
             }
         }
 
-        return stack;
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     @SideOnly(Side.CLIENT)
@@ -110,8 +111,8 @@ public class ItemResearchNote extends Item implements IModelRegister {
 
         ResearchNoteData rd = ResearchManager.getData(stack);
         if(rd != null && rd.key != null && ResearchCategories.getResearch(rd.key) != null) {
-            tooltip.add("§6" + ResearchCategories.getResearch(rd.key).getName());
-            tooltip.add("§o" + ResearchCategories.getResearch(rd.key).getText());
+            tooltip.add(TextFormatting.GOLD + ResearchCategories.getResearch(rd.key).getName());
+            tooltip.add(TextFormatting.ITALIC + ResearchCategories.getResearch(rd.key).getText());
             int warp = OldResearchApi.getWarp(rd.key);
             if(warp > 0) {
                 if(warp > 5) {

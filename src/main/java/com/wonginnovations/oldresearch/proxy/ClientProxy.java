@@ -10,10 +10,10 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import thaumcraft.Thaumcraft;
 
 public class ClientProxy extends Proxy {
+
+    ProxyTESR proxyTESR = new ProxyTESR();
 
     @Override
     public void registerModel(ItemBlock itemBlock) {
@@ -27,6 +27,7 @@ public class ClientProxy extends Proxy {
 
     public void init(FMLInitializationEvent event) {
         super.init(event);
+        this.proxyTESR.setupTESR();
     }
 
     @Override

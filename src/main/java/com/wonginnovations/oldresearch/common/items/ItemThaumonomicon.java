@@ -26,6 +26,7 @@ import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.config.ModConfig;
+import thaumcraft.common.lib.SoundsTC;
 
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class ItemThaumonomicon extends ItemTCBase implements IModelRegister {
             PacketHandler.INSTANCE.sendTo(new PacketSyncResearch(player), (EntityPlayerMP)player);
             PacketHandler.INSTANCE.sendTo(new PacketSyncAspects(player), (EntityPlayerMP)player);
         } else {
-            world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("oldresearch:page")), SoundCategory.PLAYERS, 1.0F, 1.0F, false);
+            world.playSound(player.posX, player.posY, player.posZ, SoundsTC.page, SoundCategory.MASTER, 1.0F, 1.0F, false);
         }
 
         player.openGui(Thaumcraft.instance, 12, world, 0, 0, 0);
@@ -152,7 +153,7 @@ public class ItemThaumonomicon extends ItemTCBase implements IModelRegister {
 //
 //            ThaumcraftCapabilities.getKnowledge(player).sync((EntityPlayerMP)player);
 //        } else {
-//            world.playSound(player.posX, player.posY, player.posZ, SoundsTC.page, SoundCategory.PLAYERS, 1.0F, 1.0F, false);
+//            world.playSound(player.posX, player.posY, player.posZ, SoundsTC.page, SoundCategory.MASTER, 1.0F, 1.0F, false);
 //        }
 //
 //        player.openGui(Thaumcraft.instance, 12, world, 0, 0, 0);

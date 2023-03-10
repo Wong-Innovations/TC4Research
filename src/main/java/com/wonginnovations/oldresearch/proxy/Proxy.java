@@ -8,10 +8,14 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.research.ResearchAddendum;
+import thaumcraft.api.research.ResearchCategories;
+import thaumcraft.api.research.ResearchStage;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -61,6 +65,10 @@ public class Proxy implements IGuiHandler {
         this.registerDisplayInformation();
     }
 
+    public void postInit(FMLPostInitializationEvent event) {
+        this.patchResearch();
+    }
+
     public void registerDisplayInformation() {
     }
 
@@ -83,5 +91,26 @@ public class Proxy implements IGuiHandler {
     public World getClientWorld() {
         return null;
     }
+
+    private void patchResearch() {
+//        ResearchStage[] researchStages = new ResearchStage[12];
+//        for (int i = 1; i <= 12; i++) {
+//            researchStages[i-1] = new ResearchStage();
+//            researchStages[i-1].setText("research.KNOWLEDGETYPES.stage." + i);
+//        }
+//        ResearchCategories.getResearch("KNOWLEDGETYPES").setStages(researchStages);
+    }
+
+//    private void patchResearch() {
+//        ResearchStage[] researchStages = new ResearchStage[]{new ResearchStage()};
+//        researchStages[0].setText("research.KNOWLEDGETYPES.stage.1");
+//        ResearchAddendum[] researchAddenda = new ResearchAddendum[11];
+//        for (int i = 1; i < 12; i++) {
+//            researchAddenda[i-1] = new ResearchAddendum();
+//            researchAddenda[i-1].setText("research.KNOWLEDGETYPES.addenda." + i);
+//        }
+//        ResearchCategories.getResearch("KNOWLEDGETYPES").setStages(researchStages);
+//        ResearchCategories.getResearch("KNOWLEDGETYPES").setAddenda(researchAddenda);
+//    }
 
 }

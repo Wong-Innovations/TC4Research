@@ -133,8 +133,8 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
     public void gatherResults() {
         this.data.note = null;
-        if(this.data.contents[1] != null && this.data.contents[1].getItem() instanceof ItemResearchNote) {
-            this.data.note = ResearchManager.getData(this.data.contents[1]);
+        if(this.getSyncedStackInSlot(1).getItem() instanceof ItemResearchNote) {
+            this.data.note = ResearchManager.getData(this.getSyncedStackInSlot(1));
         }
     }
 
@@ -143,8 +143,8 @@ public class TileResearchTable extends TileThaumcraftInventory {
             this.gatherResults();
         }
 
-        if(ResearchManager.consumeInkFromTable(this.data.contents[0], false)) {
-            if(this.data.contents[1] != null && this.data.contents[1].getItem() instanceof ItemResearchNote && this.data.note != null && this.data.contents[1].getItemDamage() < 64) {
+        if(ResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), false)) {
+            if(this.getSyncedStackInSlot(1).getItem() instanceof ItemResearchNote && this.data.note != null && this.getSyncedStackInSlot(1).getItemDamage() < 64) {
                 boolean r1 = ResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1");
                 boolean r2 = ResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
                 HexUtils.Hex hex = new HexUtils.Hex(q, r);
@@ -152,7 +152,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
                 if(aspect != null) {
                     he = new ResearchManager.HexEntry(aspect, 2);
                     if(r2 && this.world.rand.nextFloat() < 0.1F) {
-                        this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("oldresearch:random.orb")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
+                        this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
                     } else if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect) <= 0) {
                         this.data.bonusAspects.remove(aspect, 1);
                         player.world.notifyBlockUpdate(this.pos, world.getBlockState(this.pos), world.getBlockState(this.pos), 3);
@@ -165,7 +165,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
                 } else {
                     float f = this.world.rand.nextFloat();
                     if(this.data.note.hexEntries.get(hex.toString()).aspect != null && (r1 && f < 0.25F || r2 && f < 0.5F)) {
-                        this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("oldresearch:random.orb")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
+                        this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
                         OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect, (short)1);
                         ResearchManager.scheduleSave(player);
                         PacketHandler.INSTANCE.sendTo(new PacketAspectPool(this.data.note.hexEntries.get(hex.toString()).aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect)), (EntityPlayerMP)player);
@@ -176,10 +176,10 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
                 this.data.note.hexEntries.put(hex.toString(), he);
                 this.data.note.hexes.put(hex.toString(), hex);
-                ResearchManager.updateData(this.data.contents[1], this.data.note);
-                ResearchManager.consumeInkFromTable(this.data.contents[0], true);
-                if(!this.world.isRemote && ResearchManager.checkResearchCompletion(this.data.contents[1], this.data.note, player.getGameProfile().getName())) {
-                    this.data.contents[1].setItemDamage(64);
+                ResearchManager.updateData(this.getSyncedStackInSlot(1), this.data.note);
+                ResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), true);
+                if(!this.world.isRemote && ResearchManager.checkResearchCompletion(this.getSyncedStackInSlot(1), this.data.note, player.getGameProfile().getName())) {
+                    this.getSyncedStackInSlot(1).setItemDamage(64);
                     this.world.addBlockEvent(this.pos, ModBlocks.RESEARCHTABLE, 1, 1);
                 }
             }
@@ -276,47 +276,40 @@ public class TileResearchTable extends TileThaumcraftInventory {
     }
 
     public ItemStack getStackInSlot(int var1) {
-        return this.data.contents[var1];
+        return (this.getSyncedStackInSlot(var1).isEmpty())? super.getStackInSlot(var1) : this.getSyncedStackInSlot(var1);
     }
 
-    public ItemStack decrStackSize(int var1, int var2) {
-        if (this.data.contents[var1] != null) {
-            ItemStack var3;
-            if (this.data.contents[var1].getCount() <= var2) {
-                var3 = this.data.contents[var1];
-                this.data.contents[var1] = null;
-            } else {
-                var3 = this.data.contents[var1].splitStack(var2);
-                if(this.data.contents[var1].getCount() == 0) {
-                    this.data.contents[var1] = null;
-                }
+//    public ItemStack decrStackSize(int var1, int var2) {
+//        ItemStack var3;
+//        if (this.data.contents.get(var1).getCount() <= var2) {
+//            var3 = this.data.contents.get(var1);
+//            this.data.contents.set(var1, ItemStack.EMPTY);
+//        } else {
+//            var3 = this.data.contents.get(var1).splitStack(var2);
+//            if(this.data.contents.get(var1).getCount() == 0) {
+//                this.data.contents.set(var1, ItemStack.EMPTY);
+//            }
+//
+//        }
+//        this.markDirty();
+//        return var3;
+//    }
 
-            }
-            this.markDirty();
-            return var3;
-        } else {
-            return null;
-        }
-    }
-
-    public ItemStack getStackInSlotOnClosing(int var1) {
-        if(this.data.contents[var1] != null) {
-            ItemStack var2 = this.data.contents[var1];
-            this.data.contents[var1] = null;
-            return var2;
-        } else {
-            return null;
-        }
-    }
-
-    public void setInventorySlotContents(int var1, ItemStack var2) {
-        this.data.contents[var1] = var2;
-        if(var2 != null && var2.getCount() > this.getInventoryStackLimit()) {
-            var2.setCount(this.getInventoryStackLimit());
-        }
-
-        this.markDirty();
-    }
+//    public ItemStack getStackInSlotOnClosing(int var1) {
+//        ItemStack var2 = this.data.contents.get(var1);
+//        this.data.contents.set(var1, ItemStack.EMPTY);
+//        return var2;
+//    }
+//
+//    @Override
+//    public void setInventorySlotContents(int var1, ItemStack var2) {
+//        super.setInventorySlotContents(var1, (var2 == null)? ItemStack.EMPTY : var2);
+////        if(var2 != null && var2.getCount() > this.getInventoryStackLimit()) {
+////            var2.setCount(this.getInventoryStackLimit());
+////        }
+//
+//        this.markDirty();
+//    }
 
     public String getName() {
         return "Research Table";

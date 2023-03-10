@@ -39,7 +39,7 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
     }
 
     public static void drawCustomTooltip(GuiScreen gui, RenderItem itemRenderer, FontRenderer fr, List<String> list, int par2, int par3, int subTipColor) {
-        GL11.glDisable(32836);
+//        GL11.glDisable(32836); // weird kanji open GL12 stuff maybe
         GL11.glDisable(2929);
         if(!list.isEmpty()) {
             int var5 = 0;

@@ -53,9 +53,7 @@ public class OldResearch {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(OldResearch.instance);
-
-        GameRegistry.registerTileEntity(TileResearchTable.class, "oldresearch:TileResearchTable");
+        proxy.preInit(event);
     }
 
     @Mod.EventHandler

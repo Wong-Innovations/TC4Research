@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 
-@Mixin(ThaumcraftCraftingManager.class)
+@Mixin(value = ThaumcraftCraftingManager.class, remap = false)
 public interface ThaumcraftCraftingManagerAccessor {
 
     @Invoker("getBonusTags")

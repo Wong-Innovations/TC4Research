@@ -1,18 +1,29 @@
 package com.wonginnovations.oldresearch.proxy;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.api.OldResearchApi;
+import com.wonginnovations.oldresearch.api.capabilities.PlayerAspects;
+import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import thaumcraft.Thaumcraft;
+import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.AspectSourceHelper;
+import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.api.research.ResearchAddendum;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchStage;
@@ -60,6 +71,14 @@ public class Proxy implements IGuiHandler {
     public void onConstruction(FMLConstructionEvent event) {
     }
 
+    public void preInit(FMLPreInitializationEvent event) {
+        PacketHandler.preInit();
+        PlayerAspects.preInit();
+        GameRegistry.registerTileEntity(TileResearchTable.class, "oldresearch:TileResearchTable");
+
+        MinecraftForge.EVENT_BUS.register(OldResearch.instance);
+    }
+
     public void init(FMLInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(OldResearch.instance, this);
         this.registerDisplayInformation();
@@ -67,6 +86,7 @@ public class Proxy implements IGuiHandler {
 
     public void postInit(FMLPostInitializationEvent event) {
         this.patchResearch();
+        this.syncAspects();
     }
 
     public void registerDisplayInformation() {
@@ -90,6 +110,16 @@ public class Proxy implements IGuiHandler {
 
     public World getClientWorld() {
         return null;
+    }
+
+    private void syncAspects() {
+        CommonInternals.scanEntities.forEach(tag -> {
+            OldResearchApi.EntityTagsNBT[] nbts = new OldResearchApi.EntityTagsNBT[tag.nbts.length];
+            for (int i = 0; i < tag.nbts.length; i++) {
+                nbts[i] = new OldResearchApi.EntityTagsNBT(tag.nbts[i].name, tag.nbts[i].value);
+            }
+            OldResearchApi.registerEntityTag(tag.entityName, tag.aspects, nbts);
+        });
     }
 
     private void patchResearch() {

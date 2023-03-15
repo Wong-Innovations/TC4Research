@@ -12,6 +12,7 @@ public class ModItems {
 
     public static final Item RESEARCHNOTE = new ItemResearchNote();
     public static final Item KNOWLEDGEFRAGMENT = new ItemKnowledgeFragment();
+    public static final Item THAUMOMETER = new ItemThaumometer();
     public static final Item THAUMONOMICON = new ItemThaumonomicon();
 
     @SubscribeEvent
@@ -21,6 +22,7 @@ public class ModItems {
 
         r.register(RESEARCHNOTE);
         r.register(KNOWLEDGEFRAGMENT);
+        r.register(THAUMOMETER);
         r.register(THAUMONOMICON);
 
     }

@@ -1,6 +1,7 @@
 package com.wonginnovations.oldresearch.api.research;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class ScanResult {
     public byte type = 0;
@@ -39,4 +40,19 @@ public class ScanResult {
 
         return true;
     }
+
+//    public NBTTagCompound serialize() {
+//        NBTTagCompound tag = new NBTTagCompound();
+//        tag.setByte("type", type);
+//        tag.setInteger("blockId", id);
+//        tag.setInteger("blockMeta", meta);
+//        tag.setTag("entity", entity.serializeNBT());
+//        tag.setString("entityClass", entity.getClass().toString());
+//        tag.setString("phenomena", phenomena);
+//        return tag;
+//    }
+//
+//    public static ScanResult deserialize(NBTTagCompound nbt) {
+//        return new ScanResult(nbt.getByte("type"), nbt.getInteger("blockId"), nbt.getInteger("blockMeta"), nbt.getCompoundTag("entity"), "");
+//    }
 }

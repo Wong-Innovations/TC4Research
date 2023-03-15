@@ -12,7 +12,7 @@ public class ModConfig {
     @Config.Comment("Not quite sure yet low key")
     public static int researchDifficulty = 1;
 
-    public static int notificationDelay = 20;
+    public static int notificationDelay = 2000;
 
     public static int notificationMax = 10;
 

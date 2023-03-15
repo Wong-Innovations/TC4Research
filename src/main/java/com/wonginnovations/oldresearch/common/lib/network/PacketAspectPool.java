@@ -57,7 +57,7 @@ public class PacketAspectPool implements IMessage, IMessageHandler<PacketAspectP
                 }
 
                 if(System.currentTimeMillis() > lastSound) {
-                    Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("oldresearch:random.orb")), 0.1F, 0.9F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.2F);
+                    Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), 0.1F, 0.9F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.2F);
                     lastSound = System.currentTimeMillis() + 100L;
                 }
             }

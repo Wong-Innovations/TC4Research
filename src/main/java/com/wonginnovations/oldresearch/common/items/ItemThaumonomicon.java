@@ -1,6 +1,7 @@
 package com.wonginnovations.oldresearch.common.items;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.Tags;
 import com.wonginnovations.oldresearch.api.registration.IModelRegister;
 import com.wonginnovations.oldresearch.api.research.ResearchCategories;
 import com.wonginnovations.oldresearch.api.research.ResearchCategoryList;
@@ -167,10 +168,10 @@ public class ItemThaumonomicon extends ItemTCBase implements IModelRegister {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerModels() {
-        ModelResourceLocation location0 = new ModelResourceLocation(OldResearch.ID + ":thaumonomicon", "inventory");
+        ModelResourceLocation location0 = new ModelResourceLocation(Tags.MODID + ":thaumonomicon", "inventory");
         ModelLoader.setCustomModelResourceLocation(this, 0, location0);
 
-        ModelResourceLocation location2 = new ModelResourceLocation(OldResearch.ID + ":thaumonomicon_cheat", "inventory");
+        ModelResourceLocation location2 = new ModelResourceLocation(Tags.MODID + ":thaumonomicon_cheat", "inventory");
         ModelLoader.setCustomModelResourceLocation(this, 42, location2);
     }
 

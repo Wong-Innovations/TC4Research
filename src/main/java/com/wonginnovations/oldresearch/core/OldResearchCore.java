@@ -40,7 +40,7 @@ public class OldResearchCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public List<String> getMixinConfigs() {
-        return ImmutableList.of("mixin.oldresearch.json");
+        return ImmutableList.of("mixins.oldresearch.json");
     }
 
 }

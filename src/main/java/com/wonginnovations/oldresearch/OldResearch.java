@@ -28,17 +28,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = OldResearch.ID, name = OldResearch.NAME, version = OldResearch.VERSION, dependencies = "required-after:thaumcraft")
-@Mod.EventBusSubscriber(modid = OldResearch.ID)
+@Mod(modid = Tags.MODID, name = Tags.MODNAME, version = Tags.VERSION, dependencies = "required-after:thaumcraft")
+@Mod.EventBusSubscriber(modid = Tags.MODID)
 public class OldResearch {
-
-    public static final String ID = "oldresearch";
-    public static final String NAME = "TC4 Research Port";
-    public static final String VERSION = "1.0.0";
 
     @Mod.Instance("oldresearch")
     public static OldResearch instance;
-    public static final Logger LOGGER = LogManager.getLogger(ID);
+    public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
 
     @SidedProxy(clientSide = "com.wonginnovations.oldresearch.proxy.ClientProxy", serverSide = "com.wonginnovations.oldresearch.proxy.Proxy")
     public static Proxy proxy;
@@ -70,7 +66,7 @@ public class OldResearch {
     @SideOnly(Side.CLIENT)
     public void registerModels(ModelRegistryEvent event) {
         for (Item item : Item.REGISTRY) {
-            if (item.getRegistryName().getNamespace().equals(ID) && item instanceof IModelRegister) {
+            if (item.getRegistryName().getNamespace().equals(Tags.MODID) && item instanceof IModelRegister) {
                 ((IModelRegister) item).registerModels();
             }
         }

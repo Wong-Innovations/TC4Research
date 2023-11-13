@@ -1,6 +1,7 @@
 package com.wonginnovations.oldresearch.common.blocks;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.Tags;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -9,7 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod.EventBusSubscriber(modid = OldResearch.ID)
+@Mod.EventBusSubscriber(modid = Tags.MODID)
 public class ModBlocks {
 
     public static final Block RESEARCHTABLE = new BlockResearchTable();

@@ -20,13 +20,13 @@ public class ContainerResearchTable extends Container {
     String[] aspects;
     EntityPlayer player;
 
-    public ContainerResearchTable(InventoryPlayer iinventory, TileResearchTable iinventory1) {
-        this.player = iinventory.player;
-        this.tileEntity = iinventory1;
+    public ContainerResearchTable(InventoryPlayer playerInventory, TileResearchTable tableInventory) {
+        this.player = playerInventory.player;
+        this.tileEntity = tableInventory;
         this.aspects = Aspect.aspects.keySet().toArray(new String[0]);
-        this.addSlotToContainer(new SlotLimitedByClass(IScribeTools.class, iinventory1, 0, 14, 10));
-        this.addSlotToContainer(new SlotLimitedByItemstack(new ItemStack(ModItems.RESEARCHNOTE), iinventory1, 1, 70, 10));
-        this.bindPlayerInventory(iinventory);
+        this.addSlotToContainer(new SlotLimitedByClass(IScribeTools.class, tableInventory, 0, 14, 10));
+        this.addSlotToContainer(new SlotLimitedByItemstack(new ItemStack(ModItems.RESEARCHNOTE), tableInventory, 1, 70, 10));
+        this.bindPlayerInventory(playerInventory);
     }
 
     protected void bindPlayerInventory(InventoryPlayer inventoryPlayer) {
@@ -42,24 +42,26 @@ public class ContainerResearchTable extends Container {
 
     }
 
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slot) {
+    @Override
+    public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex) {
         ItemStack stack = ItemStack.EMPTY;
-        Slot slotObject = this.inventorySlots.get(slot);
-        if (slotObject != null && slotObject.getHasStack()) {
-            ItemStack stackInSlot = slotObject.getStack();
+        Slot slot = this.inventorySlots.get(slotIndex);
+        if (slot != null && slot.getHasStack()) {
+            ItemStack stackInSlot = slot.getStack();
             stack = stackInSlot.copy();
-            if (slot < 2) {
-                if (!this.tileEntity.isItemValidForSlot(slot, stackInSlot) || !this.mergeItemStack(stackInSlot, 2, this.inventorySlots.size(), true)) {
+            if (slotIndex < 2) {
+                if (!this.tileEntity.isItemValidForSlot(slotIndex, stackInSlot) || !this.mergeItemStack(stackInSlot, 2, this.inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.tileEntity.isItemValidForSlot(slot, stackInSlot) || !this.mergeItemStack(stackInSlot, 0, 2, false)) {
+            }
+            else if (!this.mergeItemStack(stackInSlot, 0, 2, false)) {
                 return ItemStack.EMPTY;
             }
 
             if (stackInSlot.getCount() == 0) {
-                slotObject.putStack(ItemStack.EMPTY);
+                slot.putStack(ItemStack.EMPTY);
             } else {
-                slotObject.onSlotChanged();
+                slot.onSlotChanged();
             }
         }
 

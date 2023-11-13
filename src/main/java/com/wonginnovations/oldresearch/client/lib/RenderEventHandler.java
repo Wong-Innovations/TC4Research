@@ -1,6 +1,7 @@
 package com.wonginnovations.oldresearch.client.lib;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.Tags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -24,7 +25,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = OldResearch.ID)
+@Mod.EventBusSubscriber(modid = Tags.MODID)
 public class RenderEventHandler {
     public static List<Object> blockTags = new ArrayList<>();
     public static float tagscale = 0.0F;

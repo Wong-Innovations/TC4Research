@@ -1,13 +1,14 @@
 package com.wonginnovations.oldresearch.common.items;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.Tags;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod.EventBusSubscriber(modid = OldResearch.ID)
+@Mod.EventBusSubscriber(modid = Tags.MODID)
 public class ModItems {
 
     public static final Item RESEARCHNOTE = new ItemResearchNote();

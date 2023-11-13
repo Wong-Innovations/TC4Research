@@ -5,10 +5,15 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ThaumcraftCraftingManagerAccessor",
-    "AspectEventProxyMixin"
+    "AspectEventProxyMixin",
+    "BlockTableMixin",
+    "DustTriggerOreAccessor",
+    "DustTriggerSimpleAccessor",
+    "IDustTriggerAccessor",
+    "ThaumcraftCraftingManagerAccessor"
   ],
   "client": [
     "GuiAccessor"
-  ]
+  ],
+  "server": []
 }

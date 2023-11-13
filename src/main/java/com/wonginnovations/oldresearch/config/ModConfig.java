@@ -1,9 +1,10 @@
 package com.wonginnovations.oldresearch.config;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.Tags;
 import net.minecraftforge.common.config.Config;
 
-@Config(modid = OldResearch.ID)
+@Config(modid = Tags.MODID)
 public class ModConfig {
 
     @Config.Comment("Not quite sure yet low key")

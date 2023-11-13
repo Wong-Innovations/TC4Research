@@ -3,13 +3,18 @@ package com.wonginnovations.oldresearch.proxy;
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.api.capabilities.PlayerAspects;
+import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.core.mixin.DustTriggerOreAccessor;
+import com.wonginnovations.oldresearch.core.mixin.DustTriggerSimpleAccessor;
+import com.wonginnovations.oldresearch.core.mixin.IDustTriggerAccessor;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
@@ -23,12 +28,17 @@ import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.AspectSourceHelper;
+import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.api.research.ResearchAddendum;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchStage;
+import thaumcraft.common.items.curios.ItemThaumonomicon;
+import thaumcraft.common.lib.crafting.DustTriggerOre;
+import thaumcraft.common.lib.crafting.DustTriggerSimple;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 public class Proxy implements IGuiHandler {
@@ -74,7 +84,7 @@ public class Proxy implements IGuiHandler {
     public void preInit(FMLPreInitializationEvent event) {
         PacketHandler.preInit();
         PlayerAspects.preInit();
-        GameRegistry.registerTileEntity(TileResearchTable.class, "oldresearch:TileResearchTable");
+        GameRegistry.registerTileEntity(TileResearchTable.class, new ResourceLocation("oldresearch:TileResearchTable"));
 
         MinecraftForge.EVENT_BUS.register(OldResearch.instance);
     }
@@ -87,6 +97,7 @@ public class Proxy implements IGuiHandler {
     public void postInit(FMLPostInitializationEvent event) {
         this.patchResearch();
         this.syncAspects();
+        this.patchSalisTriggers();
     }
 
     public void registerDisplayInformation() {
@@ -142,5 +153,19 @@ public class Proxy implements IGuiHandler {
 //        ResearchCategories.getResearch("KNOWLEDGETYPES").setStages(researchStages);
 //        ResearchCategories.getResearch("KNOWLEDGETYPES").setAddenda(researchAddenda);
 //    }
+
+    private void patchSalisTriggers() {
+        ArrayList<IDustTrigger> iDustTriggers = IDustTriggerAccessor.getTriggers();
+        // remove default thaumonomicion trigger with this mod's thaumonomicon
+        if (iDustTriggers != null) {
+            for (IDustTrigger trigger : iDustTriggers) {
+                if (trigger instanceof DustTriggerSimple && ((DustTriggerSimpleAccessor) trigger).getResult().getItem() instanceof ItemThaumonomicon) {
+                    ((DustTriggerSimpleAccessor) trigger).setResult(new ItemStack(ModItems.THAUMONOMICON));
+                } else if (trigger instanceof DustTriggerOre && ((DustTriggerOreAccessor) trigger).getResult().getItem() instanceof ItemThaumonomicon) {
+                    ((DustTriggerOreAccessor) trigger).setResult(new ItemStack(ModItems.THAUMONOMICON));
+                }
+            }
+        }
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.wonginnovations.oldresearch.common.items;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.Tags;
 import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.api.registration.IModelRegister;
 import com.wonginnovations.oldresearch.api.research.ResearchCategories;
@@ -32,7 +33,7 @@ import java.util.List;
 public class ItemResearchNote extends Item implements IModelRegister {
 
     public ItemResearchNote() {
-        this.setRegistryName(OldResearch.ID + ":researchnote");
+        this.setRegistryName(Tags.MODID + ":researchnote");
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(1);
@@ -135,10 +136,10 @@ public class ItemResearchNote extends Item implements IModelRegister {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerModels() {
-        ModelResourceLocation location0 = new ModelResourceLocation(OldResearch.ID + ":researchnotes", "inventory");
+        ModelResourceLocation location0 = new ModelResourceLocation(Tags.MODID + ":researchnotes", "inventory");
         ModelLoader.setCustomModelResourceLocation(this, 0, location0);
 
-        ModelResourceLocation location2 = new ModelResourceLocation(OldResearch.ID + ":discovery", "inventory");
+        ModelResourceLocation location2 = new ModelResourceLocation(Tags.MODID + ":discovery", "inventory");
         ModelLoader.setCustomModelResourceLocation(this, 64, location2);
     }
 

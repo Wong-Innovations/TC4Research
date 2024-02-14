@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "oldresearch:items/researchnote",
+    "layer1": "oldresearch:items/researchnoteoverlay"
+  }
+}

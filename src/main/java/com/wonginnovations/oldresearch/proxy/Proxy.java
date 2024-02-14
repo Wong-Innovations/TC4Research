@@ -43,7 +43,6 @@ public class Proxy implements IGuiHandler {
 
     public PlayerKnowledge playerKnowledge = new PlayerKnowledge();
     public OldResearchManager oldResearchManager = new OldResearchManager();
-    public ResearchManager researchManager = new ResearchManager();
 
     public PlayerKnowledge getPlayerKnowledge() {
         return this.playerKnowledge;
@@ -51,10 +50,6 @@ public class Proxy implements IGuiHandler {
 
     public OldResearchManager getOldResearchManager() {
         return this.oldResearchManager;
-    }
-
-    public ResearchManager getResearchManager() {
-        return this.researchManager;
     }
 
     public Map<String, ArrayList<String>> getCompletedResearch() {
@@ -97,7 +92,7 @@ public class Proxy implements IGuiHandler {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-        researchManager.patchResearch();
+        ResearchManager.patchResearch();
         this.syncAspects();
         this.patchSalisTriggers();
     }

@@ -1,7 +1,7 @@
 item.knowledgefragment.name=Knowledge Fragment
-item.researchnotes.name=Research Notes
-item.researchnotes.unknown.1=Unknown Knowledge
-item.researchnotes.unknown.2=<Right click to reveal>
+item.researchnote.name=Research Note
+item.researchnote.unknown.1=Unknown Knowledge
+item.researchnote.unknown.2=<Right click to reveal>
 item.discovery.name=Discovery
 #
 tc.discoveryerror=To understand this you need to study %1$s.

@@ -1,23 +1,24 @@
 package com.wonginnovations.oldresearch.core.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
+import com.wonginnovations.oldresearch.common.lib.network.PacketPlayerCompleteToServer;
+import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.opengl.GL11;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.research.*;
 import thaumcraft.client.gui.GuiResearchPage;
@@ -64,6 +65,9 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     abstract void drawStackAt(ItemStack itemstack, int x, int y, int mx, int my, boolean clickthrough);
 
     @Shadow private boolean isComplete;
+
+    @Unique
+    private final Map<Point, ItemStack> oldresearch$renderedNotes = new HashMap<>();
 
     @Inject(method = "drawRequirements", at = @At("HEAD"), cancellable = true)
     public void drawRequirementsInjection(int x, int mx, int my, ResearchStage stage, CallbackInfo ci) {
@@ -266,21 +270,19 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                     if (!key.startsWith("rn_")) {
                         continue;
                     } else {
-                        loc = OldResearch.proxy.researchManager.getNote(key);
+                        loc = ResearchManager.getNote(key);
                     }
 
                     GL11.glPushMatrix();
                     GL11.glEnable(3042);
                     GL11.glBlendFunc(770, 771);
-                    if (loc instanceof ResourceLocation) {
-                        this.mc.renderEngine.bindTexture((ResourceLocation)loc);
-                        UtilsFX.drawTexturedQuadFull((float)(x - 15 + shift), (float)y, (double)this.zLevel);
-                    } else if (loc instanceof ItemStack) {
+                    if (loc != null) {
                         RenderHelper.enableGUIStandardItemLighting();
                         GL11.glDisable(2896);
                         GL11.glEnable(32826);
                         GL11.glEnable(2903);
                         GL11.glEnable(2896);
+                        oldresearch$renderedNotes.put(new Point(x - 15 + shift, y), (ItemStack) loc);
                         this.itemRender.renderItemAndEffectIntoGUI(InventoryUtils.cycleItemStack(loc), x - 15 + shift, y);
                         GL11.glDisable(2896);
                         GL11.glDepthMask(true);
@@ -348,5 +350,22 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
             return new ResearchStage.Knowledge[0];
         }
         return null;
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    public void mouseClickedInjection(int mx, int my, int button, CallbackInfo ci) {
+        for (Point p : oldresearch$renderedNotes.keySet()) {
+            if ((mx >= p.x - 10 && mx <= p.x + 10) && (my >= p.y - 10 && my <= p.y + 10)) {
+                PacketHandler.INSTANCE.sendToServer(
+                    new PacketPlayerCompleteToServer(
+                        ResearchManager.getData(oldresearch$renderedNotes.get(p)).key,
+                        this.mc.player.getGameProfile().getName(),
+                        this.mc.player.world.provider.getDimension(),
+                        (byte) 1
+                    )
+                );
+                ci.cancel();
+            }
+        }
     }
 }

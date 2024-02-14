@@ -20,7 +20,7 @@ public class OldResearchUtils {
         if (consumeOffhand(player, item)) return true;
         int i = -1;
         for (int ii = 0;ii<player.inventory.mainInventory.size(); ii++) {
-            if (player.inventory.mainInventory.get(ii).isItemEqual(new ItemStack(item, md))) {
+            if (player.inventory.mainInventory.get(ii).isItemEqual(new ItemStack(item, 1, md))) {
                 i = ii;
                 break;
             }

@@ -1,12 +1,19 @@
 package com.wonginnovations.oldresearch.common.lib.research;
 
+import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.items.ModItems;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
 import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
+import thaumcraft.api.capabilities.ThaumcraftCapabilities;
+import thaumcraft.api.items.IScribeTools;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategory;
 import thaumcraft.api.research.ResearchEntry;
@@ -17,13 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class ResearchManager {
+public abstract class ResearchManager {
 
-    private final Map<String, ItemStack> notes = new HashMap<>();
+    private static final Map<String, ItemStack> NOTES = new HashMap<>();
 
-    private final Random random = new Random(69420);
+    private static final Random RANDOM = new Random(69420);
 
-    public void patchResearch() {
+    public static void patchResearch() {
         for (ResearchCategory category : ResearchCategories.researchCategories.values()) {
             for (ResearchEntry entry : category.research.values()) {
                 int i = 0;
@@ -33,7 +40,7 @@ public class ResearchManager {
                         if (knowledge.type == IPlayerKnowledge.EnumKnowledgeType.THEORY) {
                             String key = "rn_" + entry.getKey() + (++i);
                             stage.setResearch(ArrayUtils.add(stage.getResearch(), key));
-                            notes.put(key, createNote(key));
+                            NOTES.put(key, createNote(key));
                             if (stage.getResearchIcon() == null) stage.setResearchIcon(new String[]{null});
                             else stage.setResearchIcon(ArrayUtils.add(stage.getResearchIcon(), null));
                         }
@@ -44,18 +51,18 @@ public class ResearchManager {
         }
     }
 
-    private ItemStack createNote(String key) {
+    private static ItemStack createNote(String key) {
         ItemStack note = new ItemStack(ModItems.RESEARCHNOTE);
         ResearchNoteData data = new ResearchNoteData();
         data.key = key;
         Aspect[] asps = Aspect.aspects.values().toArray(new Aspect[0]);
-        data.color =  asps[random.nextInt(asps.length)].getColor();
+        data.color =  asps[RANDOM.nextInt(asps.length)].getColor();
         updateData(note, data);
         return note;
     }
 
-    public ItemStack getNote(String key) {
-        return this.notes.get(key);
+    public static ItemStack getNote(String key) {
+        return NOTES.get(key);
     }
 
     public static ResearchNoteData getData(ItemStack stack) {
@@ -114,6 +121,47 @@ public class ResearchManager {
         }
 
         stack.getTagCompound().setTag("hexgrid", gridtag);
+    }
+
+    public static void givePlayerResearchNote(World world, EntityPlayer player, String key) {
+        if(!hasResearchNote(player, key)
+            && consumeInkFromPlayer(player, false)
+            && OldResearchUtils.consumeInventoryItem(player, Items.PAPER)
+        ) {
+            consumeInkFromPlayer(player, true);
+            ItemStack note = NOTES.get(key).copy();
+            if(!player.inventory.addItemStackToInventory(note)) {
+                ForgeHooks.onPlayerTossEvent(player, note, false);
+            }
+
+            player.inventoryContainer.detectAndSendChanges();
+        }
+    }
+
+    public static boolean hasResearchNote(EntityPlayer player, String key) {
+        ItemStack[] inv = player.inventory.mainInventory.toArray(new ItemStack[0]);
+        for (ItemStack itemStack : inv) {
+            if (itemStack != null && itemStack.getItem() == ModItems.RESEARCHNOTE && getData(itemStack) != null && getData(itemStack).key.equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean consumeInkFromPlayer(EntityPlayer player, boolean doit) {
+        ItemStack[] inv = player.inventory.mainInventory.toArray(new ItemStack[0]);
+
+        for (ItemStack itemStack : inv) {
+            if (itemStack != null && itemStack.getItem() instanceof IScribeTools && itemStack.getItemDamage() < itemStack.getMaxDamage()) {
+                if (doit) {
+                    itemStack.damageItem(1, player);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

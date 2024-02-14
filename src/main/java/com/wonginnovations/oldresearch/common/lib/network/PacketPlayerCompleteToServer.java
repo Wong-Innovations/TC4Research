@@ -16,7 +16,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.common.lib.SoundsTC;
+import thaumcraft.common.lib.research.ResearchManager;
 
 public class PacketPlayerCompleteToServer implements IMessage, IMessageHandler<PacketPlayerCompleteToServer, IMessage> {
     private String key;
@@ -52,11 +54,11 @@ public class PacketPlayerCompleteToServer implements IMessage, IMessageHandler<P
         World world = DimensionManager.getWorld(message.dim);
         if(world != null && (ctx.getServerHandler().player == null || ctx.getServerHandler().player.getGameProfile().getName().equals(message.username))) {
             EntityPlayer player = world.getPlayerEntityByName(message.username);
-            if(player != null && !OldResearchManager.isResearchComplete(message.username, message.key)) {
-                if(OldResearchManager.doesPlayerHaveRequisites(message.username, message.key)) {
+            if(player != null && !ThaumcraftCapabilities.knowsResearchStrict(player, message.key)) {
+                if(thaumcraft.common.lib.research.ResearchManager.doesPlayerHaveRequisites(player, message.key)) {
                     if(message.type != 0) {
                         if(message.type == 1) {
-                            OldResearchManager.createResearchNoteForPlayer(world, player, message.key);
+                            com.wonginnovations.oldresearch.common.lib.research.ResearchManager.givePlayerResearchNote(world, player, message.key);
                         }
                     } else {
                         for(Aspect a : ResearchCategories.getResearch(message.key).tags.getAspects()) {
@@ -82,10 +84,7 @@ public class PacketPlayerCompleteToServer implements IMessage, IMessageHandler<P
                     player.sendMessage(new TextComponentTranslation(I18n.format("tc.researcherror")));
                 }
             }
-
-            return null;
-        } else {
-            return null;
         }
+        return null;
     }
 }

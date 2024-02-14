@@ -100,14 +100,14 @@ public class ItemResearchNote extends Item implements IModelRegister {
 
     @Override
     public String getItemStackDisplayName(ItemStack itemstack) {
-        return itemstack.getItemDamage() < 64 ? I18n.format("item.researchnotes.name") : I18n.format("item.discovery.name");
+        return itemstack.getItemDamage() < 64 ? I18n.format("item.researchnote.name") : I18n.format("item.discovery.name");
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         if(stack.getItemDamage() == 24 || stack.getItemDamage() == 42) {
-            tooltip.add(TextFormatting.GOLD + I18n.format("item.researchnotes.unknown.1"));
-            tooltip.add(TextFormatting.BLUE + I18n.format("item.researchnotes.unknown.2"));
+            tooltip.add(TextFormatting.GOLD + I18n.format("item.researchnote.unknown.1"));
+            tooltip.add(TextFormatting.BLUE + I18n.format("item.researchnote.unknown.2"));
         }
 
         ResearchNoteData rd = OldResearchManager.getData(stack);
@@ -136,7 +136,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerModels() {
-        ModelResourceLocation location0 = new ModelResourceLocation(Tags.MODID + ":researchnotes", "inventory");
+        ModelResourceLocation location0 = new ModelResourceLocation(Tags.MODID + ":researchnote", "inventory");
         ModelLoader.setCustomModelResourceLocation(this, 0, location0);
 
         ModelResourceLocation location2 = new ModelResourceLocation(Tags.MODID + ":discovery", "inventory");

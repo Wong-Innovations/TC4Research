@@ -23,6 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import com.wonginnovations.oldresearch.api.OldResearchApi;
@@ -305,8 +306,7 @@ public class ScanManager implements IScanEventHandler {
                 List<String> list = OldResearch.proxy.getScannedObjects().get(player.getGameProfile().getName());
                 return list == null || !list.contains(prefix + generateItemHash(Item.getItemById(scan.id), scan.meta));
             } else if(scan.type == 2) {
-                if(scan.entity instanceof EntityItem) {
-                    EntityItem item = (EntityItem)scan.entity;
+                if(scan.entity instanceof EntityItem item) {
                     ItemStack t = item.getItem().copy();
                     t.setCount(1);
                     if(OldResearchApi.groupedObjectTags.containsKey(Arrays.asList(t.getItem(), t.getItemDamage()))) {
@@ -440,6 +440,17 @@ public class ScanManager implements IScanEventHandler {
                 ResearchManager.createClue(player.world, player, clue, aspectsFinal);
             }
         }
+
+        String msg = player.getGameProfile().getName() + " aspects: [";
+
+        AspectList alist = OldResearch.proxy.getPlayerKnowledge().getAspectsDiscovered(player.getGameProfile().getName());
+        for (Aspect a : alist.getAspects()) {
+            msg = msg + a.getName() + " " + alist.getAmount(a) + ", ";
+        }
+
+        msg += "]";
+
+        player.sendMessage(new TextComponentString(msg));
 
         return ret;
     }

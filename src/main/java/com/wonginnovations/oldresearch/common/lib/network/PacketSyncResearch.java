@@ -1,7 +1,7 @@
 package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.client.gui.GuiResearchBrowser;
+import com.wonginnovations.oldresearch.client.gui.OldGuiResearchBrowser;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -56,7 +56,7 @@ public class PacketSyncResearch implements IMessage, IMessageHandler<PacketSyncR
             OldResearch.proxy.getResearchManager().completeResearch(Minecraft.getMinecraft().player, key);
         }
 
-        GuiResearchBrowser.completedResearch.put(Minecraft.getMinecraft().player.getGameProfile().getName(), message.data);
+        OldGuiResearchBrowser.completedResearch.put(Minecraft.getMinecraft().player.getGameProfile().getName(), message.data);
 
         return null;
     }

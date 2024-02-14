@@ -24,20 +24,21 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.AspectSourceHelper;
+import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.api.internal.CommonInternals;
-import thaumcraft.api.research.ResearchAddendum;
-import thaumcraft.api.research.ResearchCategories;
-import thaumcraft.api.research.ResearchStage;
+import thaumcraft.api.research.*;
 import thaumcraft.common.items.curios.ItemThaumonomicon;
 import thaumcraft.common.lib.crafting.DustTriggerOre;
 import thaumcraft.common.lib.crafting.DustTriggerSimple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -134,15 +135,30 @@ public class Proxy implements IGuiHandler {
     }
 
     private void patchResearch() {
-//        ResearchStage[] researchStages = new ResearchStage[12];
+        for (ResearchCategory category : ResearchCategories.researchCategories.values()) {
+            for (ResearchEntry entry : category.research.values()) {
+                for (ResearchStage stage : entry.getStages()) {
+                    if (stage == null || stage.getKnow() == null || stage.getKnow().length == 0) continue;
+                    int i = 0;
+                    for (ResearchStage.Knowledge knowledge : stage.getKnow()) {
+                        if (knowledge.type == IPlayerKnowledge.EnumKnowledgeType.THEORY) {
+                            stage.setResearch(ArrayUtils.add(stage.getResearch(), "rn_" + entry.getKey() + (++i)));
+                            stage.setResearchIcon(ArrayUtils.add(stage.getResearchIcon(), "oldresearch:textures/items/researchnotes.png"));
+                        }
+                    }
+                    stage.setKnow(new ResearchStage.Knowledge[0]);
+                }
+            }
+        }
+    }
+
+//    private void patchResearch() {
+    //        ResearchStage[] researchStages = new ResearchStage[12];
 //        for (int i = 1; i <= 12; i++) {
 //            researchStages[i-1] = new ResearchStage();
 //            researchStages[i-1].setText("research.KNOWLEDGETYPES.stage." + i);
 //        }
 //        ResearchCategories.getResearch("KNOWLEDGETYPES").setStages(researchStages);
-    }
-
-//    private void patchResearch() {
 //        ResearchStage[] researchStages = new ResearchStage[]{new ResearchStage()};
 //        researchStages[0].setText("research.KNOWLEDGETYPES.stage.1");
 //        ResearchAddendum[] researchAddenda = new ResearchAddendum[11];

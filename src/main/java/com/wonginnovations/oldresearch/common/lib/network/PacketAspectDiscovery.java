@@ -1,10 +1,9 @@
 package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.client.gui.GuiResearchBrowser;
+import com.wonginnovations.oldresearch.client.gui.OldGuiResearchBrowser;
 import com.wonginnovations.oldresearch.client.lib.PlayerNotifications;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.SoundType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -44,8 +43,8 @@ public class PacketAspectDiscovery implements IMessage, IMessageHandler<PacketAs
             text = text.replaceAll("%n", Aspect.getAspect(message.key).getName());
             PlayerNotifications.addNotification(TextFormatting.GOLD + text, Aspect.getAspect(message.key));
             Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), 0.2F, 0.5F + OldResearch.proxy.getClientWorld().rand.nextFloat() * 0.2F);
-            GuiResearchBrowser.highlightedItem.add("ASPECTS");
-            GuiResearchBrowser.highlightedItem.add("BASICS");
+            OldGuiResearchBrowser.highlightedItem.add("ASPECTS");
+            OldGuiResearchBrowser.highlightedItem.add("BASICS");
         }
 
         return null;

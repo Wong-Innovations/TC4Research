@@ -6,26 +6,22 @@ import com.wonginnovations.oldresearch.api.research.ResearchCategories;
 import com.wonginnovations.oldresearch.api.research.ResearchCategoryList;
 import com.wonginnovations.oldresearch.api.research.ResearchItem;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-public class EventHandlerEntity {
-    public HashMap<Integer, Float> prevStep = new HashMap();
-    public static HashMap<String, ArrayList<WeakReference<Entity>>> linkedEntities = new HashMap();
+@Mod.EventBusSubscriber
+public class EntityEvents {
 
     @SubscribeEvent
-    public void playerLoad(PlayerEvent.LoadFromFile event) {
+    public static void playerLoad(PlayerEvent.LoadFromFile event) {
         EntityPlayer p = event.getEntityPlayer();
         OldResearch.proxy.getPlayerKnowledge().wipePlayerKnowledge(p.getGameProfile().getName());
-        File file1 = this.getPlayerFile("thaum", event.getPlayerDirectory(), p.getGameProfile().getName());
+        File file1 = getPlayerFile("thaum", event.getPlayerDirectory(), p.getGameProfile().getName());
         boolean legacy = false;
         if(!file1.exists()) {
             File filep = event.getPlayerFile("thaum");
@@ -43,7 +39,7 @@ public class EventHandlerEntity {
                     ;
                 }
             } else {
-                File filet = this.getLegacyPlayerFile(p);
+                File filet = getLegacyPlayerFile(p);
                 if(filet.exists()) {
                     try {
                         Files.copy(filet, file1);
@@ -56,7 +52,7 @@ public class EventHandlerEntity {
             }
         }
 
-        ResearchManager.loadPlayerData(p, file1, this.getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()), legacy);
+        ResearchManager.loadPlayerData(p, file1, getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()), legacy);
 
         for(ResearchCategoryList cat : ResearchCategories.researchCategories.values()) {
             for(ResearchItem ri : cat.research.values()) {
@@ -68,7 +64,7 @@ public class EventHandlerEntity {
 
     }
 
-    public File getLegacyPlayerFile(EntityPlayer player) {
+    public static File getLegacyPlayerFile(EntityPlayer player) {
         try {
             File playersDirectory = new File(player.world.getSaveHandler().getWorldDirectory(), "players");
             return new File(playersDirectory, player.getGameProfile().getName() + ".thaum");
@@ -78,7 +74,7 @@ public class EventHandlerEntity {
         }
     }
 
-    public File getPlayerFile(String suffix, File playerDirectory, String playername) {
+    public static File getPlayerFile(String suffix, File playerDirectory, String playername) {
         if("dat".equals(suffix)) {
             throw new IllegalArgumentException("The suffix \'dat\' is reserved");
         } else {
@@ -87,9 +83,9 @@ public class EventHandlerEntity {
     }
 
     @SubscribeEvent
-    public void playerSave(PlayerEvent.SaveToFile event) {
+    public static void playerSave(PlayerEvent.SaveToFile event) {
         EntityPlayer p = event.getEntityPlayer();
-        ResearchManager.savePlayerData(p, this.getPlayerFile("thaum", event.getPlayerDirectory(), p.getGameProfile().getName()), this.getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()));
+        ResearchManager.savePlayerData(p, getPlayerFile("thaum", event.getPlayerDirectory(), p.getGameProfile().getName()), getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()));
     }
 
 }

@@ -21,9 +21,7 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -31,7 +29,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.client.fx.ParticleEngine;
 import thaumcraft.common.lib.SoundsTC;
@@ -41,7 +38,7 @@ import java.io.IOException;
 import java.util.*;
 
 @SideOnly(Side.CLIENT)
-public class GuiResearchBrowser extends GuiScreen {
+public class OldGuiResearchBrowser extends GuiScreen {
     private static int guiMapTop;
     private static int guiMapLeft;
     private static int guiMapBottom;
@@ -71,7 +68,7 @@ public class GuiResearchBrowser extends GuiScreen {
     String popupmessage = "";
     public boolean hasScribestuff = false;
 
-    public GuiResearchBrowser() {
+    public OldGuiResearchBrowser() {
         short var2 = 141;
         short var3 = 141;
         this.field_74117_m = this.guiMapX = this.field_74124_q = lastX * 24 - var2 / 2 - 12;
@@ -81,7 +78,7 @@ public class GuiResearchBrowser extends GuiScreen {
         this.player = Minecraft.getMinecraft().player.getGameProfile().getName();
     }
 
-    public GuiResearchBrowser(double x, double y) {
+    public OldGuiResearchBrowser(double x, double y) {
         this.field_74117_m = this.guiMapX = this.field_74124_q = x;
         this.field_74115_n = this.guiMapY = this.field_74123_r = y;
         this.updateResearch();

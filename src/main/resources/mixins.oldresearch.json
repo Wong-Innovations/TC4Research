@@ -13,7 +13,8 @@
     "ThaumcraftCraftingManagerAccessor"
   ],
   "client": [
-    "GuiAccessor"
+    "GuiAccessor",
+    "GuiResearchPageMixin"
   ],
   "server": []
 }

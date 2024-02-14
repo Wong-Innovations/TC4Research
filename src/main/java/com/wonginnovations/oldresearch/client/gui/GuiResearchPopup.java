@@ -36,8 +36,8 @@ public class GuiResearchPopup extends Gui {
         }
 
         this.theResearch.add(research);
-        GuiResearchBrowser.lastX = research.displayColumn;
-        GuiResearchBrowser.lastY = research.displayRow;
+        OldGuiResearchBrowser.lastX = research.displayColumn;
+        OldGuiResearchBrowser.lastY = research.displayRow;
     }
 
     private void updateResearchWindowScale() {

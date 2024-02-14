@@ -68,13 +68,14 @@ public class PacketAspectCombinationToServer implements IMessage, IMessageHandle
         this.ab2 = buffer.readBoolean();
     }
 
-    public IMessage onMessage(PacketAspectCombinationToServer message, MessageContext ctx) {
+    @Override
+    public IMessage onMessage(final PacketAspectCombinationToServer message, MessageContext ctx) {
         World world = DimensionManager.getWorld(message.dim);
-        if(world != null && (ctx.getServerHandler().player == null || ctx.getServerHandler().player.getEntityId() == message.playerid)) {
+        if (world != null && (ctx.getServerHandler().player == null || ctx.getServerHandler().player.getEntityId() == message.playerid)) {
             Entity player = world.getEntityByID(message.playerid);
-            if(player instanceof EntityPlayer && message.aspect1 != null) {
+            if (player instanceof EntityPlayer && message.aspect1 != null) {
                 Aspect combo = ResearchManager.getCombinationResult(message.aspect1, message.aspect2);
-                if((OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect1) > 0 || message.ab1) && (OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect2) > 0 || message.ab2)) {
+                if ((OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect1) > 0 || message.ab1) && (OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect2) > 0 || message.ab2)) {
                     TileEntity rt = player.world.getTileEntity(new BlockPos(message.x, message.y, message.z));
                     if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect1) <= 0 && message.ab1) {
                         if(rt instanceof TileResearchTable) {
@@ -100,17 +101,14 @@ public class PacketAspectCombinationToServer implements IMessage, IMessageHandle
                         PacketHandler.INSTANCE.sendTo(new PacketAspectPool(message.aspect2.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer) player).getGameProfile().getName(), message.aspect2)), (EntityPlayerMP)player);
                     }
 
-                    if(combo != null) {
+                    if (combo != null) {
                         ScanManager.checkAndSyncAspectKnowledge((EntityPlayer)player, combo, 1);
                     }
 
                     ResearchManager.scheduleSave((EntityPlayer)player);
                 }
             }
-
-            return null;
-        } else {
-            return null;
         }
+        return null;
     }
 }

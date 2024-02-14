@@ -2,14 +2,12 @@ package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.api.research.ResearchCategories;
-import com.wonginnovations.oldresearch.client.gui.GuiResearchBrowser;
+import com.wonginnovations.oldresearch.client.gui.OldGuiResearchBrowser;
 import com.wonginnovations.oldresearch.client.lib.ClientTickEventsFML;
 import com.wonginnovations.oldresearch.client.lib.PlayerNotifications;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -48,19 +46,19 @@ public class PacketResearchComplete implements IMessage, IMessageHandler<PacketR
                 Minecraft.getMinecraft().player.playSound(SoundsTC.learn, 0.2F, 1.0F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.1F);
             } else if(!ResearchCategories.getResearch(message.key).isVirtual()) {
                 ClientTickEventsFML.researchPopup.queueResearchInformation(ResearchCategories.getResearch(message.key));
-                GuiResearchBrowser.highlightedItem.add(message.key);
-                GuiResearchBrowser.highlightedItem.add(ResearchCategories.getResearch(message.key).category);
+                OldGuiResearchBrowser.highlightedItem.add(message.key);
+                OldGuiResearchBrowser.highlightedItem.add(ResearchCategories.getResearch(message.key).category);
             }
 
-            if(Minecraft.getMinecraft().currentScreen instanceof GuiResearchBrowser) {
-                ArrayList<String> al = GuiResearchBrowser.completedResearch.get(Minecraft.getMinecraft().player.getGameProfile().getName());
+            if(Minecraft.getMinecraft().currentScreen instanceof OldGuiResearchBrowser) {
+                ArrayList<String> al = OldGuiResearchBrowser.completedResearch.get(Minecraft.getMinecraft().player.getGameProfile().getName());
                 if(al == null) {
                     al = new ArrayList<>();
                 }
 
                 al.add(message.key);
-                GuiResearchBrowser.completedResearch.put(Minecraft.getMinecraft().player.getGameProfile().getName(), al);
-                ((GuiResearchBrowser)Minecraft.getMinecraft().currentScreen).updateResearch();
+                OldGuiResearchBrowser.completedResearch.put(Minecraft.getMinecraft().player.getGameProfile().getName(), al);
+                ((OldGuiResearchBrowser)Minecraft.getMinecraft().currentScreen).updateResearch();
             }
         }
 

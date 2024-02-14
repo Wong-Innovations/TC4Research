@@ -5,7 +5,7 @@ import com.wonginnovations.oldresearch.Tags;
 import com.wonginnovations.oldresearch.api.registration.IModelRegister;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPool;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -43,7 +43,7 @@ public class ItemKnowledgeFragment extends Item implements IModelRegister {
             for(Aspect a : Aspect.getPrimalAspects()) {
                 short q = (short)(world.rand.nextInt(2) + 1);
                 OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), a, q);
-                ResearchManager.scheduleSave(player);
+                OldResearchManager.scheduleSave(player);
                 PacketHandler.INSTANCE.sendTo(new PacketAspectPool(a.getTag(), q, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), a)), (EntityPlayerMP)player);
             }
         }

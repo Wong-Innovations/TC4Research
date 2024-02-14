@@ -6,6 +6,7 @@ import com.wonginnovations.oldresearch.api.capabilities.PlayerAspects;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
 import com.wonginnovations.oldresearch.core.mixin.DustTriggerOreAccessor;
 import com.wonginnovations.oldresearch.core.mixin.DustTriggerSimpleAccessor;
@@ -25,10 +26,7 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.commons.lang3.ArrayUtils;
-import thaumcraft.Thaumcraft;
-import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.aspects.AspectSourceHelper;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.api.internal.CommonInternals;
@@ -38,18 +36,21 @@ import thaumcraft.common.lib.crafting.DustTriggerOre;
 import thaumcraft.common.lib.crafting.DustTriggerSimple;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Proxy implements IGuiHandler {
     ProxyGUI proxyGUI = new ProxyGUI();
 
     public PlayerKnowledge playerKnowledge = new PlayerKnowledge();
+    public OldResearchManager oldResearchManager = new OldResearchManager();
     public ResearchManager researchManager = new ResearchManager();
 
     public PlayerKnowledge getPlayerKnowledge() {
         return this.playerKnowledge;
+    }
+
+    public OldResearchManager getOldResearchManager() {
+        return this.oldResearchManager;
     }
 
     public ResearchManager getResearchManager() {
@@ -96,7 +97,7 @@ public class Proxy implements IGuiHandler {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-        this.patchResearch();
+        researchManager.patchResearch();
         this.syncAspects();
         this.patchSalisTriggers();
     }
@@ -132,24 +133,6 @@ public class Proxy implements IGuiHandler {
             }
             OldResearchApi.registerEntityTag(tag.entityName, tag.aspects, nbts);
         });
-    }
-
-    private void patchResearch() {
-        for (ResearchCategory category : ResearchCategories.researchCategories.values()) {
-            for (ResearchEntry entry : category.research.values()) {
-                for (ResearchStage stage : entry.getStages()) {
-                    if (stage == null || stage.getKnow() == null || stage.getKnow().length == 0) continue;
-                    int i = 0;
-                    for (ResearchStage.Knowledge knowledge : stage.getKnow()) {
-                        if (knowledge.type == IPlayerKnowledge.EnumKnowledgeType.THEORY) {
-                            stage.setResearch(ArrayUtils.add(stage.getResearch(), "rn_" + entry.getKey() + (++i)));
-                            stage.setResearchIcon(ArrayUtils.add(stage.getResearchIcon(), "oldresearch:textures/items/researchnotes.png"));
-                        }
-                    }
-                    stage.setKnow(new ResearchStage.Knowledge[0]);
-                }
-            }
-        }
     }
 
 //    private void patchResearch() {

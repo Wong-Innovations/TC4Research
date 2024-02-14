@@ -10,7 +10,7 @@ import com.wonginnovations.oldresearch.client.lib.UtilsFX;
 import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketPlayerCompleteToServer;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.config.ModConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -100,7 +100,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
 
         this.research.addAll(ResearchCategories.getResearchList(selectedCategory).research.values());
 
-        if(ResearchManager.consumeInkFromPlayer(this.mc.player, false) && InventoryUtils.isPlayerCarryingAmount(this.mc.player, new ItemStack(Items.PAPER), true)) {
+        if(OldResearchManager.consumeInkFromPlayer(this.mc.player, false) && InventoryUtils.isPlayerCarryingAmount(this.mc.player, new ItemStack(Items.PAPER), true)) {
             this.hasScribestuff = true;
         }
 
@@ -204,7 +204,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
             }
 
             ResearchCategoryList rcl = ResearchCategories.getResearchList(obj);
-            if(!obj.equals("ELDRITCH") || ResearchManager.isResearchComplete(this.player, "ELDRITCHMINOR")) {
+            if(!obj.equals("ELDRITCH") || OldResearchManager.isResearchComplete(this.player, "ELDRITCHMINOR")) {
                 int mposx = mx - (var4 - 24 + (swop?280:0));
                 int mposy = my - (var5 + count * 24);
                 if(mposx >= 0 && mposx < 24 && mposy >= 0 && mposy < 24) {
@@ -463,7 +463,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
 
         for(String obj : cats) {
             ResearchCategoryList rcl = ResearchCategories.getResearchList(obj);
-            if(!(obj).equals("ELDRITCH") || ResearchManager.isResearchComplete(this.player, "ELDRITCHMINOR")) {
+            if(!(obj).equals("ELDRITCH") || OldResearchManager.isResearchComplete(this.player, "ELDRITCHMINOR")) {
                 GL11.glPushMatrix();
                 if(count == 9) {
                     count = 0;
@@ -592,7 +592,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
                     GL11.glPushMatrix();
                     GL11.glTranslatef((float)var26, (float)(var27 + var41 + 8), 0.0F);
                     GL11.glScalef(0.5F, 0.5F, 0.5F);
-                    if(ResearchManager.getResearchSlot(this.mc.player, this.currentHighlight.key) >= 0) {
+                    if(OldResearchManager.getResearchSlot(this.mc.player, this.currentHighlight.key) >= 0) {
                         this.fontRenderer.drawStringWithShadow(I18n.format("tc.research.hasnote"), 0, 0, 16753920);
                     } else if(this.hasScribestuff) {
                         this.fontRenderer.drawStringWithShadow(I18n.format("tc.research.getprim"), 0, 0, 8900331);
@@ -672,7 +672,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
                 if(enough) {
                     PacketHandler.INSTANCE.sendToServer(new PacketPlayerCompleteToServer(this.currentHighlight.key, this.mc.player.getGameProfile().getName(), this.mc.player.world.provider.getDimension(), (byte)0));
                 }
-            } else if(this.hasScribestuff && ResearchManager.getResearchSlot(this.mc.player, this.currentHighlight.key) == -1) {
+            } else if(this.hasScribestuff && OldResearchManager.getResearchSlot(this.mc.player, this.currentHighlight.key) == -1) {
                 PacketHandler.INSTANCE.sendToServer(new PacketPlayerCompleteToServer(this.currentHighlight.key, this.mc.player.getGameProfile().getName(), this.mc.player.world.provider.getDimension(), (byte)1));
                 this.popuptime = System.currentTimeMillis() + 3000L;
                 this.popupmessage = (new TextComponentTranslation(I18n.format("tc.research.popup"), "" + this.currentHighlight.getName())).getUnformattedText();
@@ -689,7 +689,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
 
             for(Object obj : cats) {
                 ResearchCategoryList rcl = ResearchCategories.getResearchList((String)obj);
-                if(!obj.equals("ELDRITCH") || ResearchManager.isResearchComplete(this.player, "ELDRITCHMINOR")) {
+                if(!obj.equals("ELDRITCH") || OldResearchManager.isResearchComplete(this.player, "ELDRITCHMINOR")) {
                     if(count == 9) {
                         count = 0;
                         swop = true;

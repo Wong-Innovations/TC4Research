@@ -9,7 +9,7 @@ import com.wonginnovations.oldresearch.api.research.ResearchItem;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketSyncAspects;
 import com.wonginnovations.oldresearch.common.lib.network.PacketSyncResearch;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -64,24 +64,24 @@ public class ItemThaumonomicon extends ItemTCBase implements IModelRegister {
             if(ModConfig.CONFIG_MISC.allowCheatSheet && stack.getItemDamage() == 42) {
                 for(ResearchCategoryList cat : ResearchCategories.researchCategories.values()) {
                     for(ResearchItem ri : cat.research.values()) {
-                        if(!ResearchManager.isResearchComplete(player.getGameProfile().getName(), ri.key)) {
-                            OldResearch.proxy.getResearchManager().completeResearch(player, ri.key);
+                        if(!OldResearchManager.isResearchComplete(player.getGameProfile().getName(), ri.key)) {
+                            OldResearch.proxy.getOldResearchManager().completeResearch(player, ri.key);
                         }
                     }
                 }
 
                 for(Aspect aspect : Aspect.aspects.values()) {
                     if(!OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(player.getGameProfile().getName(), aspect)) {
-                        OldResearch.proxy.researchManager.completeAspect(player, aspect, (short)50);
+                        OldResearch.proxy.oldResearchManager.completeAspect(player, aspect, (short)50);
                     }
                 }
             } else {
                 for(ResearchCategoryList cat : ResearchCategories.researchCategories.values()) {
                     for(ResearchItem ri : cat.research.values()) {
-                        if(ResearchManager.isResearchComplete(player.getGameProfile().getName(), ri.key) && ri.siblings != null) {
+                        if(OldResearchManager.isResearchComplete(player.getGameProfile().getName(), ri.key) && ri.siblings != null) {
                             for(String sib : ri.siblings) {
-                                if(!ResearchManager.isResearchComplete(player.getGameProfile().getName(), sib)) {
-                                    OldResearch.proxy.getResearchManager().completeResearch(player, sib);
+                                if(!OldResearchManager.isResearchComplete(player.getGameProfile().getName(), sib)) {
+                                    OldResearch.proxy.getOldResearchManager().completeResearch(player, sib);
                                 }
                             }
                         }
@@ -145,7 +145,7 @@ public class ItemThaumonomicon extends ItemTCBase implements IModelRegister {
 //                        for(int var12 = 0; var12 < var11; ++var12) {
 //                            String sib = var10[var12];
 //                            if (!ThaumcraftCapabilities.knowsResearch(player, sib)) {
-//                                ResearchManager.completeResearch(player, sib);
+//                                OldResearchManager.completeResearch(player, sib);
 //                            }
 //                        }
 //                    }

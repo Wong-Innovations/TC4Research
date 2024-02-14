@@ -7,7 +7,7 @@ import com.wonginnovations.oldresearch.api.registration.IModelRegister;
 import com.wonginnovations.oldresearch.api.research.ResearchCategories;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketResearchComplete;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
@@ -43,15 +43,15 @@ public class ItemResearchNote extends Item implements IModelRegister {
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if(!world.isRemote) {
-            if(ResearchManager.getData(stack) != null && ResearchManager.getData(stack).isComplete() && !ResearchManager.isResearchComplete(player.getGameProfile().getName(), ResearchManager.getData(stack).key)) {
-                if(ResearchManager.doesPlayerHaveRequisites(player.getGameProfile().getName(), ResearchManager.getData(stack).key)) {
-                    PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(ResearchManager.getData(stack).key), (EntityPlayerMP)player);
-                    OldResearch.proxy.getResearchManager().completeResearch(player, ResearchManager.getData(stack).key);
-                    if(ResearchCategories.getResearch(ResearchManager.getData(stack).key).siblings != null) {
-                        for(String sibling : ResearchCategories.getResearch(ResearchManager.getData(stack).key).siblings) {
-                            if(!ResearchManager.isResearchComplete(player.getGameProfile().getName(), sibling) && ResearchManager.doesPlayerHaveRequisites(player.getGameProfile().getName(), sibling)) {
+            if(OldResearchManager.getData(stack) != null && OldResearchManager.getData(stack).isComplete() && !OldResearchManager.isResearchComplete(player.getGameProfile().getName(), OldResearchManager.getData(stack).key)) {
+                if(OldResearchManager.doesPlayerHaveRequisites(player.getGameProfile().getName(), OldResearchManager.getData(stack).key)) {
+                    PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(OldResearchManager.getData(stack).key), (EntityPlayerMP)player);
+                    OldResearch.proxy.getOldResearchManager().completeResearch(player, OldResearchManager.getData(stack).key);
+                    if(ResearchCategories.getResearch(OldResearchManager.getData(stack).key).siblings != null) {
+                        for(String sibling : ResearchCategories.getResearch(OldResearchManager.getData(stack).key).siblings) {
+                            if(!OldResearchManager.isResearchComplete(player.getGameProfile().getName(), sibling) && OldResearchManager.doesPlayerHaveRequisites(player.getGameProfile().getName(), sibling)) {
                                 PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(sibling), (EntityPlayerMP)player);
-                                OldResearch.proxy.getResearchManager().completeResearch(player, sibling);
+                                OldResearch.proxy.getOldResearchManager().completeResearch(player, sibling);
                             }
                         }
                     }
@@ -62,7 +62,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
                     player.sendMessage(new TextComponentTranslation(I18n.format("tc.researcherror")));
                 }
             } else if(stack.getItemDamage() == 42 || stack.getItemDamage() == 24) {
-                String key = ResearchManager.findHiddenResearch(player);
+                String key = OldResearchManager.findHiddenResearch(player);
                 if(key.equals("FAIL")) {
                     stack.setCount(stack.getCount()-1);
                     EntityItem entityItem = new EntityItem(world, player.posX, player.posY + (double)(player.getEyeHeight() / 2.0F), player.posZ, new ItemStack(ModItems.KNOWLEDGEFRAGMENT, 7 + world.rand.nextInt(3)));
@@ -70,7 +70,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
                     world.playSound(player.posX, player.posY, player.posZ, SoundsTC.erase, SoundCategory.MASTER, 0.75F, 1.0F, false);
                 } else {
                     stack.setItemDamage(0);
-                    stack.setTagCompound(ResearchManager.createNote(stack, key, player.world).getTagCompound());
+                    stack.setTagCompound(OldResearchManager.createNote(stack, key, player.world).getTagCompound());
                     world.playSound(player.posX, player.posY, player.posZ, SoundsTC.write, SoundCategory.MASTER, 0.75F, 1.0F, false);
                 }
             }
@@ -83,7 +83,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
     public int getColorFromItemStack(ItemStack stack, int par2) {
         if(par2 == 1) {
             int c = 10066329;
-            ResearchNoteData rd = ResearchManager.getData(stack);
+            ResearchNoteData rd = OldResearchManager.getData(stack);
             if(rd != null) {
                 c = rd.color;
             }
@@ -110,7 +110,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
             tooltip.add(TextFormatting.BLUE + I18n.format("item.researchnotes.unknown.2"));
         }
 
-        ResearchNoteData rd = ResearchManager.getData(stack);
+        ResearchNoteData rd = OldResearchManager.getData(stack);
         if(rd != null && rd.key != null && ResearchCategories.getResearch(rd.key) != null) {
             tooltip.add(TextFormatting.GOLD + ResearchCategories.getResearch(rd.key).getName());
             tooltip.add(TextFormatting.ITALIC + ResearchCategories.getResearch(rd.key).getText());

@@ -39,7 +39,7 @@ public class PacketResearchComplete implements IMessage, IMessageHandler<PacketR
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(PacketResearchComplete message, MessageContext ctx) {
         if(message.key != null && message.key.length() > 0) {
-            OldResearch.proxy.getResearchManager().completeResearch(Minecraft.getMinecraft().player, message.key);
+            OldResearch.proxy.getOldResearchManager().completeResearch(Minecraft.getMinecraft().player, message.key);
             if(message.key.startsWith("@")) {
                 String text = I18n.format("tc.addclue");
                 PlayerNotifications.addNotification("§a" + text);

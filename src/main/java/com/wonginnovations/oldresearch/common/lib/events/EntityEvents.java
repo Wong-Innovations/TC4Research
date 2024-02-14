@@ -5,7 +5,7 @@ import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.api.research.ResearchCategories;
 import com.wonginnovations.oldresearch.api.research.ResearchCategoryList;
 import com.wonginnovations.oldresearch.api.research.ResearchItem;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -52,12 +52,12 @@ public class EntityEvents {
             }
         }
 
-        ResearchManager.loadPlayerData(p, file1, getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()), legacy);
+        OldResearchManager.loadPlayerData(p, file1, getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()), legacy);
 
         for(ResearchCategoryList cat : ResearchCategories.researchCategories.values()) {
             for(ResearchItem ri : cat.research.values()) {
                 if(ri.isAutoUnlock()) {
-                    OldResearch.proxy.getResearchManager().completeResearch(p, ri.key);
+                    OldResearch.proxy.getOldResearchManager().completeResearch(p, ri.key);
                 }
             }
         }
@@ -85,7 +85,7 @@ public class EntityEvents {
     @SubscribeEvent
     public static void playerSave(PlayerEvent.SaveToFile event) {
         EntityPlayer p = event.getEntityPlayer();
-        ResearchManager.savePlayerData(p, getPlayerFile("thaum", event.getPlayerDirectory(), p.getGameProfile().getName()), getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()));
+        OldResearchManager.savePlayerData(p, getPlayerFile("thaum", event.getPlayerDirectory(), p.getGameProfile().getName()), getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()));
     }
 
 }

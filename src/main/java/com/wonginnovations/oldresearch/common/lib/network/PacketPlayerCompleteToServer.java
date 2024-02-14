@@ -2,14 +2,12 @@ package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.api.research.ResearchCategories;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -54,26 +52,26 @@ public class PacketPlayerCompleteToServer implements IMessage, IMessageHandler<P
         World world = DimensionManager.getWorld(message.dim);
         if(world != null && (ctx.getServerHandler().player == null || ctx.getServerHandler().player.getGameProfile().getName().equals(message.username))) {
             EntityPlayer player = world.getPlayerEntityByName(message.username);
-            if(player != null && !ResearchManager.isResearchComplete(message.username, message.key)) {
-                if(ResearchManager.doesPlayerHaveRequisites(message.username, message.key)) {
+            if(player != null && !OldResearchManager.isResearchComplete(message.username, message.key)) {
+                if(OldResearchManager.doesPlayerHaveRequisites(message.username, message.key)) {
                     if(message.type != 0) {
                         if(message.type == 1) {
-                            ResearchManager.createResearchNoteForPlayer(world, player, message.key);
+                            OldResearchManager.createResearchNoteForPlayer(world, player, message.key);
                         }
                     } else {
                         for(Aspect a : ResearchCategories.getResearch(message.key).tags.getAspects()) {
                             OldResearch.proxy.playerKnowledge.addAspectPool(message.username, a, (short)(-ResearchCategories.getResearch(message.key).tags.getAmount(a)));
-                            ResearchManager.scheduleSave(player);
+                            OldResearchManager.scheduleSave(player);
                             PacketHandler.INSTANCE.sendTo(new PacketAspectPool(a.getTag(), (short) (-ResearchCategories.getResearch(message.key).tags.getAmount(a)), OldResearch.proxy.playerKnowledge.getAspectPoolFor(message.username, a)), (EntityPlayerMP)player);
                         }
 
                         PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(message.key), (EntityPlayerMP)player);
-                        OldResearch.proxy.getResearchManager().completeResearch(player, message.key);
+                        OldResearch.proxy.getOldResearchManager().completeResearch(player, message.key);
                         if(ResearchCategories.getResearch(message.key).siblings != null) {
                             for(String sibling : ResearchCategories.getResearch(message.key).siblings) {
-                                if(!ResearchManager.isResearchComplete(message.username, sibling) && ResearchManager.doesPlayerHaveRequisites(message.username, sibling)) {
+                                if(!OldResearchManager.isResearchComplete(message.username, sibling) && OldResearchManager.doesPlayerHaveRequisites(message.username, sibling)) {
                                     PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(sibling), (EntityPlayerMP)player);
-                                    OldResearch.proxy.getResearchManager().completeResearch(player, sibling);
+                                    OldResearch.proxy.getOldResearchManager().completeResearch(player, sibling);
                                 }
                             }
                         }

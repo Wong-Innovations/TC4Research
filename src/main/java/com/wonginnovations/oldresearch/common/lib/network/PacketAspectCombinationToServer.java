@@ -1,7 +1,7 @@
 package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ScanManager;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import io.netty.buffer.ByteBuf;
@@ -74,7 +74,7 @@ public class PacketAspectCombinationToServer implements IMessage, IMessageHandle
         if (world != null && (ctx.getServerHandler().player == null || ctx.getServerHandler().player.getEntityId() == message.playerid)) {
             Entity player = world.getEntityByID(message.playerid);
             if (player instanceof EntityPlayer && message.aspect1 != null) {
-                Aspect combo = ResearchManager.getCombinationResult(message.aspect1, message.aspect2);
+                Aspect combo = OldResearchManager.getCombinationResult(message.aspect1, message.aspect2);
                 if ((OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect1) > 0 || message.ab1) && (OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect2) > 0 || message.ab2)) {
                     TileEntity rt = player.world.getTileEntity(new BlockPos(message.x, message.y, message.z));
                     if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(((EntityPlayer)player).getGameProfile().getName(), message.aspect1) <= 0 && message.ab1) {
@@ -105,7 +105,7 @@ public class PacketAspectCombinationToServer implements IMessage, IMessageHandle
                         ScanManager.checkAndSyncAspectKnowledge((EntityPlayer)player, combo, 1);
                     }
 
-                    ResearchManager.scheduleSave((EntityPlayer)player);
+                    OldResearchManager.scheduleSave((EntityPlayer)player);
                 }
             }
         }

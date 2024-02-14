@@ -2,7 +2,7 @@ package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.client.gui.OldGuiResearchBrowser;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +22,7 @@ public class PacketSyncResearch implements IMessage, IMessageHandler<PacketSyncR
     }
 
     public PacketSyncResearch(EntityPlayer player) {
-        this.data = ResearchManager.getResearchForPlayer(player.getGameProfile().getName());
+        this.data = OldResearchManager.getResearchForPlayer(player.getGameProfile().getName());
     }
 
     public void toBytes(ByteBuf buffer) {
@@ -53,7 +53,7 @@ public class PacketSyncResearch implements IMessage, IMessageHandler<PacketSyncR
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(PacketSyncResearch message, MessageContext ctx) {
         for(String key : message.data) {
-            OldResearch.proxy.getResearchManager().completeResearch(Minecraft.getMinecraft().player, key);
+            OldResearch.proxy.getOldResearchManager().completeResearch(Minecraft.getMinecraft().player, key);
         }
 
         OldGuiResearchBrowser.completedResearch.put(Minecraft.getMinecraft().player.getGameProfile().getName(), message.data);

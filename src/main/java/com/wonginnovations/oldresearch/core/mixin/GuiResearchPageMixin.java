@@ -1,44 +1,34 @@
 package com.wonginnovations.oldresearch.core.mixin;
 
-import com.wonginnovations.oldresearch.common.items.ModItems;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.wonginnovations.oldresearch.OldResearch;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.opengl.GL11;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.research.ResearchCategories;
-import thaumcraft.api.research.ResearchEntry;
-import thaumcraft.api.research.ResearchStage;
+import thaumcraft.api.research.*;
 import thaumcraft.client.gui.GuiResearchPage;
 import thaumcraft.client.lib.UtilsFX;
-import thaumcraft.client.lib.events.HudHandler;
 import thaumcraft.common.lib.utils.InventoryUtils;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Mixin(value = GuiResearchPage.class, remap = false)
 public abstract class GuiResearchPageMixin extends GuiScreen {
-
-//    @Inject(method = "drawRequirements", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", ordinal = 2, shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
-//    public void drawRequirementsInjection(int x, int mx, int my, ResearchStage stage, CallbackInfo ci, @Local(ordinal = 8) LocalRef<Object> locRef, @Local(ordinal = 11) LocalRef<String> keyRef) {
-//        if (keyRef.get().startsWith("rn_")) {
-//            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//            locRef.set(new ItemStack(ModItems.RESEARCHNOTE, 1, 0));
-//        }
-//    }
 
     @Shadow
     protected int paneHeight;
@@ -59,8 +49,6 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     @Shadow
     boolean[] hasResearch;
     @Shadow
-    boolean[] hasKnow;
-    @Shadow
     boolean[] hasItem;
     @Shadow
     boolean[] hasCraft;
@@ -75,6 +63,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     @Shadow
     abstract void drawStackAt(ItemStack itemstack, int x, int y, int mx, int my, boolean clickthrough);
 
+    @Shadow private boolean isComplete;
 
     @Inject(method = "drawRequirements", at = @At("HEAD"), cancellable = true)
     public void drawRequirementsInjection(int x, int mx, int my, ResearchStage stage, CallbackInfo ci) {
@@ -276,6 +265,8 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
 
                     if (!key.startsWith("rn_")) {
                         continue;
+                    } else {
+                        loc = OldResearch.proxy.researchManager.getNote(key);
                     }
 
                     GL11.glPushMatrix();
@@ -311,69 +302,10 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
             }
         }
 
-//        if (stage.getKnow() != null) {
-//            y -= 18;
-//            b = true;
-//            shift = 24;
-//            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.25F);
-//            this.mc.renderEngine.bindTexture(this.tex1);
-//            this.drawTexturedModalRect(x - 12, y - 1, 200, 184, 56, 16);
-//            this.drawPopupAt(x - 15, y, mx, my, "tc.need.know");
-//            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//            if (this.hasKnow != null) {
-//                if (this.hasKnow.length != stage.getKnow().length) {
-//                    this.hasKnow = new boolean[stage.getKnow().length];
-//                }
-//
-//                ss = 18;
-//                if (stage.getKnow().length > 6) {
-//                    ss = 110 / stage.getKnow().length;
-//                }
-//
-//                for(ss = 0; ss < stage.getKnow().length; ++ss) {
-//                    ResearchStage.Knowledge kn = stage.getKnow()[ss];
-//                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//                    GL11.glPushMatrix();
-//                    this.mc.renderEngine.bindTexture(HudHandler.KNOW_TYPE[kn.type.ordinal()]);
-//                    GL11.glTranslatef((float)(x - 15 + shift), (float)y, 0.0F);
-//                    GL11.glScaled(0.0625, 0.0625, 0.0625);
-//                    this.drawTexturedModalRect(0, 0, 0, 0, 255, 255);
-//                    if (kn.type.hasFields() && kn.category != null) {
-//                        this.mc.renderEngine.bindTexture(kn.category.icon);
-//                        GL11.glTranslatef(32.0F, 32.0F, 1.0F);
-//                        GL11.glPushMatrix();
-//                        GL11.glScaled(0.75, 0.75, 0.75);
-//                        this.drawTexturedModalRect(0, 0, 0, 0, 255, 255);
-//                        GL11.glPopMatrix();
-//                    }
-//
-//                    GL11.glPopMatrix();
-//                    key = "" + (!this.hasKnow[ss] ? TextFormatting.RED : "") + kn.amount;
-//                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//                    GL11.glPushMatrix();
-//                    GL11.glTranslatef((float)(x - 15 + shift + 16 - this.mc.fontRenderer.getStringWidth(key) / 2), (float)(y + 12), 5.0F);
-//                    GL11.glScaled(0.5, 0.5, 0.5);
-//                    this.mc.fontRenderer.drawStringWithShadow(key, 0.0F, 0.0F, 16777215);
-//                    GL11.glPopMatrix();
-//                    if (this.hasKnow[ss]) {
-//                        GL11.glPushMatrix();
-//                        GL11.glTranslatef(0.0F, 0.0F, 1.0F);
-//                        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//                        this.mc.renderEngine.bindTexture(this.tex1);
-//                        this.drawTexturedModalRect(x - 15 + shift + 8, y, 159, 207, 10, 10);
-//                        GL11.glPopMatrix();
-//                    }
-//
-//                    s = I18n.translateToLocal("tc.type." + kn.type.toString().toLowerCase());
-//                    if (kn.type.hasFields() && kn.category != null) {
-//                        s = s + ": " + ResearchCategories.getCategoryName(kn.category.key);
-//                    }
-//
-//                    this.drawPopupAt(x - 15 + shift, y, mx, my, s);
-//                    shift += ss;
-//                }
-//            }
-//        }
+        if (stage.getResearch() == null && stage.getObtain() == null && stage.getCraft() == null) {
+            b = true;
+            shift = 24;
+        }
 
         if (b) {
             y -= 12;
@@ -407,4 +339,14 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
         ci.cancel();
     }
 
+    @Redirect(
+        method = "parsePages",
+        at = @At(value = "INVOKE", target = "Lthaumcraft/api/research/ResearchStage;getKnow()[Lthaumcraft/api/research/ResearchStage$Knowledge;")
+    )
+    public ResearchStage.Knowledge[] parsePagesGetKnow(ResearchStage instance) {
+        if (instance.getCraft() == null && instance.getObtain() == null && instance.getResearch() == null) {
+            return new ResearchStage.Knowledge[0];
+        }
+        return null;
+    }
 }

@@ -32,7 +32,6 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.golems.EntityThaumcraftGolem;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
-import thaumcraft.common.lib.utils.Utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -379,7 +378,7 @@ public class ScanManager implements IScanEventHandler {
 
             if(validScan(aspects, player)) {
                 clue = new ItemStack(Item.getItemById(scan.id), 1, scan.meta);
-                OldResearch.proxy.getResearchManager().completeScannedObject(player, prefix + generateItemHash(Item.getItemById(scan.id), scan.meta));
+                OldResearch.proxy.getOldResearchManager().completeScannedObject(player, prefix + generateItemHash(Item.getItemById(scan.id), scan.meta));
                 ret = true;
             }
         } else if(scan.type == 2) {
@@ -395,14 +394,14 @@ public class ScanManager implements IScanEventHandler {
                 aspects = ThaumcraftCraftingManagerAccessor.getBonusTags(t, aspects);
                 if(validScan(aspects, player)) {
                     clue = item.getItem();
-                    OldResearch.proxy.getResearchManager().completeScannedObject(player, prefix + generateItemHash(item.getItem().getItem(), item.getItem().getItemDamage()));
+                    OldResearch.proxy.getOldResearchManager().completeScannedObject(player, prefix + generateItemHash(item.getItem().getItem(), item.getItem().getItemDamage()));
                     ret = true;
                 }
             } else {
                 aspects = generateEntityAspects(scan.entity);
                 if(validScan(aspects, player)) {
                     clue = EntityList.getEntityString(scan.entity);
-                    OldResearch.proxy.getResearchManager().completeScannedEntity(player, prefix + generateEntityHash(scan.entity));
+                    OldResearch.proxy.getOldResearchManager().completeScannedEntity(player, prefix + generateEntityHash(scan.entity));
                     ret = true;
                 }
             }
@@ -437,7 +436,7 @@ public class ScanManager implements IScanEventHandler {
             }
 
             if(clue != null) {
-                ResearchManager.createClue(player.world, player, clue, aspectsFinal);
+                OldResearchManager.createClue(player.world, player, clue, aspectsFinal);
             }
         }
 
@@ -478,7 +477,7 @@ public class ScanManager implements IScanEventHandler {
         }
 
         if(save > 0) {
-            OldResearch.proxy.getResearchManager().completeAspect(player, aspect, rp.getAspectPoolFor(player.getGameProfile().getName(), aspect));
+            OldResearch.proxy.getOldResearchManager().completeAspect(player, aspect, rp.getAspectPoolFor(player.getGameProfile().getName(), aspect));
         }
 
         return save;

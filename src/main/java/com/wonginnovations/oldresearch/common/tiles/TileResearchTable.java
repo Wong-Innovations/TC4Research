@@ -7,14 +7,13 @@ import com.wonginnovations.oldresearch.common.items.ItemResearchNote;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPool;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -134,7 +133,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
     public void gatherResults() {
         this.data.note = null;
         if(this.getSyncedStackInSlot(1).getItem() instanceof ItemResearchNote) {
-            this.data.note = ResearchManager.getData(this.getSyncedStackInSlot(1));
+            this.data.note = OldResearchManager.getData(this.getSyncedStackInSlot(1));
         }
     }
 
@@ -143,14 +142,14 @@ public class TileResearchTable extends TileThaumcraftInventory {
             this.gatherResults();
         }
 
-        if(ResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), false)) {
+        if(OldResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), false)) {
             if(this.getSyncedStackInSlot(1).getItem() instanceof ItemResearchNote && this.data.note != null && this.getSyncedStackInSlot(1).getItemDamage() < 64) {
-                boolean r1 = ResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1");
-                boolean r2 = ResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
+                boolean r1 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1");
+                boolean r2 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
                 HexUtils.Hex hex = new HexUtils.Hex(q, r);
-                ResearchManager.HexEntry he;
+                OldResearchManager.HexEntry he;
                 if(aspect != null) {
-                    he = new ResearchManager.HexEntry(aspect, 2);
+                    he = new OldResearchManager.HexEntry(aspect, 2);
                     if(r2 && this.world.rand.nextFloat() < 0.1F) {
                         this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
                     } else if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect) <= 0) {
@@ -159,7 +158,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
                         this.markDirty();
                     } else {
                         OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), aspect, (short)-1);
-                        ResearchManager.scheduleSave(player);
+                        OldResearchManager.scheduleSave(player);
                         PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect)), (EntityPlayerMP)player);
                     }
                 } else {
@@ -167,18 +166,18 @@ public class TileResearchTable extends TileThaumcraftInventory {
                     if(this.data.note.hexEntries.get(hex.toString()).aspect != null && (r1 && f < 0.25F || r2 && f < 0.5F)) {
                         this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
                         OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect, (short)1);
-                        ResearchManager.scheduleSave(player);
+                        OldResearchManager.scheduleSave(player);
                         PacketHandler.INSTANCE.sendTo(new PacketAspectPool(this.data.note.hexEntries.get(hex.toString()).aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect)), (EntityPlayerMP)player);
                     }
 
-                    he = new ResearchManager.HexEntry(null, 0);
+                    he = new OldResearchManager.HexEntry(null, 0);
                 }
 
                 this.data.note.hexEntries.put(hex.toString(), he);
                 this.data.note.hexes.put(hex.toString(), hex);
-                ResearchManager.updateData(this.getSyncedStackInSlot(1), this.data.note);
-                ResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), true);
-                if(!this.world.isRemote && ResearchManager.checkResearchCompletion(this.getSyncedStackInSlot(1), this.data.note, player.getGameProfile().getName())) {
+                OldResearchManager.updateData(this.getSyncedStackInSlot(1), this.data.note);
+                OldResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), true);
+                if(!this.world.isRemote && OldResearchManager.checkResearchCompletion(this.getSyncedStackInSlot(1), this.data.note, player.getGameProfile().getName())) {
                     this.getSyncedStackInSlot(1).setItemDamage(64);
                     this.world.addBlockEvent(this.pos, ModBlocks.RESEARCHTABLE, 1, 1);
                 }

@@ -13,7 +13,7 @@ import com.wonginnovations.oldresearch.common.container.ContainerResearchTable;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectCombinationToServer;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPlaceToServer;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import com.wonginnovations.oldresearch.client.lib.PlayerNotifications;
@@ -75,9 +75,9 @@ public class GuiResearchTable extends GuiContainer {
         this.galFontRenderer = FMLClientHandler.instance().getClient().standardGalacticFontRenderer;
         this.username = player.getGameProfile().getName();
         this.player = player;
-        RESEARCHER_1 = ResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1"); // possible alternative: ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHER1");
-        RESEARCHER_2 = ResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
-        RESEARCHDUPE = ResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHDUPE");
+        RESEARCHER_1 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1"); // possible alternative: ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHER1");
+        RESEARCHER_2 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
+        RESEARCHDUPE = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHDUPE");
         int count = 0;
 
         for(Aspect aspect : Aspect.aspects.values()) {
@@ -413,7 +413,7 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     private void drawSheet(int x, int y, int mx, int my) {
-        this.note = ResearchManager.getData(this.tileEntity.getStackInSlot(1));
+        this.note = OldResearchManager.getData(this.tileEntity.getStackInSlot(1));
         if(this.note != null && this.note.key != null && this.note.key.length() != 0) {
             UtilsFX.bindTexture("textures/misc/parchment3.png");
             this.drawTexturedModalRect(x + 94, y + 8, 0, 0, 150, 150);

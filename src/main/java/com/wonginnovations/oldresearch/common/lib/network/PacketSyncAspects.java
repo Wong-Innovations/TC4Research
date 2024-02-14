@@ -54,7 +54,7 @@ public class PacketSyncAspects implements IMessage, IMessageHandler<PacketSyncAs
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(PacketSyncAspects message, MessageContext ctx) {
         for(Aspect key : message.data.getAspects()) {
-            OldResearch.proxy.getResearchManager().completeAspect(Minecraft.getMinecraft().player, key, (short)message.data.getAmount(key));
+            OldResearch.proxy.getOldResearchManager().completeAspect(Minecraft.getMinecraft().player, key, (short)message.data.getAmount(key));
         }
 
         return null;

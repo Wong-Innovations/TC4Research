@@ -1,6 +1,6 @@
 package com.wonginnovations.oldresearch.client;
 
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ public class ResearchNoteColorHandler implements IItemColor {
             case 0: return Color.WHITE.getRGB();
             case 1: {
                 int c = 10066329;
-                ResearchNoteData rd = ResearchManager.getData(stack);
+                ResearchNoteData rd = OldResearchManager.getData(stack);
                 if(rd != null) {
                     c = rd.color;
                 }

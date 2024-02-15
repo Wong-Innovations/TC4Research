@@ -52,14 +52,19 @@ public class OldResearchUtils {
         }
     }
 
-    public static int isPlayerCarrying(EntityPlayer player, ItemStack stack) {
-        for(int var2 = 0; var2 < player.inventory.mainInventory.size(); ++var2) {
-            if(player.inventory.mainInventory.get(var2).isItemEqual(stack)) {
-                return var2;
+    public static boolean isPlayerCarrying(EntityPlayer player, Item item) {
+        return isPlayerCarrying(player, new ItemStack(item));
+    }
+
+    public static boolean isPlayerCarrying(EntityPlayer player, ItemStack stack) {
+        if (player.inventory.offHandInventory.get(0).isItemEqualIgnoreDurability(stack)) return true;
+        for(int i = 0; i < player.inventory.mainInventory.size(); ++i) {
+            if(player.inventory.mainInventory.get(i).isItemEqualIgnoreDurability(stack)) {
+                return true;
             }
         }
 
-        return -1;
+        return false;
     }
 
     public static float sqrt_double(double val) {

@@ -1,16 +1,17 @@
 package com.wonginnovations.oldresearch.core.mixin;
 
-import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketPlayerCompleteToServer;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.Item;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.items.ItemsTC;
 import thaumcraft.api.research.*;
 import thaumcraft.client.gui.GuiResearchPage;
 import thaumcraft.client.lib.UtilsFX;
@@ -100,7 +102,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                 for(int a = 0; a < stage.getResearch().length; ++a) {
                     key = stage.getResearch()[a];
                     loc = stage.getResearchIcon()[a] != null ? new ResourceLocation(stage.getResearchIcon()[a]) : this.dummyResearch;
-                    s = I18n.translateToLocal("research." + key + ".text");
+                    s = I18n.format("research." + key + ".text");
                     if (key.startsWith("!")) {
                         String k = key.replaceAll("!", "");
                         Aspect as = (Aspect)Aspect.aspects.get(k);
@@ -257,7 +259,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                 for(int a = 0; a < stage.getResearch().length; ++a) {
                     key = stage.getResearch()[a];
                     loc = stage.getResearchIcon()[a] != null ? new ResourceLocation(stage.getResearchIcon()[a]) : this.dummyResearch;
-                    s = I18n.translateToLocal("research." + key + ".text");
+                    s = I18n.format("research." + key + ".text");
 
                     ResearchEntry re = ResearchCategories.getResearch(key);
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -318,7 +320,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                 this.hrx = x + 20;
                 this.hry = y - 6;
                 if (this.hold) {
-                    s = I18n.translateToLocal("tc.stage.hold");
+                    s = I18n.format("tc.stage.hold");
                     ss = this.mc.fontRenderer.getStringWidth(s);
                     this.mc.fontRenderer.drawStringWithShadow(s, (float)(x + 52) - (float)ss / 2.0F, (float)(y - 4), 16777215);
                 } else {
@@ -330,7 +332,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
 
                     this.mc.renderEngine.bindTexture(this.tex1);
                     this.drawTexturedModalRect(this.hrx, this.hry, 84, 216, 64, 12);
-                    s = I18n.translateToLocal("tc.stage.complete");
+                    s = I18n.format("tc.stage.complete");
                     ss = this.mc.fontRenderer.getStringWidth(s);
                     this.mc.fontRenderer.drawStringWithShadow(s, (float)(x + 52) - (float)ss / 2.0F, (float)(y - 4), 16777215);
                 }
@@ -356,15 +358,28 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     public void mouseClickedInjection(int mx, int my, int button, CallbackInfo ci) {
         for (Point p : oldresearch$renderedNotes.keySet()) {
             if ((mx >= p.x - 10 && mx <= p.x + 10) && (my >= p.y - 10 && my <= p.y + 10)) {
-                PacketHandler.INSTANCE.sendToServer(
-                    new PacketPlayerCompleteToServer(
-                        ResearchManager.getData(oldresearch$renderedNotes.get(p)).key,
-                        this.mc.player.getGameProfile().getName(),
-                        this.mc.player.world.provider.getDimension(),
-                        (byte) 1
-                    )
-                );
+                if (!OldResearchUtils.isPlayerCarrying(this.mc.player, ItemsTC.scribingTools)) {
+                    this.mc.player.sendMessage(new TextComponentString("§cScribing tools required to create research notes."));
+                    this.mc.displayGuiScreen(null);
+                } else if (!OldResearchUtils.isPlayerCarrying(this.mc.player, Items.PAPER)) {
+                    this.mc.player.sendMessage(new TextComponentString("§cPaper required to create research notes."));
+                    this.mc.displayGuiScreen(null);
+                } else if (!ResearchManager.consumeInkFromPlayer(this.mc.player, false)) {
+                    this.mc.player.sendMessage(new TextComponentString("§c" + I18n.format("tile.researchtable.noink.0")));
+                    this.mc.player.sendMessage(new TextComponentString("§c" + I18n.format("tile.researchtable.noink.1")));
+                    this.mc.displayGuiScreen(null);
+                } else {
+                    PacketHandler.INSTANCE.sendToServer(
+                        new PacketPlayerCompleteToServer(
+                            ResearchManager.getData(oldresearch$renderedNotes.get(p)).key,
+                            this.mc.player.getGameProfile().getName(),
+                            this.mc.player.world.provider.getDimension(),
+                            (byte) 1
+                        )
+                    );
+                }
                 ci.cancel();
+                return;
             }
         }
     }

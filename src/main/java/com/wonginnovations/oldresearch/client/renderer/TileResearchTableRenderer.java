@@ -37,11 +37,11 @@ public class TileResearchTableRenderer extends TileEntitySpecialRenderer<TileRes
                 GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
         }
 
-        if (!table.getStackInSlot(1).isEmpty() && table.getStackInSlot(1).getItem() instanceof ItemResearchNote) {
-            this.tableModel.renderScroll(Aspect.ALCHEMY.getColor());
+        if (table.hasResearchNote()) {
+            this.tableModel.renderScroll(Aspect.ALCHEMY.getColor()); // TODO: make this use scroll color
         }
 
-        if (!table.getStackInSlot(0).isEmpty() && table.getStackInSlot(0).getItem() instanceof IScribeTools) {
+        if (table.hasScribingTools()) {
             this.tableModel.renderInkwell();
             GL11.glPushMatrix();
             GL11.glEnable(3042);

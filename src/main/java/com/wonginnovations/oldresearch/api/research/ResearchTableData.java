@@ -19,21 +19,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class ResearchTableData {
-    public TileEntity table;
     public EntityPlayer researcher = null;
 //    public NonNullList<ItemStack> contents = NonNullList.withSize(2, ItemStack.EMPTY);
     public AspectList bonusAspects = new AspectList();
-    public int nextRecalc = 0;
 
     public ResearchNoteData note = null;
 
-    public ResearchTableData(TileEntity tileResearchTable) {
-        this.table = tileResearchTable;
+    public ResearchTableData() {
     }
 
-    public ResearchTableData(EntityPlayer player2, TileEntity tileResearchTable) {
+    public ResearchTableData(EntityPlayer player2) {
         this.researcher = player2;
-        this.table = tileResearchTable;
     }
 
     public NBTTagCompound serialize() {

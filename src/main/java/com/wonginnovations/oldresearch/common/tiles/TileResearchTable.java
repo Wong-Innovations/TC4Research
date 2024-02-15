@@ -7,6 +7,7 @@ import com.wonginnovations.oldresearch.common.items.ItemResearchNote;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPool;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
+import com.wonginnovations.oldresearch.common.lib.network.PacketSyncResearchTableData;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -23,16 +24,20 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.items.IScribeTools;
 import thaumcraft.common.blocks.essentia.BlockJar;
 import thaumcraft.common.blocks.world.ore.BlockCrystal;
 import thaumcraft.common.lib.SoundsTC;
+import thaumcraft.common.lib.network.tiles.PacketTileToClient;
 import thaumcraft.common.lib.utils.HexUtils;
 import thaumcraft.common.tiles.TileThaumcraftInventory;
 
 public class TileResearchTable extends TileThaumcraftInventory {
-    public ResearchTableData data = new ResearchTableData(this);
+    public ResearchTableData data;
+    public int nextRecalc;
+    private boolean hasClientSynced;
 
     public TileResearchTable() {
         super(2);
@@ -42,10 +47,10 @@ public class TileResearchTable extends TileThaumcraftInventory {
     public void readSyncNBT(NBTTagCompound nbttagcompound) {
         super.readSyncNBT(nbttagcompound);
         if (nbttagcompound.hasKey("note")) {
-            this.data = new ResearchTableData(this);
+            this.data = new ResearchTableData();
             this.data.deserialize(nbttagcompound.getCompoundTag("note"));
         } else {
-            this.data = new ResearchTableData(this);
+            this.data = null;
         }
     }
 
@@ -101,28 +106,16 @@ public class TileResearchTable extends TileThaumcraftInventory {
         }
     }
 
-//    // New table doesn't use raw paper
-//    public boolean consumePaperFromTable() {
-//        if (this.getStackInSlot(1).getItem() == Items.PAPER && this.getStackInSlot(1).getCount() > 0) {
-//            this.decrStackSize(1, 1);
-//            this.syncTile(false);
-//            this.markDirty();
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-
     @Override
     public void update() {
         super.update();
-        if(!this.world.isRemote && this.data.nextRecalc++ > 600) {
-            this.data.nextRecalc = 0;
-            this.recalculateBonus();
-            this.world.notifyBlockUpdate(this.pos, world.getBlockState(this.pos), world.getBlockState(this.pos), 3);
-            this.markDirty();
-        }
-
+//        if(!this.world.isRemote && this.nextRecalc++ > 100) {
+//            this.nextRecalc = 0;
+//            this.recalculateBonus();
+//            this.markDirty();
+//            this.syncTile(false);
+////            PacketHandler.INSTANCE.sendToAllAround(new PacketSyncResearchTableData(this.getPos(), this.data), new NetworkRegistry.TargetPoint(this.getWorld().provider.getDimension(), (double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5, 128.0));
+//        }
     }
 
     public void markDirty() {
@@ -154,6 +147,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
                         this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
                     } else if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect) <= 0) {
                         this.data.bonusAspects.remove(aspect, 1);
+                        // this will cause problems later
                         player.world.notifyBlockUpdate(this.pos, world.getBlockState(this.pos), world.getBlockState(this.pos), 3);
                         this.markDirty();
                     } else {
@@ -274,41 +268,21 @@ public class TileResearchTable extends TileThaumcraftInventory {
         return 2;
     }
 
+    public boolean hasScribingTools() {
+        return super.getStackInSlot(0).getItem() instanceof IScribeTools || super.getSyncedStackInSlot(0).getItem() instanceof IScribeTools;
+    }
+
+    public boolean hasResearchNote() {
+        return super.getStackInSlot(1).getItem() instanceof ItemResearchNote || super.getSyncedStackInSlot(1).getItem() instanceof ItemResearchNote;
+    }
+
     public ItemStack getStackInSlot(int var1) {
         return (this.getSyncedStackInSlot(var1).isEmpty())? super.getStackInSlot(var1) : this.getSyncedStackInSlot(var1);
     }
 
-//    public ItemStack decrStackSize(int var1, int var2) {
-//        ItemStack var3;
-//        if (this.data.contents.get(var1).getCount() <= var2) {
-//            var3 = this.data.contents.get(var1);
-//            this.data.contents.set(var1, ItemStack.EMPTY);
-//        } else {
-//            var3 = this.data.contents.get(var1).splitStack(var2);
-//            if(this.data.contents.get(var1).getCount() == 0) {
-//                this.data.contents.set(var1, ItemStack.EMPTY);
-//            }
-//
-//        }
-//        this.markDirty();
-//        return var3;
-//    }
-
-//    public ItemStack getStackInSlotOnClosing(int var1) {
-//        ItemStack var2 = this.data.contents.get(var1);
-//        this.data.contents.set(var1, ItemStack.EMPTY);
-//        return var2;
-//    }
-//
-//    @Override
-//    public void setInventorySlotContents(int var1, ItemStack var2) {
-//        super.setInventorySlotContents(var1, (var2 == null)? ItemStack.EMPTY : var2);
-////        if(var2 != null && var2.getCount() > this.getInventoryStackLimit()) {
-////            var2.setCount(this.getInventoryStackLimit());
-////        }
-//
-//        this.markDirty();
-//    }
+    public void setTableData(ResearchTableData data) {
+        this.data = data;
+    }
 
     public String getName() {
         return "Research Table";
@@ -334,7 +308,6 @@ public class TileResearchTable extends TileThaumcraftInventory {
         if (this.world != null && this.world.isRemote) {
             this.syncTile(false);
         }
-
     }
 
     public boolean receiveClientEvent(int i, int j) {

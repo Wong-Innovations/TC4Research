@@ -20,6 +20,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(PacketScannedToServer.class, PacketScannedToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketSyncAspects.class, PacketSyncAspects.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSyncResearch.class, PacketSyncResearch.class, discriminator++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketSyncResearchTableData.class, PacketSyncResearchTableData.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSyncWarp.class, PacketSyncWarp.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketWarpMessage.class, PacketWarpMessage.class, discriminator++, Side.CLIENT);
     }

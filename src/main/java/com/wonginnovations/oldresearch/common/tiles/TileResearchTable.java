@@ -45,11 +45,9 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
     public void readSyncNBT(NBTTagCompound nbttagcompound) {
         super.readSyncNBT(nbttagcompound);
+        this.data = new ResearchTableData();
         if (nbttagcompound.hasKey("note")) {
-            this.data = new ResearchTableData();
             this.data.deserialize(nbttagcompound.getCompoundTag("note"));
-        } else {
-            this.data = null;
         }
     }
 

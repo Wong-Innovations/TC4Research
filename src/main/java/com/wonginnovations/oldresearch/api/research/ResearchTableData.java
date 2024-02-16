@@ -79,7 +79,7 @@ public class ResearchTableData {
 //                this.contents.add(stack);
 //            }
 
-            NBTTagList list = nbt.getTagList("aspects", 9);
+            NBTTagList list = nbt.getTagList("aspects", 10);
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound tc = list.getCompoundTagAt(i);
                 this.bonusAspects.add(Aspect.getAspect(tc.getString("aspect")), 1);

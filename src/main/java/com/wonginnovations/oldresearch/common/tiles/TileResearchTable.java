@@ -37,7 +37,6 @@ import thaumcraft.common.tiles.TileThaumcraftInventory;
 public class TileResearchTable extends TileThaumcraftInventory {
     public ResearchTableData data;
     public int nextRecalc;
-    private boolean hasClientSynced;
 
     public TileResearchTable() {
         super(2);
@@ -109,13 +108,12 @@ public class TileResearchTable extends TileThaumcraftInventory {
     @Override
     public void update() {
         super.update();
-//        if(!this.world.isRemote && this.nextRecalc++ > 100) {
-//            this.nextRecalc = 0;
-//            this.recalculateBonus();
-//            this.markDirty();
-//            this.syncTile(false);
-////            PacketHandler.INSTANCE.sendToAllAround(new PacketSyncResearchTableData(this.getPos(), this.data), new NetworkRegistry.TargetPoint(this.getWorld().provider.getDimension(), (double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5, 128.0));
-//        }
+        if(!this.world.isRemote && this.nextRecalc++ > 100) {
+            this.nextRecalc = 0;
+            this.recalculateBonus();
+            PacketHandler.INSTANCE.sendToAllAround(new PacketSyncResearchTableData(this.getPos(), this.data), new NetworkRegistry.TargetPoint(this.getWorld().provider.getDimension(), (double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5, 128.0));
+            this.markDirty();
+        }
     }
 
     public void markDirty() {

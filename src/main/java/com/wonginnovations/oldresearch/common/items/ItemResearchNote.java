@@ -80,18 +80,14 @@ public class ItemResearchNote extends Item implements IModelRegister {
     }
 
     @SideOnly(Side.CLIENT)
-    public int getColorFromItemStack(ItemStack stack, int par2) {
-        if(par2 == 1) {
-            int c = 10066329;
-            ResearchNoteData rd = OldResearchManager.getData(stack);
-            if(rd != null) {
-                c = rd.color;
-            }
-
-            return c;
-        } else {
-            return 10066329;// super.getColorFromItemStack(stack, par2);
+    public static int getColorFromItemStack(ItemStack stack) {
+        int c = 2337949;
+        ResearchNoteData rd = OldResearchManager.getData(stack);
+        if(rd != null) {
+            c = rd.color;
         }
+
+        return c;
     }
 
     public boolean getShareTag() {

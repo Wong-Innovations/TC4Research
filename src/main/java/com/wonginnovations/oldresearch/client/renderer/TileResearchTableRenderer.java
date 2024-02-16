@@ -38,7 +38,7 @@ public class TileResearchTableRenderer extends TileEntitySpecialRenderer<TileRes
         }
 
         if (table.hasResearchNote()) {
-            this.tableModel.renderScroll(Aspect.ALCHEMY.getColor()); // TODO: make this use scroll color
+            this.tableModel.renderScroll(ItemResearchNote.getColorFromItemStack(table.getStackInSlot(1)));
         }
 
         if (table.hasScribingTools()) {

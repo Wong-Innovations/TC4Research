@@ -16,7 +16,7 @@ import thaumcraft.common.lib.utils.Utils;
 public class PacketSyncResearchTableData implements IMessage, IMessageHandler<PacketSyncResearchTableData, IMessage> {
 
     private long pos;
-    ResearchTableData data = new ResearchTableData();
+    ResearchTableData data;
 
     public PacketSyncResearchTableData() {
     }
@@ -33,6 +33,7 @@ public class PacketSyncResearchTableData implements IMessage, IMessageHandler<Pa
 
     public void fromBytes(ByteBuf buffer) {
         this.pos = buffer.readLong();
+        this.data = new ResearchTableData();
         this.data.deserialize(Utils.readNBTTagCompoundFromBuffer(buffer));
     }
 
@@ -41,7 +42,7 @@ public class PacketSyncResearchTableData implements IMessage, IMessageHandler<Pa
             public void run() {
                 World world = Thaumcraft.proxy.getClientWorld();
                 BlockPos bp = BlockPos.fromLong(message.pos);
-                if (world != null && bp != null) {
+                if (world != null) {
                     TileEntity te = world.getTileEntity(bp);
                     if (te != null && te instanceof TileResearchTable) {
                         ((TileResearchTable) te).setTableData(message.data);

@@ -55,6 +55,10 @@ public class OldResearchManager {
     private static final String SCANNED_ENT_TAG = "THAUMCRAFT.SCAN.ENTITIES";
     private static final String SCANNED_PHE_TAG = "THAUMCRAFT.SCAN.PHENOMENA";
 
+    public static String getStrippedKey(ItemStack stack) {
+        return getData(stack).key.substring(3, getData(stack).key.length() - 1);
+    }
+
     public static boolean createClue(World world, EntityPlayer player, Object clue, AspectList aspects) {
         ArrayList<String> keys = new ArrayList<>();
 

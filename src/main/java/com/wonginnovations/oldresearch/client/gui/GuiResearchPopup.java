@@ -104,7 +104,7 @@ public class GuiResearchPopup extends Gui {
                 GL11.glEnable(2929);
                 RenderHelper.enableGUIStandardItemLighting();
                 GL11.glDisable(2896);
-                GL11.glEnable(32836);
+                GL11.glEnable('耺');
                 GL11.glEnable(2903);
                 GL11.glEnable(2896);
                 if(this.theResearch.get(0).icon_item != null) {

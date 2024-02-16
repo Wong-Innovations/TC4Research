@@ -1,19 +1,27 @@
 package com.wonginnovations.oldresearch.client.lib;
 
 import com.wonginnovations.oldresearch.core.mixin.GuiAccessor;
+import com.wonginnovations.oldresearch.core.mixin.UtilsFXAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.client.fx.ParticleEngine;
+import thaumcraft.common.config.ModConfig;
 
+import java.awt.*;
 import java.util.List;
 
 public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
@@ -41,7 +49,7 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
     }
 
     public static void drawCustomTooltip(GuiScreen gui, RenderItem itemRenderer, FontRenderer fr, List<String> list, int par2, int par3, int subTipColor) {
-//        GL11.glDisable(32836); // weird kanji open GL12 stuff maybe
+//        GL11.glDisable(32836); // weird kanji open GL12 stuff maybe '耺'
         GL11.glDisable(2929);
         if(!list.isEmpty()) {
             int var5 = 0;
@@ -186,6 +194,117 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
             tessellator.draw();
         }
 
+    }
+
+    public static void drawTag(int x, int y, Aspect aspect, float amount, int bonus, double z, int blend, float alpha) {
+        drawTag(x, y, aspect, amount, bonus, z, blend, alpha, false);
+    }
+
+    public static void drawTag(int x, int y, Aspect aspect, float amt, int bonus, double z) {
+        drawTag(x, y, aspect, amt, bonus, z, 771, 1.0F, false);
+    }
+
+    public static void drawTag(int x, int y, Aspect aspect) {
+        drawTag(x, y, aspect, 0.0F, 0, 0.0, 771, 1.0F, true);
+    }
+
+    public static void drawTag(int x, int y, Aspect aspect, float amount, int bonus, double z, int blend, float alpha, boolean bw) {
+        drawTag((double)x, (double)y, aspect, amount, bonus, z, blend, alpha, bw);
+    }
+
+    public static void drawTag(double x, double y, Aspect aspect, float amount, int bonus, double z, int blend, float alpha, boolean bw) {
+        if (aspect != null) {
+            boolean blendon = GL11.glIsEnabled(3042);
+            Minecraft mc = Minecraft.getMinecraft();
+            boolean isLightingEnabled = GL11.glIsEnabled(2896);
+            Color color = new Color(aspect.getColor());
+            GL11.glPushMatrix();
+            GL11.glDisable(2896);
+            GL11.glAlphaFunc(516, 0.003921569F);
+            GL11.glEnable(3042);
+            GL11.glBlendFunc(770, blend);
+            GL11.glPushMatrix();
+            mc.renderEngine.bindTexture(aspect.getImage());
+            if (!bw) {
+                GL11.glColor4f((float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, alpha);
+            } else {
+                GL11.glColor4f(0.1F, 0.1F, 0.1F, alpha * 0.8F);
+            }
+
+            net.minecraft.client.renderer.Tessellator var9 = net.minecraft.client.renderer.Tessellator.getInstance();
+            var9.getBuffer().begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            if (!bw) {
+                var9.getBuffer().pos(x + 0.0, y + 16.0, z).tex(0.0, 1.0).color((float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, alpha).endVertex();
+                var9.getBuffer().pos(x + 16.0, y + 16.0, z).tex(1.0, 1.0).color((float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, alpha).endVertex();
+                var9.getBuffer().pos(x + 16.0, y + 0.0, z).tex(1.0, 0.0).color((float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, alpha).endVertex();
+                var9.getBuffer().pos(x + 0.0, y + 0.0, z).tex(0.0, 0.0).color((float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, alpha).endVertex();
+            } else {
+                var9.getBuffer().pos(x + 0.0, y + 16.0, z).tex(0.0, 1.0).color(0.1F, 0.1F, 0.1F, alpha * 0.8F).endVertex();
+                var9.getBuffer().pos(x + 16.0, y + 16.0, z).tex(1.0, 1.0).color(0.1F, 0.1F, 0.1F, alpha * 0.8F).endVertex();
+                var9.getBuffer().pos(x + 16.0, y + 0.0, z).tex(1.0, 0.0).color(0.1F, 0.1F, 0.1F, alpha * 0.8F).endVertex();
+                var9.getBuffer().pos(x + 0.0, y + 0.0, z).tex(0.0, 0.0).color(0.1F, 0.1F, 0.1F, alpha * 0.8F).endVertex();
+            }
+
+            var9.draw();
+            GL11.glPopMatrix();
+            if (amount > 0.0F) {
+                GL11.glPushMatrix();
+                float q = 0.5F;
+                if (!ModConfig.CONFIG_GRAPHICS.largeTagText) {
+                    GL11.glScalef(0.5F, 0.5F, 0.5F);
+                    q = 1.0F;
+                }
+
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                String am = UtilsFXAccessor.getMyFormatter().format((double)amount);
+                int sw = mc.fontRenderer.getStringWidth(am);
+                EnumFacing[] var20 = EnumFacing.HORIZONTALS;
+                int var21 = var20.length;
+
+                for(int var22 = 0; var22 < var21; ++var22) {
+                    EnumFacing e = var20[var22];
+                    mc.fontRenderer.drawString(am, (float)(32 - sw + (int)x * 2) * q + (float)e.getXOffset(), (float)(32 - mc.fontRenderer.FONT_HEIGHT + (int)y * 2) * q + (float)e.getZOffset(), 0, false);
+                }
+
+                mc.fontRenderer.drawString(am, (float)(32 - sw + (int)x * 2) * q, (float)(32 - mc.fontRenderer.FONT_HEIGHT + (int)y * 2) * q, 16777215, false);
+                GL11.glPopMatrix();
+            }
+
+            if (bonus > 0) {
+                GL11.glPushMatrix();
+                mc.renderEngine.bindTexture(new ResourceLocation("oldresearch", "textures/misc/particles.png"));
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                int px = 16 * (mc.player.ticksExisted % 16);
+                drawTexturedQuad((float)((int)x - 4), (float)((int)y - 4), (float)px, 80.0F, 16.0F, 16.0F, z);
+                if (bonus > 1) {
+                    float q = 0.5F;
+                    if (!ModConfig.CONFIG_GRAPHICS.largeTagText) {
+                        GL11.glScalef(0.5F, 0.5F, 0.5F);
+                        q = 1.0F;
+                    }
+
+                    String am = "" + bonus;
+                    int sw = mc.fontRenderer.getStringWidth(am) / 2;
+                    GL11.glTranslated(0.0, 0.0, -1.0);
+                    mc.fontRenderer.drawStringWithShadow(am, (float)(8 - sw + (int)x * 2) * q, (float)(15 - mc.fontRenderer.FONT_HEIGHT + (int)y * 2) * q, 16777215);
+                }
+
+                GL11.glPopMatrix();
+            }
+
+            GlStateManager.blendFunc(770, 771);
+            if (!blendon) {
+                GL11.glDisable(3042);
+            }
+
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glAlphaFunc(516, 0.1F);
+            if (isLightingEnabled) {
+                GL11.glEnable(2896);
+            }
+
+            GL11.glPopMatrix();
+        }
     }
 
 }

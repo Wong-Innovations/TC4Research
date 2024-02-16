@@ -11,8 +11,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
-import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.items.IScribeTools;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategory;
@@ -20,15 +20,50 @@ import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.api.research.ResearchStage;
 import thaumcraft.common.lib.utils.HexUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class ResearchManager {
 
+    private static final int COMPLEXITY = 1;
+
     private static final Map<String, ItemStack> NOTES = new HashMap<>();
+    private static final Map<Aspect, Integer> ASPECT_COMPLEXITY = new HashMap<>();
 
     private static final Random RANDOM = new Random(69420);
+
+    public static void computeAspectComplexity() {
+        for (Aspect aspect : Aspect.aspects.values()) {
+            ASPECT_COMPLEXITY.put(aspect, computeAspectComplexity(aspect, 0));
+        }
+    }
+
+    private static int computeAspectComplexity(Aspect aspect, int depth) {
+        if (aspect.isPrimal()) return depth;
+        ArrayList<Integer> childDepths = new ArrayList<>();
+        for (Aspect asp : aspect.getComponents()) {
+            childDepths.add(computeAspectComplexity(asp, depth + 1));
+        }
+        return Collections.max(childDepths);
+    }
+
+//    public static Aspect getRandomAspect(Random rand, int complexity) {
+//        List<Aspect> possible = ASPECT_COMPLEXITY.keySet().stream().filter(aspect -> ASPECT_COMPLEXITY.get(aspect) <= complexity).toList();
+//        return possible.get(rand.nextInt(possible.size()));
+//    }
+
+    public static AspectList getRandomAspects(Random rand, int complexity, int quantity) {
+        List<Aspect> possible = ASPECT_COMPLEXITY.keySet().stream().filter(aspect -> ASPECT_COMPLEXITY.get(aspect) <= complexity).collect(Collectors.toList());
+        AspectList selected = new AspectList();
+        int upto = Math.min(quantity, possible.size());
+        for (int i = 0; i < upto; i++) {
+            int toadd = rand.nextInt(possible.size());
+            selected.add(possible.get(toadd), 1);
+            possible.remove(toadd);
+        }
+
+        return selected;
+    }
 
     public static void patchResearch() {
         for (ResearchCategory category : ResearchCategories.researchCategories.values()) {
@@ -130,6 +165,10 @@ public abstract class ResearchManager {
         ) {
             consumeInkFromPlayer(player, true);
             ItemStack note = NOTES.get(key).copy();
+            int numberOfAspects = (COMPLEXITY - 1) * world.rand.nextInt() * 3 + 3;
+            ResearchNoteData data = getData(note);
+            data.generateHexes(world, getRandomAspects(world.rand, COMPLEXITY, numberOfAspects), COMPLEXITY);
+            updateData(note, data);
             if(!player.inventory.addItemStackToInventory(note)) {
                 ForgeHooks.onPlayerTossEvent(player, note, false);
             }

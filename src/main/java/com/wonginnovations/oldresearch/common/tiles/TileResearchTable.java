@@ -9,6 +9,7 @@ import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPool;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketSyncResearchTableData;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -103,10 +104,14 @@ public class TileResearchTable extends TileThaumcraftInventory {
         }
     }
 
+    public boolean canConsumeInkFromTable() {
+        return this.getStackInSlot(0).getItem() instanceof IScribeTools && this.getStackInSlot(0).getItemDamage() < this.getStackInSlot(0).getMaxDamage();
+    }
+
     @Override
     public void update() {
         super.update();
-        if(!this.world.isRemote && this.nextRecalc++ > 100) {
+        if(!this.world.isRemote && this.nextRecalc++ > 600) {
             this.nextRecalc = 0;
             this.recalculateBonus();
             PacketHandler.INSTANCE.sendToAllAround(new PacketSyncResearchTableData(this.getPos(), this.data), new NetworkRegistry.TargetPoint(this.getWorld().provider.getDimension(), (double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5, 128.0));
@@ -121,8 +126,8 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
     public void gatherResults() {
         this.data.note = null;
-        if(this.getSyncedStackInSlot(1).getItem() instanceof ItemResearchNote) {
-            this.data.note = OldResearchManager.getData(this.getSyncedStackInSlot(1));
+        if(this.getStackInSlot(1).getItem() instanceof ItemResearchNote) {
+            this.data.note = ResearchManager.getData(this.getStackInSlot(1));
         }
     }
 
@@ -131,8 +136,8 @@ public class TileResearchTable extends TileThaumcraftInventory {
             this.gatherResults();
         }
 
-        if(OldResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), false)) {
-            if(this.getSyncedStackInSlot(1).getItem() instanceof ItemResearchNote && this.data.note != null && this.getSyncedStackInSlot(1).getItemDamage() < 64) {
+        if(this.canConsumeInkFromTable()) {
+            if(this.getStackInSlot(1).getItem() instanceof ItemResearchNote && this.data.note != null && this.getStackInSlot(1).getItemDamage() < 64) {
                 boolean r1 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1");
                 boolean r2 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
                 HexUtils.Hex hex = new HexUtils.Hex(q, r);
@@ -165,10 +170,10 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
                 this.data.note.hexEntries.put(hex.toString(), he);
                 this.data.note.hexes.put(hex.toString(), hex);
-                OldResearchManager.updateData(this.getSyncedStackInSlot(1), this.data.note);
-                OldResearchManager.consumeInkFromTable(this.getSyncedStackInSlot(0), true);
-                if(!this.world.isRemote && OldResearchManager.checkResearchCompletion(this.getSyncedStackInSlot(1), this.data.note, player.getGameProfile().getName())) {
-                    this.getSyncedStackInSlot(1).setItemDamage(64);
+                OldResearchManager.updateData(this.getStackInSlot(1), this.data.note);
+                this.consumeInkFromTable();
+                if(!this.world.isRemote && OldResearchManager.checkResearchCompletion(this.getStackInSlot(1), this.data.note, player.getGameProfile().getName())) {
+                    this.getStackInSlot(1).setItemDamage(64);
                     this.world.addBlockEvent(this.pos, ModBlocks.RESEARCHTABLE, 1, 1);
                 }
             }

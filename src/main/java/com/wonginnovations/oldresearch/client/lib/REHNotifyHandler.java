@@ -2,6 +2,7 @@ package com.wonginnovations.oldresearch.client.lib;
 
 import com.wonginnovations.oldresearch.config.ModConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -88,7 +89,7 @@ public class REHNotifyHandler {
                 GL11.glTranslatef((float)(k - 5) - 8.0F * scale - (1.0F - scale) * (1.0F - scale) * (1.0F - scale) * (float)size * 3.0F, (float)(l - entry * 8) + shift - 2.0F - 8.0F * scale, 0.0F);
                 GL11.glScalef(scale, scale, scale);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F - (float)alpha / 511.0F);
-                UtilsFX.bindTexture(ParticleEngine.particleTexture);
+                UtilsFX.bindTexture(new ResourceLocation("oldresearch", "textures/misc/particles.png"));
                 int px = 16 * ((mc.player.ticksExisted + entry * 3) % 16);
                 UtilsFX.drawTexturedQuad(0, 0, px, 80, 16, 16, (double)(-90 - notifications.size()));
                 GL11.glPopMatrix();

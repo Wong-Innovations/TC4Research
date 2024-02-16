@@ -25,6 +25,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -34,7 +35,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
-import thaumcraft.client.fx.ParticleEngine;
 import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.utils.HexUtils;
 
@@ -299,7 +299,7 @@ public class GuiResearchTable extends GuiContainer {
                             GL11.glPushMatrix();
                             GL11.glEnable(3042);
                             GL11.glBlendFunc(770, 771);
-                            UtilsFX.bindTexture("textures/aspects/_back.png");
+                            UtilsFX.bindTexture(new ResourceLocation("thaumcraft", "textures/aspects/_back.png"));
                             GL11.glPushMatrix();
                             GL11.glTranslated(mx + 6, my + 6, 0.0D);
                             GL11.glScaled(1.25D, 1.25D, 0.0D);
@@ -400,6 +400,7 @@ public class GuiResearchTable extends GuiContainer {
         GL11.glPushMatrix();
         GL11.glLineWidth(3.0F);
         GL11.glDisable(3553);
+        GL11.glEnable('耺');
         GL11.glBlendFunc(770, 1);
         tessellator.startDrawing(3);
         tessellator.setColorRGBA_F(0.0F, 0.6F, 0.8F, alpha);
@@ -407,7 +408,7 @@ public class GuiResearchTable extends GuiContainer {
         tessellator.addVertex(x2, y2, 0.0D);
         tessellator.draw();
         GL11.glBlendFunc(770, 771);
-        GL11.glDisable(32836);
+        GL11.glDisable('耺');
         GL11.glEnable(3553);
         GL11.glPopMatrix();
     }
@@ -490,7 +491,7 @@ public class GuiResearchTable extends GuiContainer {
             for(HexUtils.Hex hex : this.note.hexes.values()) {
                 if(this.note.hexEntries.get(hex.toString()).aspect != null && !OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, this.note.hexEntries.get(hex.toString()).aspect)) {
                     HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
-                    UtilsFX.bindTexture("textures/aspects/_unknown.png");
+                    UtilsFX.bindTexture(new ResourceLocation("thaumcraft", "textures/aspects/_unknown.png"));
                     GL11.glPushMatrix();
                     GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.5F);
                     GL11.glEnable(3042);
@@ -724,7 +725,7 @@ public class GuiResearchTable extends GuiContainer {
 //        }
 
         GL11.glPushMatrix();
-        UtilsFX.bindTexture(ParticleEngine.particleTexture);
+        UtilsFX.bindTexture("textures/misc/particles.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glTranslated(x, y, 0.0D);
         Tessellator tessellator = new Tessellator();

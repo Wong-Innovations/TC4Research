@@ -8,6 +8,7 @@ import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
 import com.wonginnovations.oldresearch.core.mixin.DustTriggerOreAccessor;
 import com.wonginnovations.oldresearch.core.mixin.DustTriggerSimpleAccessor;
 import com.wonginnovations.oldresearch.core.mixin.IDustTriggerAccessor;
@@ -93,6 +94,7 @@ public class Proxy implements IGuiHandler {
 
     public void postInit(FMLPostInitializationEvent event) {
         ResearchManager.patchResearch();
+        ResearchManager.computeAspectComplexity();
         this.syncAspects();
         this.patchSalisTriggers();
     }

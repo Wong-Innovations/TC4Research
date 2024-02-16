@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -263,7 +264,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
         GL11.glEnable(3553);
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glDisable(2896);
-        GL11.glEnable(32836);
+        GL11.glEnable('耺');
         GL11.glEnable(2903);
         GL11.glPushMatrix();
         GL11.glScalef(2.0F, 2.0F, 1.0F);
@@ -335,7 +336,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
         this.currentHighlight = null;
         RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
         boolean renderWithColor = true;
-        GL11.glEnable(32836);
+        GL11.glEnable('耺');
         GL11.glEnable(2903);
         if(completedResearch.get(this.player) != null) {
             for(int var24 = 0; var24 < this.research.size(); ++var24) {
@@ -404,7 +405,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
                         GL11.glEnable(3042);
                         GL11.glBlendFunc(770, 771);
                         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                        this.mc.renderEngine.bindTexture(ParticleEngine.particleTexture);
+                        this.mc.renderEngine.bindTexture(new ResourceLocation("oldresearch", "textures/misc/particles.png"));
                         int px = (int)(t % 16L) * 16;
                         GL11.glTranslatef((float)(var42 - 5), (float)(var41 - 5), 0.0F);
                         UtilsFX.drawTexturedQuad(0, 0, px, 80, 16, 16, 0.0D);
@@ -418,7 +419,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
                         GL11.glBlendFunc(770, 771);
                         RenderHelper.enableGUIStandardItemLighting();
                         GL11.glDisable(2896);
-                        GL11.glEnable(32836);
+                        GL11.glEnable('耺');
                         GL11.glEnable(2903);
                         GL11.glEnable(2896);
                         itemRenderer.renderItemAndEffectIntoGUI(InventoryUtils.cycleItemStack(var35.icon_item), var42 + 3, var41 + 3);
@@ -488,7 +489,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
 
                 if(highlightedItem.contains(obj)) {
                     GL11.glPushMatrix();
-                    this.mc.renderEngine.bindTexture(ParticleEngine.particleTexture);
+                    this.mc.renderEngine.bindTexture(new ResourceLocation("oldresearch", "textures/misc/particles.png"));
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                     int px = (int)(16L * (t % 16L));
                     UtilsFX.drawTexturedQuad(var8 - 27 + s2 + s0, var9 - 4 + count * 24, px, 80, 16, 16, -90.0D);
@@ -811,7 +812,7 @@ public class OldGuiResearchBrowser extends GuiScreen {
         GL11.glBlendFunc(770, 771);
         GL11.glDisable(2848);
         GL11.glDisable(3042);
-        GL11.glDisable(32836);
+        GL11.glDisable('耺');
         GL11.glEnable(3553);
         GL11.glAlphaFunc(516, 0.1F);
         GL11.glPopMatrix();

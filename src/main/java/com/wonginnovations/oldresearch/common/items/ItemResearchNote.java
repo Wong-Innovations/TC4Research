@@ -34,6 +34,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
 
     public ItemResearchNote() {
         this.setRegistryName(Tags.MODID + ":researchnote");
+        this.setTranslationKey("researchnote");
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(1);

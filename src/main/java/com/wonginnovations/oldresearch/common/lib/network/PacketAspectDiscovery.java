@@ -1,7 +1,6 @@
 package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.client.gui.OldGuiResearchBrowser;
 import com.wonginnovations.oldresearch.client.lib.PlayerNotifications;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -39,12 +38,9 @@ public class PacketAspectDiscovery implements IMessage, IMessageHandler<PacketAs
     public IMessage onMessage(PacketAspectDiscovery message, MessageContext ctx) {
         if(Aspect.getAspect(message.key) != null) {
             OldResearch.proxy.getPlayerKnowledge().addDiscoveredAspect(Minecraft.getMinecraft().player.getGameProfile().getName(), Aspect.getAspect(message.key));
-            String text = I18n.format("tc.addaspectdiscovery");
-            text = text.replaceAll("%n", Aspect.getAspect(message.key).getName());
+            String text = I18n.format("tc.addaspectdiscovery", Aspect.getAspect(message.key).getName());
             PlayerNotifications.addNotification(TextFormatting.GOLD + text, Aspect.getAspect(message.key));
             Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), 0.2F, 0.5F + OldResearch.proxy.getClientWorld().rand.nextFloat() * 0.2F);
-            OldGuiResearchBrowser.highlightedItem.add("ASPECTS");
-            OldGuiResearchBrowser.highlightedItem.add("BASICS");
         }
 
         return null;

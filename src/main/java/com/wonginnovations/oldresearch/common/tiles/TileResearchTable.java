@@ -9,7 +9,6 @@ import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPool;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketSyncResearchTableData;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -27,16 +26,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.items.IScribeTools;
 import thaumcraft.common.blocks.essentia.BlockJar;
 import thaumcraft.common.blocks.world.ore.BlockCrystal;
 import thaumcraft.common.lib.SoundsTC;
-import thaumcraft.common.lib.network.tiles.PacketTileToClient;
+import thaumcraft.common.lib.research.ResearchManager;
 import thaumcraft.common.lib.utils.HexUtils;
 import thaumcraft.common.tiles.TileThaumcraftInventory;
 
 public class TileResearchTable extends TileThaumcraftInventory {
-    public ResearchTableData data;
+    public ResearchTableData data = new ResearchTableData();
     public int nextRecalc;
 
     public TileResearchTable() {
@@ -127,7 +127,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
     public void gatherResults() {
         this.data.note = null;
         if(this.getStackInSlot(1).getItem() instanceof ItemResearchNote) {
-            this.data.note = ResearchManager.getData(this.getStackInSlot(1));
+            this.data.note = OldResearchManager.getData(this.getStackInSlot(1));
         }
     }
 
@@ -138,8 +138,8 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
         if(this.canConsumeInkFromTable()) {
             if(this.getStackInSlot(1).getItem() instanceof ItemResearchNote && this.data.note != null && this.getStackInSlot(1).getItemDamage() < 64) {
-                boolean r1 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1");
-                boolean r2 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
+                boolean r1 = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHER1");
+                boolean r2 = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHER2");
                 HexUtils.Hex hex = new HexUtils.Hex(q, r);
                 OldResearchManager.HexEntry he;
                 if(aspect != null) {

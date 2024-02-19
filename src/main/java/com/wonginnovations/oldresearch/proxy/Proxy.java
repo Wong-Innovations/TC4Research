@@ -3,19 +3,12 @@ package com.wonginnovations.oldresearch.proxy;
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.api.capabilities.PlayerAspects;
-import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
-import com.wonginnovations.oldresearch.core.mixin.DustTriggerOreAccessor;
-import com.wonginnovations.oldresearch.core.mixin.DustTriggerSimpleAccessor;
-import com.wonginnovations.oldresearch.core.mixin.IDustTriggerAccessor;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,15 +19,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.capabilities.IPlayerKnowledge;
-import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.api.internal.CommonInternals;
-import thaumcraft.api.research.*;
-import thaumcraft.common.items.curios.ItemThaumonomicon;
-import thaumcraft.common.lib.crafting.DustTriggerOre;
-import thaumcraft.common.lib.crafting.DustTriggerSimple;
+import thaumcraft.api.research.ResearchCategories;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -43,14 +30,9 @@ public class Proxy implements IGuiHandler {
     ProxyGUI proxyGUI = new ProxyGUI();
 
     public PlayerKnowledge playerKnowledge = new PlayerKnowledge();
-    public OldResearchManager oldResearchManager = new OldResearchManager();
 
     public PlayerKnowledge getPlayerKnowledge() {
         return this.playerKnowledge;
-    }
-
-    public OldResearchManager getOldResearchManager() {
-        return this.oldResearchManager;
     }
 
     public Map<String, ArrayList<String>> getCompletedResearch() {
@@ -93,10 +75,13 @@ public class Proxy implements IGuiHandler {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-        ResearchManager.patchResearch();
-        ResearchManager.computeAspectComplexity();
+        ResearchCategories.getResearchCategory("BASICS").research.remove("KNOWLEDGETYPES");
+        ResearchCategories.getResearchCategory("BASICS").research.remove("THEORYRESEARCH");
+        ResearchCategories.getResearchCategory("BASICS").research.remove("CELESTIALSCANNING");
+        OldResearchManager.parseJsonResearch(new ResourceLocation("oldresearch", "research/basics.json"));
+        OldResearchManager.patchResearch();
+        OldResearchManager.computeAspectComplexity();
         this.syncAspects();
-        this.patchSalisTriggers();
     }
 
     public void registerDisplayInformation() {
@@ -130,38 +115,6 @@ public class Proxy implements IGuiHandler {
             }
             OldResearchApi.registerEntityTag(tag.entityName, tag.aspects, nbts);
         });
-    }
-
-//    private void patchResearch() {
-    //        ResearchStage[] researchStages = new ResearchStage[12];
-//        for (int i = 1; i <= 12; i++) {
-//            researchStages[i-1] = new ResearchStage();
-//            researchStages[i-1].setText("research.KNOWLEDGETYPES.stage." + i);
-//        }
-//        ResearchCategories.getResearch("KNOWLEDGETYPES").setStages(researchStages);
-//        ResearchStage[] researchStages = new ResearchStage[]{new ResearchStage()};
-//        researchStages[0].setText("research.KNOWLEDGETYPES.stage.1");
-//        ResearchAddendum[] researchAddenda = new ResearchAddendum[11];
-//        for (int i = 1; i < 12; i++) {
-//            researchAddenda[i-1] = new ResearchAddendum();
-//            researchAddenda[i-1].setText("research.KNOWLEDGETYPES.addenda." + i);
-//        }
-//        ResearchCategories.getResearch("KNOWLEDGETYPES").setStages(researchStages);
-//        ResearchCategories.getResearch("KNOWLEDGETYPES").setAddenda(researchAddenda);
-//    }
-
-    private void patchSalisTriggers() {
-        ArrayList<IDustTrigger> iDustTriggers = IDustTriggerAccessor.getTriggers();
-        // remove default thaumonomicion trigger with this mod's thaumonomicon
-        if (iDustTriggers != null) {
-            for (IDustTrigger trigger : iDustTriggers) {
-                if (trigger instanceof DustTriggerSimple && ((DustTriggerSimpleAccessor) trigger).getResult().getItem() instanceof ItemThaumonomicon) {
-                    ((DustTriggerSimpleAccessor) trigger).setResult(new ItemStack(ModItems.THAUMONOMICON));
-                } else if (trigger instanceof DustTriggerOre && ((DustTriggerOreAccessor) trigger).getResult().getItem() instanceof ItemThaumonomicon) {
-                    ((DustTriggerOreAccessor) trigger).setResult(new ItemStack(ModItems.THAUMONOMICON));
-                }
-            }
-        }
     }
 
 }

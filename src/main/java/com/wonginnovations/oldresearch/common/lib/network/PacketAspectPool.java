@@ -47,9 +47,7 @@ public class PacketAspectPool implements IMessage, IMessageHandler<PacketAspectP
         if(Aspect.getAspect(message.key) != null) {
             boolean success = OldResearch.proxy.getPlayerKnowledge().setAspectPool(Minecraft.getMinecraft().player.getGameProfile().getName(), Aspect.getAspect(message.key), message.total);
             if(success && message.amount > 0) {
-                String text = I18n.format("tc.addaspectpool");
-                text = text.replaceAll("%s", message.amount + "");
-                text = text.replaceAll("%n", Aspect.getAspect(message.key).getName());
+                String text = I18n.format("tc.addaspectpool", message.amount + "", Aspect.getAspect(message.key).getName());
                 PlayerNotifications.addNotification(text, Aspect.getAspect(message.key));
 
                 for(int a = 0; a < message.amount; ++a) {

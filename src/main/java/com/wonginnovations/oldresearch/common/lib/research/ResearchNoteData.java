@@ -14,6 +14,7 @@ public class ResearchNoteData {
     
     public String key;
     public int color;
+    public AspectList aspects = new AspectList();
     public HashMap<String, OldResearchManager.HexEntry> hexEntries = new HashMap<>();
     public HashMap<String, HexUtils.Hex> hexes = new HashMap<>();
     public boolean complete;
@@ -24,6 +25,7 @@ public class ResearchNoteData {
     }
 
     public void generateHexes(World world, AspectList aspects, int complexity) {
+        this.aspects = aspects;
         int radius = 1 + Math.min(3, complexity);
         HashMap<String, HexUtils.Hex> hexLocs = HexUtils.generateHexes(radius);
         ArrayList<HexUtils.Hex> outerRing = HexUtils.distributeRingRandomly(radius, aspects.size(), world.rand);

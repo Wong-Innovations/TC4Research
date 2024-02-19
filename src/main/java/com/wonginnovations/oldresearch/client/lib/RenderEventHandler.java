@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Tags.MODID)
-public class RenderEventHandler {
+public abstract class RenderEventHandler {
     public static List<Object> blockTags = new ArrayList<>();
     public static float tagscale = 0.0F;
     public static long scanCount = 0L;

@@ -15,14 +15,10 @@ public class PacketHandler {
         INSTANCE.registerMessage(PacketAspectDiscovery.class, PacketAspectDiscovery.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAspectPlaceToServer.class, PacketAspectPlaceToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketAspectPool.class, PacketAspectPool.class, discriminator++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketPlayerCompleteToServer.class, PacketPlayerCompleteToServer.class, discriminator++, Side.SERVER);
-        INSTANCE.registerMessage(PacketResearchComplete.class, PacketResearchComplete.class, discriminator++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketGivePlayerNoteToServer.class, PacketGivePlayerNoteToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketScannedToServer.class, PacketScannedToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketSyncAspects.class, PacketSyncAspects.class, discriminator++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncResearch.class, PacketSyncResearch.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSyncResearchTableData.class, PacketSyncResearchTableData.class, discriminator++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncWarp.class, PacketSyncWarp.class, discriminator++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketWarpMessage.class, PacketWarpMessage.class, discriminator++, Side.CLIENT);
     }
 
 }

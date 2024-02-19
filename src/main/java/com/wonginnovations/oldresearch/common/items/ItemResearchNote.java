@@ -3,16 +3,15 @@ package com.wonginnovations.oldresearch.common.items;
 import com.wonginnovations.oldresearch.Tags;
 import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.api.registration.IModelRegister;
-import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
-import com.wonginnovations.oldresearch.common.lib.network.PacketResearchComplete;
+import com.wonginnovations.oldresearch.client.gui.ResearchNoteToast;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,6 +22,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
+import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.research.ResearchManager;
@@ -43,42 +43,15 @@ public class ItemResearchNote extends Item implements IModelRegister {
     @Override
     public @NotNull ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @NotNull EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if(!world.isRemote) {
-            if(OldResearchManager.getData(stack) != null && OldResearchManager.getData(stack).isComplete() /* && !ThaumcraftCapabilities.getKnowledge(player).isResearchComplete(OldResearchManager.getData(stack).key) */) {
+
+        if(OldResearchManager.getData(stack) != null && OldResearchManager.getData(stack).isComplete() && !ThaumcraftCapabilities.getKnowledge(player).isResearchComplete(OldResearchManager.getData(stack).key)) {
+            if (!world.isRemote) {
                 ResearchManager.progressResearch(player, OldResearchManager.getData(stack).key);
-//                PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(OldResearchManager.getData(stack).key), (EntityPlayerMP)player);
-                stack.setCount(stack.getCount()-1);
+            } else {
+                Minecraft.getMinecraft().getToastGui().add(new ResearchNoteToast(ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack))));
                 world.playSound(player.posX, player.posY, player.posZ, SoundsTC.learn, SoundCategory.MASTER, 0.75F, 1.0F, false);
-//                if(ResearchManager.doesPlayerHaveRequisites(player, OldResearchManager.getData(stack).key)) {
-//                    PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(OldResearchManager.getData(stack).key), (EntityPlayerMP)player);
-//                    OldResearch.proxy.getOldResearchManager().completeResearch(player, OldResearchManager.getData(stack).key);
-//                    if(ResearchCategories.getResearch(OldResearchManager.getData(stack).key).siblings != null) {
-//                        for(String sibling : ResearchCategories.getResearch(OldResearchManager.getData(stack).key).siblings) {
-//                            if(!ThaumcraftCapabilities.getKnowledge(player).isResearchComplete(sibling) && ResearchManager.doesPlayerHaveRequisites(player, sibling)) {
-//                                PacketHandler.INSTANCE.sendTo(new PacketResearchComplete(sibling), (EntityPlayerMP)player);
-//                                OldResearch.proxy.getOldResearchManager().completeResearch(player, sibling);
-//                            }
-//                        }
-//                    }
-//
-//                    stack.setCount(stack.getCount()-1);
-//                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.learn, SoundCategory.MASTER, 0.75F, 1.0F, false);
-//                } else {
-//                    player.sendMessage(new TextComponentTranslation(I18n.format("tc.researcherror")));
-//                }
-            } else if(stack.getItemDamage() == 42 || stack.getItemDamage() == 24) {
-                String key = OldResearchManager.findHiddenResearch(player);
-                if(key.equals("FAIL")) {
-                    stack.setCount(stack.getCount()-1);
-                    EntityItem entityItem = new EntityItem(world, player.posX, player.posY + (double)(player.getEyeHeight() / 2.0F), player.posZ, new ItemStack(ModItems.KNOWLEDGEFRAGMENT, 7 + world.rand.nextInt(3)));
-                    world.spawnEntity(entityItem);
-                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.erase, SoundCategory.MASTER, 0.75F, 1.0F, false);
-                } else {
-                    stack.setItemDamage(0);
-                    stack.setTagCompound(OldResearchManager.createNote(stack, key, player.world).getTagCompound());
-                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.write, SoundCategory.MASTER, 0.75F, 1.0F, false);
-                }
             }
+            stack = ItemStack.EMPTY;
         }
 
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
@@ -114,7 +87,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
         ResearchNoteData rd = OldResearchManager.getData(stack);
         if(rd != null && rd.key != null && ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)) != null) {
             tooltip.add(TextFormatting.GOLD + ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)).getLocalizedName());
-//            tooltip.add(TextFormatting.ITALIC + ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)).getText());
+//            tooltip.add(TextFormatting.ITALIC + OldResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)).getText());
             int warp = OldResearchApi.getWarp(rd.key);
             if(warp > 0) {
                 if(warp > 5) {

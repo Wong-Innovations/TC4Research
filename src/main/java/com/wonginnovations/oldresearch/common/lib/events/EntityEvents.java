@@ -2,9 +2,6 @@ package com.wonginnovations.oldresearch.common.lib.events;
 
 import com.google.common.io.Files;
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.api.research.ResearchCategories;
-import com.wonginnovations.oldresearch.api.research.ResearchCategoryList;
-import com.wonginnovations.oldresearch.api.research.ResearchItem;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -53,15 +50,6 @@ public class EntityEvents {
         }
 
         OldResearchManager.loadPlayerData(p, file1, getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()), legacy);
-
-        for(ResearchCategoryList cat : ResearchCategories.researchCategories.values()) {
-            for(ResearchItem ri : cat.research.values()) {
-                if(ri.isAutoUnlock()) {
-                    OldResearch.proxy.getOldResearchManager().completeResearch(p, ri.key);
-                }
-            }
-        }
-
     }
 
     public static File getLegacyPlayerFile(EntityPlayer player) {

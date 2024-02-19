@@ -7,8 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.api.research.ResearchCategories;
-import com.wonginnovations.oldresearch.api.research.ResearchItem;
+import com.wonginnovations.oldresearch.client.lib.RenderEventHandler;
 import com.wonginnovations.oldresearch.common.container.ContainerResearchTable;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectCombinationToServer;
@@ -35,13 +34,14 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.utils.HexUtils;
 
 @SideOnly(Side.CLIENT)
 public class GuiResearchTable extends GuiContainer {
-    private static boolean RESEARCHER_1;
-    private static boolean RESEARCHER_2;
+    private static boolean RESEARCHEXPERTISE;
+    private static boolean RESEARCHMASTERY;
     private static boolean RESEARCHDUPE;
     private final int HEX_SIZE = 9;
     private float xSize_lo;
@@ -75,9 +75,9 @@ public class GuiResearchTable extends GuiContainer {
         this.galFontRenderer = FMLClientHandler.instance().getClient().standardGalacticFontRenderer;
         this.username = player.getGameProfile().getName();
         this.player = player;
-        RESEARCHER_1 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER1"); // possible alternative: ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHER1");
-        RESEARCHER_2 = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHER2");
-        RESEARCHDUPE = OldResearchManager.isResearchComplete(player.getGameProfile().getName(), "RESEARCHDUPE");
+        RESEARCHEXPERTISE = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHEXPERTISE");
+        RESEARCHMASTERY = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHMASTERY");
+        RESEARCHDUPE = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHDUPE");
         int count = 0;
 
         for(Aspect aspect : Aspect.aspects.values()) {
@@ -92,7 +92,7 @@ public class GuiResearchTable extends GuiContainer {
         long time = System.nanoTime() / 1000000L;
         if(PlayerNotifications.getListAndUpdate(time).size() > 0) {
             GL11.glPushMatrix();
-            OldResearch.renderEventHandler.notifyHandler.renderNotifyHUD((double)this.width, (double)this.height, time);
+            RenderEventHandler.notifyHandler.renderNotifyHUD((double)this.width, (double)this.height, time);
             GL11.glPopMatrix();
         }
 
@@ -110,12 +110,11 @@ public class GuiResearchTable extends GuiContainer {
             if(var7 >= 0 && var8 >= 0 && var7 < 24 && var8 < 24) {
                 RenderHelper.enableGUIStandardItemLighting();
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                ResearchItem rr = ResearchCategories.getResearch(this.note.key);
                 String ss = I18n.format("tc.research.copy");
                 GL11.glEnable(3042);
                 UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
                 this.drawTexturedModalRect(gx + 100, gy + 21, 184, 224, 48, 16);
-                AspectList al = rr.tags.copy();
+                AspectList al = this.note.aspects.copy();
 
                 for(Aspect aspect : al.getAspects()) {
                     al.add(aspect, this.note.copies);
@@ -295,7 +294,7 @@ public class GuiResearchTable extends GuiContainer {
                     var8 = my - (y + yy);
                     if(var7 >= 0 && var8 >= 0 && var7 < 16 && var8 < 16) {
                         UtilsFX.drawCustomTooltip(this, itemRender, this.fontRenderer, Arrays.asList(aspect.getName(), aspect.getLocalizedDescription()), mx, my - 8, 11);
-                        if(RESEARCHER_1 && !aspect.isPrimal()) {
+                        if(RESEARCHEXPERTISE && !aspect.isPrimal()) {
                             GL11.glPushMatrix();
                             GL11.glEnable(3042);
                             GL11.glBlendFunc(770, 771);
@@ -625,7 +624,7 @@ public class GuiResearchTable extends GuiContainer {
                             }
                         }
 
-                        if(isShiftKeyDown() && RESEARCHER_2) {
+                        if(isShiftKeyDown() && RESEARCHMASTERY) {
                             Aspect aspect = this.getClickedAspect(mx, my, gx, gy, true);
                             if(aspect != null && !aspect.isPrimal()) {
                                 AspectList aspects = OldResearch.proxy.getPlayerKnowledge().getAspectsDiscovered(this.username);

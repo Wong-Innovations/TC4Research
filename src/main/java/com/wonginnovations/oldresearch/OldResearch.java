@@ -4,17 +4,10 @@ import com.wonginnovations.oldresearch.api.registration.IModelRegister;
 import com.wonginnovations.oldresearch.client.ResearchNoteColorHandler;
 import com.wonginnovations.oldresearch.client.lib.RenderEventHandler;
 import com.wonginnovations.oldresearch.common.items.ModItems;
-import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
-import com.wonginnovations.oldresearch.common.lib.network.PacketSyncWarp;
-import com.wonginnovations.oldresearch.common.lib.network.PacketWarpMessage;
-import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import com.wonginnovations.oldresearch.proxy.Proxy;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
@@ -22,7 +15,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +32,6 @@ public class OldResearch {
     public static Proxy proxy;
 
     public static boolean aspectShift = false; // this may have to be non-static
-    public static RenderEventHandler renderEventHandler = new RenderEventHandler(); // same with this
 
     @Mod.EventHandler
     public void onConstruction(FMLConstructionEvent event) {
@@ -76,47 +67,6 @@ public class OldResearch {
     @SideOnly(Side.CLIENT)
     public static void onColorHandlerEvent(ColorHandlerEvent.Item event) {
         event.getItemColors().registerItemColorHandler(new ResearchNoteColorHandler(), ModItems.RESEARCHNOTE);
-    }
-
-    public static void addWarpToPlayer(EntityPlayer player, int amount, boolean temporary) {
-        if(!player.world.isRemote) {
-            if(proxy.getPlayerKnowledge() != null) {
-                if(temporary || amount >= 0) {
-                    if(amount != 0) {
-                        if(temporary) {
-                            if(amount < 0 && proxy.getPlayerKnowledge().getWarpTemp(player.getGameProfile().getName()) <= 0) {
-                                return;
-                            }
-
-                            proxy.getPlayerKnowledge().addWarpTemp(player.getGameProfile().getName(), amount);
-                            PacketHandler.INSTANCE.sendTo(new PacketSyncWarp(player, (byte)2), (EntityPlayerMP)player);
-                            PacketHandler.INSTANCE.sendTo(new PacketWarpMessage(player, (byte)2, amount), (EntityPlayerMP)player);
-                        } else {
-                            proxy.getPlayerKnowledge().addWarpPerm(player.getGameProfile().getName(), amount);
-                            PacketHandler.INSTANCE.sendTo(new PacketSyncWarp(player, (byte)0), (EntityPlayerMP)player);
-                            PacketHandler.INSTANCE.sendTo(new PacketWarpMessage(player, (byte)0, amount), (EntityPlayerMP)player);
-                        }
-
-                        proxy.getPlayerKnowledge().setWarpCounter(player.getGameProfile().getName(), proxy.getPlayerKnowledge().getWarpTotal(player.getGameProfile().getName()));
-                    }
-                }
-            }
-        }
-    }
-
-    public static void addStickyWarpToPlayer(EntityPlayer player, int amount) {
-        if(!player.world.isRemote) {
-            if(proxy.getPlayerKnowledge() != null) {
-                if(amount != 0) {
-                    if(amount >= 0 || proxy.getPlayerKnowledge().getWarpSticky(player.getGameProfile().getName()) > 0) {
-                        proxy.getPlayerKnowledge().addWarpSticky(player.getGameProfile().getName(), amount);
-                        PacketHandler.INSTANCE.sendTo(new PacketSyncWarp(player, (byte)1), (EntityPlayerMP)player);
-                        PacketHandler.INSTANCE.sendTo(new PacketWarpMessage(player, (byte)1, amount), (EntityPlayerMP)player);
-                        proxy.getPlayerKnowledge().setWarpCounter(player.getGameProfile().getName(), proxy.getPlayerKnowledge().getWarpTotal(player.getGameProfile().getName()));
-                    }
-                }
-            }
-        }
     }
 
 }

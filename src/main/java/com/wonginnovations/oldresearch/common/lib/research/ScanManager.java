@@ -378,7 +378,7 @@ public class ScanManager implements IScanEventHandler {
 
             if(validScan(aspects, player)) {
                 clue = new ItemStack(Item.getItemById(scan.id), 1, scan.meta);
-                OldResearch.proxy.getOldResearchManager().completeScannedObject(player, prefix + generateItemHash(Item.getItemById(scan.id), scan.meta));
+                OldResearchManager.completeScannedObject(player, prefix + generateItemHash(Item.getItemById(scan.id), scan.meta));
                 ret = true;
             }
         } else if(scan.type == 2) {
@@ -394,14 +394,14 @@ public class ScanManager implements IScanEventHandler {
                 aspects = ThaumcraftCraftingManagerAccessor.getBonusTags(t, aspects);
                 if(validScan(aspects, player)) {
                     clue = item.getItem();
-                    OldResearch.proxy.getOldResearchManager().completeScannedObject(player, prefix + generateItemHash(item.getItem().getItem(), item.getItem().getItemDamage()));
+                    OldResearchManager.completeScannedObject(player, prefix + generateItemHash(item.getItem().getItem(), item.getItem().getItemDamage()));
                     ret = true;
                 }
             } else {
                 aspects = generateEntityAspects(scan.entity);
                 if(validScan(aspects, player)) {
                     clue = EntityList.getEntityString(scan.entity);
-                    OldResearch.proxy.getOldResearchManager().completeScannedEntity(player, prefix + generateEntityHash(scan.entity));
+                    OldResearchManager.completeScannedEntity(player, prefix + generateEntityHash(scan.entity));
                     ret = true;
                 }
             }
@@ -435,21 +435,11 @@ public class ScanManager implements IScanEventHandler {
                 }
             }
 
-            if(clue != null) {
-                OldResearchManager.createClue(player.world, player, clue, aspectsFinal);
-            }
+            // IDK what clues are
+//            if(clue != null) {
+//                OldResearchManager.createClue(player.world, player, clue, aspectsFinal);
+//            }
         }
-
-        String msg = player.getGameProfile().getName() + " aspects: [";
-
-        AspectList alist = OldResearch.proxy.getPlayerKnowledge().getAspectsDiscovered(player.getGameProfile().getName());
-        for (Aspect a : alist.getAspects()) {
-            msg = msg + a.getName() + " " + alist.getAmount(a) + ", ";
-        }
-
-        msg += "]";
-
-        player.sendMessage(new TextComponentString(msg));
 
         return ret;
     }
@@ -477,7 +467,7 @@ public class ScanManager implements IScanEventHandler {
         }
 
         if(save > 0) {
-            OldResearch.proxy.getOldResearchManager().completeAspect(player, aspect, rp.getAspectPoolFor(player.getGameProfile().getName(), aspect));
+            OldResearchManager.completeAspect(player, aspect, rp.getAspectPoolFor(player.getGameProfile().getName(), aspect));
         }
 
         return save;
@@ -491,7 +481,7 @@ public class ScanManager implements IScanEventHandler {
                     if(player.world.isRemote) {
                         for(Aspect parent : aspect.getComponents()) {
                             if(!rp.hasDiscoveredAspect(player.getGameProfile().getName(), parent)) {
-                                PlayerNotifications.addNotification((new TextComponentTranslation(I18n.format("tc.discoveryerror"), I18n.format("tc.aspect.help." + parent.getTag()))).getUnformattedText());
+                                PlayerNotifications.addNotification((new TextComponentTranslation(I18n.format("tc.discoveryerror", I18n.format("tc.aspect.help." + parent.getTag())))).getUnformattedText());
                                 break;
                             }
                         }

@@ -2,8 +2,8 @@ package com.wonginnovations.oldresearch.core.mixin;
 
 import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
-import com.wonginnovations.oldresearch.common.lib.network.PacketPlayerCompleteToServer;
-import com.wonginnovations.oldresearch.common.lib.research.ResearchManager;
+import com.wonginnovations.oldresearch.common.lib.network.PacketGivePlayerNoteToServer;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -190,10 +190,10 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                     ss = 110 / stage.getObtain().length;
                 }
 
-                for(ss = 0; ss < stage.getObtain().length; ++ss) {
-                    stack = InventoryUtils.cycleItemStack(stage.getObtain()[ss], ss);
+                for(int a = 0; a < stage.getObtain().length; ++a) {
+                    stack = InventoryUtils.cycleItemStack(stage.getObtain()[a]);
                     this.drawStackAt(stack, x - 15 + shift, y, mx, my, true);
-                    if (this.hasItem[ss]) {
+                    if (this.hasItem[a]) {
                         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                         this.mc.renderEngine.bindTexture(this.tex1);
                         GlStateManager.disableDepth();
@@ -225,10 +225,10 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                     ss = 110 / stage.getCraft().length;
                 }
 
-                for(ss = 0; ss < stage.getCraft().length; ++ss) {
-                    stack = InventoryUtils.cycleItemStack(stage.getCraft()[ss], ss);
+                for(int a = 0; a < stage.getCraft().length; ++a) {
+                    stack = InventoryUtils.cycleItemStack(stage.getCraft()[a]);
                     this.drawStackAt(stack, x - 15 + shift, y, mx, my, true);
-                    if (this.hasCraft[ss]) {
+                    if (this.hasCraft[a]) {
                         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                         this.mc.renderEngine.bindTexture(this.tex1);
                         GlStateManager.disableDepth();
@@ -272,7 +272,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                     if (!key.startsWith("rn_")) {
                         continue;
                     } else {
-                        loc = ResearchManager.getNote(key);
+                        loc = OldResearchManager.getNote(key);
                     }
 
                     GL11.glPushMatrix();
@@ -364,14 +364,15 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                 } else if (!OldResearchUtils.isPlayerCarrying(this.mc.player, Items.PAPER)) {
                     this.mc.player.sendMessage(new TextComponentString("§cPaper required to create research notes."));
                     this.mc.displayGuiScreen(null);
-                } else if (!ResearchManager.consumeInkFromPlayer(this.mc.player, false)) {
+                } else if (!OldResearchManager.consumeInkFromPlayer(this.mc.player, false)) {
                     this.mc.player.sendMessage(new TextComponentString("§c" + I18n.format("tile.researchtable.noink.0")));
                     this.mc.player.sendMessage(new TextComponentString("§c" + I18n.format("tile.researchtable.noink.1")));
                     this.mc.displayGuiScreen(null);
                 } else {
+
                     PacketHandler.INSTANCE.sendToServer(
-                        new PacketPlayerCompleteToServer(
-                            ResearchManager.getData(oldresearch$renderedNotes.get(p)).key,
+                        new PacketGivePlayerNoteToServer(
+                            OldResearchManager.getData(oldresearch$renderedNotes.get(p)).key,
                             this.mc.player.getGameProfile().getName(),
                             this.mc.player.world.provider.getDimension(),
                             (byte) 1

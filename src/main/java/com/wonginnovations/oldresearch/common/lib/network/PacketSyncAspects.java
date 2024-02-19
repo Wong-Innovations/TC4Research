@@ -1,6 +1,7 @@
 package com.wonginnovations.oldresearch.common.lib.network;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +55,7 @@ public class PacketSyncAspects implements IMessage, IMessageHandler<PacketSyncAs
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(PacketSyncAspects message, MessageContext ctx) {
         for(Aspect key : message.data.getAspects()) {
-            OldResearch.proxy.getOldResearchManager().completeAspect(Minecraft.getMinecraft().player, key, (short)message.data.getAmount(key));
+            OldResearchManager.completeAspect(Minecraft.getMinecraft().player, key, (short)message.data.getAmount(key));
         }
 
         return null;

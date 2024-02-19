@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
@@ -42,7 +41,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
     }
 
     @Override
-    public @NotNull ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @NotNull EnumHand hand) {
+    public @NotNull ActionResult<ItemStack> onItemRightClick(@NotNull World world, EntityPlayer player, @NotNull EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
 
         if(OldResearchManager.getData(stack) != null && OldResearchManager.getData(stack).isComplete() && !ThaumcraftCapabilities.getKnowledge(player).isResearchComplete(OldResearchManager.getData(stack).key)) {
@@ -70,17 +69,13 @@ public class ItemResearchNote extends Item implements IModelRegister {
         return c;
     }
 
-    public boolean getShareTag() {
-        return true;
-    }
-
     @Override
-    public String getItemStackDisplayName(ItemStack itemstack) {
+    public @NotNull String getItemStackDisplayName(ItemStack itemstack) {
         return itemstack.getItemDamage() < 64 ? I18n.format("item.researchnote.name") : I18n.format("item.discovery.name");
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, @NotNull List<String> tooltip, @NotNull ITooltipFlag flagIn) {
         if(stack.getItemDamage() == 24 || stack.getItemDamage() == 42) {
             tooltip.add(TextFormatting.GOLD + I18n.format("item.researchnote.unknown.1"));
             tooltip.add(TextFormatting.BLUE + I18n.format("item.researchnote.unknown.2"));
@@ -89,7 +84,6 @@ public class ItemResearchNote extends Item implements IModelRegister {
         ResearchNoteData rd = OldResearchManager.getData(stack);
         if(rd != null && rd.key != null && ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)) != null) {
             tooltip.add(TextFormatting.GOLD + ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)).getLocalizedName());
-//            tooltip.add(TextFormatting.ITALIC + OldResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)).getText());
             int warp = OldResearchApi.getWarp(rd.key);
             if(warp > 0) {
                 if(warp > 5) {
@@ -105,7 +99,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
 
     }
 
-    public EnumRarity getRarity(ItemStack itemstack) {
+    public @NotNull EnumRarity getRarity(ItemStack itemstack) {
         return itemstack.getItemDamage() < 64 ? EnumRarity.RARE : EnumRarity.EPIC;
     }
 

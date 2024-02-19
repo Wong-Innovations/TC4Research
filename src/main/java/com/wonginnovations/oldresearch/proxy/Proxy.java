@@ -35,10 +35,6 @@ public class Proxy implements IGuiHandler {
         return this.playerKnowledge;
     }
 
-    public Map<String, ArrayList<String>> getCompletedResearch() {
-        return this.playerKnowledge.researchCompleted;
-    }
-
     public Map<String, ArrayList<String>> getScannedObjects() {
         return this.playerKnowledge.objectsScanned;
     }

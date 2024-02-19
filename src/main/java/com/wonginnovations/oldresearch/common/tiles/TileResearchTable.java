@@ -153,7 +153,6 @@ public class TileResearchTable extends TileThaumcraftInventory {
                         this.markDirty();
                     } else {
                         OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), aspect, (short)-1);
-                        OldResearchManager.scheduleSave(player);
                         PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect)), (EntityPlayerMP)player);
                     }
                 } else {
@@ -161,7 +160,6 @@ public class TileResearchTable extends TileThaumcraftInventory {
                     if(this.data.note.hexEntries.get(hex.toString()).aspect != null && (r1 && f < 0.25F || r2 && f < 0.5F)) {
                         this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
                         OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect, (short)1);
-                        OldResearchManager.scheduleSave(player);
                         PacketHandler.INSTANCE.sendTo(new PacketAspectPool(this.data.note.hexEntries.get(hex.toString()).aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect)), (EntityPlayerMP)player);
                     }
 

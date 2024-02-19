@@ -104,8 +104,6 @@ public class PacketAspectCombinationToServer implements IMessage, IMessageHandle
                     if (combo != null) {
                         ScanManager.checkAndSyncAspectKnowledge((EntityPlayer)player, combo, 1);
                     }
-
-                    OldResearchManager.scheduleSave((EntityPlayer)player);
                 }
             }
         }

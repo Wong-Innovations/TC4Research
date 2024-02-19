@@ -1,5 +1,6 @@
 package com.wonginnovations.oldresearch.common.items;
 
+import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.Tags;
 import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.api.registration.IModelRegister;
@@ -46,6 +47,7 @@ public class ItemResearchNote extends Item implements IModelRegister {
 
         if(OldResearchManager.getData(stack) != null && OldResearchManager.getData(stack).isComplete() && !ThaumcraftCapabilities.getKnowledge(player).isResearchComplete(OldResearchManager.getData(stack).key)) {
             if (!world.isRemote) {
+                OldResearch.proxy.getPlayerKnowledge().incrementResearchCompleted(player.getGameProfile().getName());
                 ResearchManager.progressResearch(player, OldResearchManager.getData(stack).key);
             } else {
                 Minecraft.getMinecraft().getToastGui().add(new ResearchNoteToast(ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack))));

@@ -1,34 +1,28 @@
 package com.wonginnovations.oldresearch.common.lib.research;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
 //import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.core.mixin.ResearchManagerAccessor;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.SaveHandler;
 import net.minecraftforge.common.ForgeHooks;
 import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.Thaumcraft;
@@ -40,16 +34,13 @@ import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategory;
 import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.api.research.ResearchStage;
-import thaumcraft.common.lib.research.ResearchManager;
 import thaumcraft.common.lib.utils.HexUtils;
 
 public abstract class OldResearchManager {
-    private static final String RESEARCH_TAG = "THAUMCRAFT.RESEARCH";
+    private static final String NOTES_TAG = "THAUMCRAFT.NOTE.COUNT";
     private static final String ASPECT_TAG = "THAUMCRAFT.ASPECTS";
     private static final String SCANNED_OBJ_TAG = "THAUMCRAFT.SCAN.OBJECTS";
     private static final String SCANNED_ENT_TAG = "THAUMCRAFT.SCAN.ENTITIES";
-
-    private static final int COMPLEXITY = 1;
 
     private static final Map<String, ItemStack> NOTES = new HashMap<>();
     private static final Map<Aspect, Integer> ASPECT_COMPLEXITY = new HashMap<>();
@@ -90,12 +81,6 @@ public abstract class OldResearchManager {
     }
 
     public static void patchResearch() {
-//        TODO: Remove this comment.
-//        ResearchEntry fs = ResearchCategories.getResearchCategory("BASICS").research.get("FIRSTSTEPS");
-//        List<String> fsSiblings = new ArrayList<>();
-//        for (String s : fs.getSiblings()) if (!"KNOWLEDGETYPES".equals(s)) fsSiblings.add(s);
-//        fsSiblings.add("RESEARCH");
-//        fs.setSiblings(fsSiblings.toArray(new String[0]));
         for (ResearchCategory category : ResearchCategories.researchCategories.values()) {
             for (ResearchEntry entry : category.research.values()) {
                 int i = 0;
@@ -137,9 +122,11 @@ public abstract class OldResearchManager {
         ) {
             consumeInkFromPlayer(player, true);
             ItemStack note = NOTES.get(key).copy();
-            int numberOfAspects = (COMPLEXITY - 1) * world.rand.nextInt() * 3 + 3;
+            int researchCompleted = OldResearch.proxy.getPlayerKnowledge().getResearchCompleted(player.getGameProfile().getName());
+            int complexity = (int) Math.floor(Math.log10(researchCompleted + 1) + 1);
+            int numberOfAspects = (complexity - 1) * world.rand.nextInt() * 3 + 3;
             ResearchNoteData data = getData(note);
-            data.generateHexes(world, getRandomAspects(world.rand, COMPLEXITY, numberOfAspects), COMPLEXITY);
+            data.generateHexes(world, getRandomAspects(world.rand, complexity, numberOfAspects), complexity);
             updateData(note, data);
             if(!player.inventory.addItemStackToInventory(note)) {
                 ForgeHooks.onPlayerTossEvent(player, note, false);
@@ -299,30 +286,6 @@ public abstract class OldResearchManager {
         stack.getTagCompound().setTag("hexgrid", gridtag);
     }
 
-    public static ArrayList<String> getResearchForPlayer(String playername) {
-        ArrayList<String> out = OldResearch.proxy.getCompletedResearch().get(playername);
-
-        try {
-            if(out == null && OldResearch.proxy.getClientWorld() == null && OldResearch.proxy.getClientWorld().getMinecraftServer() != null) {
-                OldResearch.proxy.getCompletedResearch().put(playername, new ArrayList<>());
-                UUID id = UUID.nameUUIDFromBytes(("OfflinePlayer:" + playername).getBytes(Charsets.UTF_8));
-                EntityPlayerMP entityplayermp = new EntityPlayerMP(OldResearch.proxy.getClientWorld().getMinecraftServer(), OldResearch.proxy.getClientWorld().getMinecraftServer().getWorld(0), new GameProfile(id, playername), new PlayerInteractionManager(OldResearch.proxy.getClientWorld().getMinecraftServer().getWorld(0)));
-                File dir = ((SaveHandler) OldResearch.proxy.getClientWorld().getMinecraftServer().getWorld(0).getSaveHandler()).playersDirectory;
-                File file1 = new File(dir, id + ".thaum");
-                File file2 = new File(dir, id + ".thaumbak");
-                loadPlayerData(entityplayermp, file1, file2, false);
-
-                out = OldResearch.proxy.getCompletedResearch().get(playername);
-            }
-        } catch (Exception ignored) {}
-
-        return out;
-    }
-
-    public static ArrayList<String> getResearchForPlayerSafe(String playername) {
-        return OldResearch.proxy.getCompletedResearch().get(playername);
-    }
-
     public static Aspect getCombinationResult(Aspect aspect1, Aspect aspect2) {
         for(Aspect aspect : Aspect.aspects.values()) {
             if(aspect.getComponents() != null && (aspect.getComponents()[0] == aspect1 && aspect.getComponents()[1] == aspect2 || aspect.getComponents()[0] == aspect2 && aspect.getComponents()[1] == aspect1)) {
@@ -331,21 +294,6 @@ public abstract class OldResearchManager {
         }
 
         return null;
-    }
-
-    public static boolean completeResearchUnsaved(String username, String key) {
-        ArrayList<String> completed = getResearchForPlayerSafe(username);
-        if(completed != null && completed.contains(key)) {
-            return false;
-        } else {
-            if(completed == null) {
-                completed = new ArrayList<>();
-            }
-
-            completed.add(key);
-            OldResearch.proxy.getCompletedResearch().put(username, completed);
-            return true;
-        }
     }
 
     public static boolean completeAspectUnsaved(String username, Aspect aspect, short amount) {
@@ -359,10 +307,7 @@ public abstract class OldResearchManager {
     }
 
     public static void completeAspect(EntityPlayer player, Aspect aspect, short amount) {
-        if(completeAspectUnsaved(player.getGameProfile().getName(), aspect, amount)) {
-            scheduleSave(player);
-        }
-
+        completeAspectUnsaved(player.getGameProfile().getName(), aspect, amount);
     }
 
     public static boolean completeScannedObjectUnsaved(String username, String object) {
@@ -404,17 +349,11 @@ public abstract class OldResearchManager {
     }
 
     public static void completeScannedObject(EntityPlayer player, String object) {
-        if(completeScannedObjectUnsaved(player.getGameProfile().getName(), object)) {
-            scheduleSave(player);
-        }
-
+        completeScannedObjectUnsaved(player.getGameProfile().getName(), object);
     }
 
     public static void completeScannedEntity(EntityPlayer player, String key) {
-        if(completeScannedEntityUnsaved(player.getGameProfile().getName(), key)) {
-            scheduleSave(player);
-        }
-
+        completeScannedEntityUnsaved(player.getGameProfile().getName(), key);
     }
 
     public static void loadPlayerData(EntityPlayer player, File file1, File file2, boolean legacy) {
@@ -444,7 +383,7 @@ public abstract class OldResearchManager {
             }
 
             if(data != null) {
-                loadResearchNBT(data, player);
+                loadResearchCountNBT(data, player);
                 loadAspectNBT(data, player);
                 loadScannedNBT(data, player);
 //                if(data.hasKey("Thaumcraft.shielding")) {
@@ -482,7 +421,6 @@ public abstract class OldResearchManager {
                     }
                 }
 
-                scheduleSave(player);
                 Thaumcraft.log.info("Assigning initial aspects to " + player.getGameProfile().getName());
             }
         } catch (Exception var10) {
@@ -492,16 +430,10 @@ public abstract class OldResearchManager {
 
     }
 
-    public static void loadResearchNBT(NBTTagCompound entityData, EntityPlayer player) {
-        NBTTagList tagList = entityData.getTagList(RESEARCH_TAG, 10);
-
-        for(int j = 0; j < tagList.tagCount(); ++j) {
-            NBTTagCompound rs = tagList.getCompoundTagAt(j);
-            if(rs.hasKey("key")) {
-                completeResearchUnsaved(player.getGameProfile().getName(), rs.getString("key"));
-            }
+    public static void loadResearchCountNBT(NBTTagCompound entityData, EntityPlayer player) {
+        if(entityData.hasKey(NOTES_TAG)) {
+            OldResearch.proxy.getPlayerKnowledge().setResearchCompleted(player.getGameProfile().getName(), entityData.getInteger(NOTES_TAG));
         }
-
     }
 
     public static void loadAspectNBT(NBTTagCompound entityData, EntityPlayer player) {
@@ -543,18 +475,12 @@ public abstract class OldResearchManager {
 
     }
 
-    public static void scheduleSave(EntityPlayer player) {
-        if(!player.world.isRemote) {
-            ;
-        }
-    }
-
     public static boolean savePlayerData(EntityPlayer player, File file1, File file2) {
         boolean success = true;
 
         try {
             NBTTagCompound data = new NBTTagCompound();
-//            saveResearchNBT(data, player);
+            saveResearchCountNBT(data, player);
             saveAspectNBT(data, player);
             saveScannedNBT(data, player);
 //            if(Thaumcraft.instance.runicEventHandler.runicCharge.containsKey(player.getEntityId())) {
@@ -596,6 +522,10 @@ public abstract class OldResearchManager {
         }
 
         return success;
+    }
+
+    public static void saveResearchCountNBT(NBTTagCompound entityData, EntityPlayer player) {
+        entityData.setInteger(NOTES_TAG, OldResearch.proxy.getPlayerKnowledge().getResearchCompleted(player.getGameProfile().getName()));
     }
 
     public static void saveAspectNBT(NBTTagCompound entityData, EntityPlayer player) {

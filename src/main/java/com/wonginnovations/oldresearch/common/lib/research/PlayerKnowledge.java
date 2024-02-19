@@ -1,5 +1,6 @@
 package com.wonginnovations.oldresearch.common.lib.research;
 
+import net.minecraft.entity.player.EntityPlayer;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerKnowledge {
-    public Map<String, ArrayList<String>> researchCompleted = new HashMap<>();
+    public Map<String, Integer> researchCompleted = new HashMap<>();
     public Map<String, AspectList> aspectsDiscovered = new HashMap<>();
     public Map<String, ArrayList<String>> objectsScanned = new HashMap<>();
     public Map<String, ArrayList<String>> entitiesScanned = new HashMap<>();
@@ -28,6 +29,18 @@ public class PlayerKnowledge {
         this.warp.remove(player);
         this.warpTemp.remove(player);
         this.warpSticky.remove(player);
+    }
+
+    public int getResearchCompleted(String player) {
+        return this.researchCompleted.get(player);
+    }
+
+    public void setResearchCompleted(String player, int num) {
+        this.researchCompleted.put(player, num);
+    }
+
+    public void incrementResearchCompleted(String player) {
+        this.researchCompleted.put(player, this.researchCompleted.get(player) + 1);
     }
 
     public AspectList getAspectsDiscovered(String player) {

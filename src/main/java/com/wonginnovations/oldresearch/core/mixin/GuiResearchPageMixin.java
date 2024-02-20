@@ -1,5 +1,6 @@
 package com.wonginnovations.oldresearch.core.mixin;
 
+import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketGivePlayerNoteToServer;
@@ -11,6 +12,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +23,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.capabilities.IPlayerKnowledge;
+import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.api.research.*;
 import thaumcraft.client.gui.GuiResearchPage;
@@ -60,14 +65,26 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     @Shadow
     boolean hold;
     @Shadow
+    AspectList knownPlayerAspects;
+    @Shadow
+    private int maxAspectPages;
+    @Shadow
+    private static int aspectsPage;
+    @Shadow
+    ResourceLocation tex3;
+
+    @Shadow
     abstract boolean mouseInside(int x, int y, int w, int h, int mx, int my);
     @Shadow
     abstract void drawPopupAt(int x, int y, int mx, int my, String text);
     @Shadow
     abstract void drawStackAt(ItemStack itemstack, int x, int y, int mx, int my, boolean clickthrough);
+    @Shadow
+    public abstract void drawTexturedModalRectScaled(int par1, int par2, int par3, int par4, int par5, int par6, float scale);
 
     @Shadow private boolean isComplete;
 
+    @Shadow private IPlayerKnowledge playerKnowledge;
     @Unique
     private final Map<Point, ItemStack> oldresearch$renderedNotes = new HashMap<>();
 
@@ -383,5 +400,133 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                 return;
             }
         }
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    public void ctorInjection(ResearchEntry research, ResourceLocation recipe, double x, double y, CallbackInfo ci) {
+        this.knownPlayerAspects = new AspectList();
+
+        for (Aspect a : OldResearch.proxy.getPlayerKnowledge().getAspectsDiscovered(this.mc.player.getGameProfile().getName()).getAspects()) {
+            this.knownPlayerAspects.add(a, OldResearchManager.getAspectComplexity(a));
+        }
+
+        this.maxAspectPages = this.knownPlayerAspects != null ? MathHelper.ceil((float)this.knownPlayerAspects.size() / 5.0F) : 0;
+    }
+
+    @Inject(method = "drawAspectPage", at = @At("HEAD"), cancellable = true)
+    public void drawAspectPageInjection(int x, int y, int mx, int my, CallbackInfo ci) {
+        if (this.knownPlayerAspects != null && this.knownPlayerAspects.size() > 0) {
+            GL11.glPushMatrix();
+            int count = -1;
+            int start = aspectsPage * 5;
+            Aspect[] var9 = this.knownPlayerAspects.getAspectsSortedByAmount();
+            int var10 = var9.length;
+
+            for(int var11 = 0; var11 < var10; ++var11) {
+                Aspect aspect = var9[var11];
+                ++count;
+                if (count >= start) {
+                    if (count > start + 4) {
+                        break;
+                    }
+
+                    if (aspect.getImage() != null) {
+                        int ty = y + count % 5 * 40;
+                        if (mx >= x && my >= ty && mx < x + 40 && my < ty + 40) {
+                            this.mc.renderEngine.bindTexture(this.tex3);
+                            GL11.glPushMatrix();
+                            GlStateManager.enableBlend();
+                            GlStateManager.blendFunc(770, 771);
+                            GL11.glTranslated((double)(x - 2), (double)(y + count % 5 * 40 - 2), 0.0);
+                            GL11.glScaled(2.0, 2.0, 0.0);
+                            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
+                            UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, (double)this.zLevel);
+                            GL11.glPopMatrix();
+                        }
+
+                        GL11.glPushMatrix();
+                        GL11.glTranslated((double)(x + 2), (double)(y + 2 + count % 5 * 40), 0.0);
+                        GL11.glScalef(1.5F, 1.5F, 1.5F);
+                        UtilsFX.drawTag(0, 0, aspect, 0.0F, 0, (double)this.zLevel);
+                        GL11.glPopMatrix();
+                        GL11.glPushMatrix();
+                        GL11.glTranslated((double)(x + 16), (double)(y + 29 + count % 5 * 40), 0.0);
+                        GL11.glScalef(0.5F, 0.5F, 0.5F);
+                        String text = aspect.getName();
+                        int offset = this.mc.fontRenderer.getStringWidth(text) / 2;
+                        this.mc.fontRenderer.drawString(text, -offset, 0, 5263440);
+                        GL11.glPopMatrix();
+                        if (aspect.getComponents() != null) {
+                            GL11.glPushMatrix();
+                            GL11.glTranslated((double)(x + 60), (double)(y + 4 + count % 5 * 40), 0.0);
+                            GL11.glScalef(1.25F, 1.25F, 1.25F);
+                            if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[0])) {
+                                UtilsFX.drawTag(0, 0, aspect.getComponents()[0], 0.0F, 0, (double)this.zLevel);
+                            } else {
+                                this.mc.renderEngine.bindTexture(this.dummyResearch);
+                                GlStateManager.color(0.8F, 0.8F, 0.8F, 1.0F);
+                                UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, (double)this.zLevel);
+                            }
+
+                            GL11.glPopMatrix();
+                            GL11.glPushMatrix();
+                            GL11.glTranslated((double)(x + 102), (double)(y + 4 + count % 5 * 40), 0.0);
+                            GL11.glScalef(1.25F, 1.25F, 1.25F);
+                            if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[1])) {
+                                UtilsFX.drawTag(0, 0, aspect.getComponents()[1], 0.0F, 0, (double)this.zLevel);
+                            } else {
+                                this.mc.renderEngine.bindTexture(this.dummyResearch);
+                                GlStateManager.color(0.8F, 0.8F, 0.8F, 1.0F);
+                                UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, (double)this.zLevel);
+                            }
+
+                            GL11.glPopMatrix();
+                            if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[0])) {
+                                text = aspect.getComponents()[0].getName();
+                                offset = this.mc.fontRenderer.getStringWidth(text) / 2;
+                                GL11.glPushMatrix();
+                                GL11.glTranslated((double)(x + 22 + 50), (double)(y + 29 + count % 5 * 40), 0.0);
+                                GL11.glScalef(0.5F, 0.5F, 0.5F);
+                                this.mc.fontRenderer.drawString(text, -offset, 0, 5263440);
+                                GL11.glPopMatrix();
+                            }
+
+                            if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[1])) {
+                                text = aspect.getComponents()[1].getName();
+                                offset = this.mc.fontRenderer.getStringWidth(text) / 2;
+                                GL11.glPushMatrix();
+                                GL11.glTranslated((double)(x + 22 + 92), (double)(y + 29 + count % 5 * 40), 0.0);
+                                GL11.glScalef(0.5F, 0.5F, 0.5F);
+                                this.mc.fontRenderer.drawString(text, -offset, 0, 5263440);
+                                GL11.glPopMatrix();
+                            }
+
+                            this.mc.fontRenderer.drawString("=", x + 9 + 32, y + 12 + count % 5 * 40, 10066329);
+                            this.mc.fontRenderer.drawString("+", x + 10 + 79, y + 12 + count % 5 * 40, 10066329);
+                        } else {
+                            this.mc.fontRenderer.drawString(I18n.format("tc.aspect.primal"), x + 54, y + 12 + count % 5 * 40, 7829367);
+                        }
+                    }
+                }
+            }
+
+            this.mc.renderEngine.bindTexture(this.tex1);
+            float bob = MathHelper.sin((float)this.mc.player.ticksExisted / 3.0F) * 0.2F + 0.1F;
+            if (aspectsPage > 0) {
+                this.drawTexturedModalRectScaled(x - 20, y + 208, 0, 184, 12, 8, bob);
+            }
+
+            if (aspectsPage < this.maxAspectPages - 1) {
+                this.drawTexturedModalRectScaled(x + 144, y + 208, 12, 184, 12, 8, bob);
+            }
+
+            GL11.glPopMatrix();
+        }
+        ci.cancel();
+    }
+
+    @Redirect(method = "drawPage", at = @At(value = "INVOKE", target = "Lthaumcraft/api/capabilities/IPlayerKnowledge;isResearchComplete(Ljava/lang/String;)Z"))
+    public boolean drawPageInjection(IPlayerKnowledge instance, String s) {
+        return !"KNOWLEDGETYPES".equals(s) && instance.isResearchComplete(s);
     }
 }

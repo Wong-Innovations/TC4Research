@@ -1,5 +1,6 @@
 package com.wonginnovations.oldresearch.common.lib.research;
 
+import com.cleanroommc.groovyscript.sandbox.ClosureHelper;
 import com.google.common.io.Files;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -14,6 +15,7 @@ import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.core.mixin.ResearchManagerAccessor;
+import com.wonginnovations.oldresearch.utils.ResearchComplexityGenerator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -45,6 +47,9 @@ public abstract class OldResearchManager {
     private static final Map<String, ItemStack> NOTES = new HashMap<>();
     private static final Map<Aspect, Integer> ASPECT_COMPLEXITY = new HashMap<>();
 
+    public static ResearchComplexityGenerator RESEARCH_COMPLEXITY_FUNCTION = new DefaultResearchComplexity();
+    public static Map<String, AspectList> RESEARCH_ASPECTS = new HashMap<>(); // to be populated by external libs like GrS or CT
+
     private static final Random RANDOM = new Random(69420);
 
     public static void computeAspectComplexity() {
@@ -62,13 +67,17 @@ public abstract class OldResearchManager {
         return Collections.max(childDepths);
     }
 
+    public static int getAspectComplexity(Aspect a) {
+        return ASPECT_COMPLEXITY.get(a);
+    }
+
 //    public static Aspect getRandomAspect(Random rand, int complexity) {
 //        List<Aspect> possible = ASPECT_COMPLEXITY.keySet().stream().filter(aspect -> ASPECT_COMPLEXITY.get(aspect) <= complexity).toList();
 //        return possible.get(rand.nextInt(possible.size()));
 //    }
 
-    public static AspectList getRandomAspects(Random rand, int complexity, int quantity) {
-        List<Aspect> possible = ASPECT_COMPLEXITY.keySet().stream().filter(aspect -> ASPECT_COMPLEXITY.get(aspect) <= complexity).collect(Collectors.toList());
+    public static AspectList getRandomAspects(Random rand, int maxComplexity, int quantity) {
+        List<Aspect> possible = ASPECT_COMPLEXITY.keySet().stream().filter(aspect -> ASPECT_COMPLEXITY.get(aspect) <= maxComplexity).collect(Collectors.toList());
         AspectList selected = new AspectList();
         int upto = Math.min(quantity, possible.size());
         for (int i = 0; i < upto; i++) {
@@ -115,6 +124,10 @@ public abstract class OldResearchManager {
         return NOTES.get(key);
     }
 
+    public static int getResearchComplexity(EntityPlayer player, String key) {
+        return RESEARCH_COMPLEXITY_FUNCTION.get(player, key);
+    }
+
     public static void givePlayerResearchNote(World world, EntityPlayer player, String key) {
         if(!hasResearchNote(player, key)
                 && consumeInkFromPlayer(player, false)
@@ -122,11 +135,12 @@ public abstract class OldResearchManager {
         ) {
             consumeInkFromPlayer(player, true);
             ItemStack note = NOTES.get(key).copy();
-            int researchCompleted = OldResearch.proxy.getPlayerKnowledge().getResearchCompleted(player.getGameProfile().getName());
-            int complexity = (int) Math.floor(Math.log10(researchCompleted + 1) + 1);
-            int numberOfAspects = (complexity - 1) * world.rand.nextInt() * 3 + 3;
+            int complexity = getResearchComplexity(player, key);
             ResearchNoteData data = getData(note);
-            data.generateHexes(world, getRandomAspects(world.rand, complexity, numberOfAspects), complexity);
+            AspectList aspects = (RESEARCH_ASPECTS.containsKey(key))
+                                    ? RESEARCH_ASPECTS.get(key)
+                                    : getRandomAspects(world.rand, complexity, (complexity - 1) * world.rand.nextInt() * 3 + 3);
+            data.generateHexes(world, aspects, complexity);
             updateData(note, data);
             if(!player.inventory.addItemStackToInventory(note)) {
                 ForgeHooks.onPlayerTossEvent(player, note, false);

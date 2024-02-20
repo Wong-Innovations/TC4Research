@@ -21,7 +21,7 @@ public class PlayerKnowledge {
     public Map<String, Integer> warpTemp = new HashMap<>();
 
     public void wipePlayerKnowledge(String player) {
-        this.researchCompleted.remove(player);
+        this.researchCompleted.put(player, 0);
         this.aspectsDiscovered.remove(player);
         this.objectsScanned.remove(player);
         this.entitiesScanned.remove(player);
@@ -32,6 +32,7 @@ public class PlayerKnowledge {
     }
 
     public int getResearchCompleted(String player) {
+        if (!this.researchCompleted.containsKey(player)) this.researchCompleted.put(player, 0);
         return this.researchCompleted.get(player);
     }
 

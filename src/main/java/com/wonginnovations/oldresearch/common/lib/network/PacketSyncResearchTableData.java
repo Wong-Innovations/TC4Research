@@ -48,7 +48,6 @@ public class PacketSyncResearchTableData implements IMessage, IMessageHandler<Pa
                         ((TileResearchTable) te).setTableData(message.data);
                     }
                 }
-
             }
         });
         return null;

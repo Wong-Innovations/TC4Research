@@ -17,6 +17,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(PacketAspectPool.class, PacketAspectPool.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketGivePlayerNoteToServer.class, PacketGivePlayerNoteToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketScannedToServer.class, PacketScannedToServer.class, discriminator++, Side.SERVER);
+        INSTANCE.registerMessage(PacketSyncScannedToServer.class, PacketSyncScannedToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketSyncAspects.class, PacketSyncAspects.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketSyncResearchTableData.class, PacketSyncResearchTableData.class, discriminator++, Side.CLIENT);
     }

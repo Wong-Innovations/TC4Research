@@ -2,8 +2,12 @@ package com.wonginnovations.oldresearch.client.lib;
 
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.Tags;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +23,13 @@ import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
+import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.api.items.IGoggles;
+import thaumcraft.api.items.ItemsTC;
+import thaumcraft.api.research.ScanningManager;
+import thaumcraft.common.config.ConfigAspects;
+import thaumcraft.common.config.ConfigItems;
+import thaumcraft.common.lib.utils.EntityUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -50,39 +60,20 @@ public abstract class RenderEventHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void blockHighlight(DrawBlockHighlightEvent event) {
-        int ticks = event.getPlayer().ticksExisted;
         RayTraceResult target = event.getTarget();
-        if(blockTags.size() > 0) {
-            int x = (Integer) blockTags.get(0);
-            int y = (Integer) blockTags.get(1);
-            int z = (Integer) blockTags.get(2);
-            AspectList ot = (AspectList)blockTags.get(3);
-            EnumFacing dir = EnumFacing.byIndex((Integer) blockTags.get(4));
-            if(x == target.hitVec.x && y == target.hitVec.y && z == target.hitVec.z) {
-                if(tagscale < 0.5F) {
-                    tagscale += 0.031F - tagscale / 10.0F;
-                }
-
-                drawTagsOnContainer((float)target.getBlockPos().getX() + (float)dir.getXOffset() / 2.0F, (float)target.getBlockPos().getY() + (float)dir.getYOffset() / 2.0F, (float)target.getBlockPos().getZ() + (float)dir.getZOffset() / 2.0F, ot, 220, dir, event.getPartialTicks());
+        if(target != null && target.typeOfHit == RayTraceResult.Type.BLOCK
+                && (event.getPlayer().getHeldItemMainhand().getItem() == ItemsTC.thaumometer
+                    || event.getPlayer().getHeldItemOffhand().getItem() == ItemsTC.thaumometer)
+                && !ScanningManager.isThingStillScannable(event.getPlayer(), target.getBlockPos())) {
+            IBlockState bs = event.getPlayer().world.getBlockState(target.getBlockPos());
+            AspectList ot = CommonInternals.objectTags.get(CommonInternals.generateUniqueItemstackId(new ItemStack(bs.getBlock())));
+            boolean spaceAbove = event.getPlayer().world.isAirBlock(target.getBlockPos().up());
+            EnumFacing dir = spaceAbove ? EnumFacing.UP : target.sideHit;
+            if(tagscale < 0.5F) {
+                tagscale += 0.031F - tagscale / 10.0F;
             }
-        }
 
-        event.getPlayer().inventory.armorItemInSlot(3);
-        if(event.getPlayer().inventory.armorItemInSlot(3).getItem() instanceof IGoggles && ((IGoggles) event.getPlayer().inventory.armorItemInSlot(3).getItem()).showIngamePopups(event.getPlayer().inventory.armorItemInSlot(3), event.getPlayer())) {
-            boolean spaceAbove = event.getPlayer().world.isAirBlock(new BlockPos(target.getBlockPos().getX(), target.getBlockPos().getY() + 1, target.getBlockPos().getZ()));
-            TileEntity te = event.getPlayer().world.getTileEntity(target.getBlockPos());
-            if(te != null) {
-                int note = -1;
-                if(te instanceof IAspectContainer && ((IAspectContainer)te).getAspects() != null && ((IAspectContainer)te).getAspects().size() > 0) {
-                    float shift = 0.0F;
-
-                    if(tagscale < 0.3F) {
-                        tagscale += 0.031F - tagscale / 10.0F;
-                    }
-
-                    drawTagsOnContainer(target.getBlockPos().getX(), (float)target.getBlockPos().getY() + (spaceAbove?0.4F:0.0F) + shift, target.getBlockPos().getZ(), ((IAspectContainer)te).getAspects(), 220, spaceAbove ? EnumFacing.UP : event.getTarget().sideHit, event.getPartialTicks());
-                }
-            }
+            drawTagsOnContainer((float)target.getBlockPos().getX() + (float)dir.getXOffset() / 2.0F, (float)target.getBlockPos().getY() + (float)dir.getYOffset() / 2.0F, (float)target.getBlockPos().getZ() + (float)dir.getZOffset() / 2.0F, ot, 220, dir, event.getPartialTicks());
         }
 
     }
@@ -227,9 +218,12 @@ public abstract class RenderEventHandler {
                 GL11.glDisable(2929);
                 GL11.glTranslated(-iPX + x + 0.5D + (double)(tagscale * 2.0F * (float)dir.getXOffset()), -iPY + y - (double)shifty + 0.5D + (double)(tagscale * 2.0F * (float)dir.getYOffset()), -iPZ + z + 0.5D + (double)(tagscale * 2.0F * (float)dir.getZOffset()));
                 float xd = (float)(iPX - (x + 0.5D));
+                float yd = (float)(iPY - y);
                 float zd = (float)(iPZ - (z + 0.5D));
                 float rotYaw = (float)(Math.atan2(xd, zd) * 180.0D / 3.141592653589793D);
+                float rotPitch = (float)(Math.atan2(yd, Math.sqrt(xd * xd + zd * zd)) * 180.0D / 3.141592653589793D);
                 GL11.glRotatef(rotYaw + 180.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glRotatef(rotPitch, 1.0F, 0.0F, 0.0F);
                 GL11.glTranslated((double)shift, 0.0D, 0.0D);
                 GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
                 GL11.glScalef(tagscale, tagscale, tagscale);

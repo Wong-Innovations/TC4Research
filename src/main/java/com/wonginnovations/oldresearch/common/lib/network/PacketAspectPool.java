@@ -44,23 +44,26 @@ public class PacketAspectPool implements IMessage, IMessageHandler<PacketAspectP
 
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(PacketAspectPool message, MessageContext ctx) {
-        if(Aspect.getAspect(message.key) != null) {
-            boolean success = OldResearch.proxy.getPlayerKnowledge().setAspectPool(Minecraft.getMinecraft().player.getGameProfile().getName(), Aspect.getAspect(message.key), message.total);
-            if(success && message.amount > 0) {
-                String text = I18n.format("tc.addaspectpool", message.amount + "", Aspect.getAspect(message.key).getName());
-                PlayerNotifications.addNotification(text, Aspect.getAspect(message.key));
+        Minecraft.getMinecraft().addScheduledTask(new Runnable() {
+            public void run() {
+                if (Aspect.getAspect(message.key) != null) {
+                    boolean success = OldResearch.proxy.getPlayerKnowledge().setAspectPool(Minecraft.getMinecraft().player.getGameProfile().getName(), Aspect.getAspect(message.key), message.total);
+                    if (success && message.amount > 0) {
+                        String text = I18n.format("tc.addaspectpool", message.amount + "", Aspect.getAspect(message.key).getName());
+                        PlayerNotifications.addNotification(text, Aspect.getAspect(message.key));
 
-                for(int a = 0; a < message.amount; ++a) {
-                    PlayerNotifications.addAspectNotification(Aspect.getAspect(message.key));
-                }
+                        for (int a = 0; a < message.amount; ++a) {
+                            PlayerNotifications.addAspectNotification(Aspect.getAspect(message.key));
+                        }
 
-                if(System.currentTimeMillis() > lastSound) {
-                    Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), 0.1F, 0.9F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.2F);
-                    lastSound = System.currentTimeMillis() + 100L;
+                        if (System.currentTimeMillis() > lastSound) {
+                            Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), 0.1F, 0.9F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.2F);
+                            lastSound = System.currentTimeMillis() + 100L;
+                        }
+                    }
                 }
             }
-        }
-
+        });
         return null;
     }
 }

@@ -4,6 +4,7 @@ import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -43,18 +44,21 @@ public class PacketGivePlayerNoteToServer implements IMessage, IMessageHandler<P
     }
 
     public IMessage onMessage(PacketGivePlayerNoteToServer message, MessageContext ctx) {
-        World world = DimensionManager.getWorld(message.dim);
-        if(world != null && (ctx.getServerHandler().player == null || ctx.getServerHandler().player.getGameProfile().getName().equals(message.username))) {
-            EntityPlayer player = world.getPlayerEntityByName(message.username);
-            if(player != null && !ThaumcraftCapabilities.knowsResearchStrict(player, message.key)) {
-                if(ResearchManager.doesPlayerHaveRequisites(player, message.key)) {
-                    OldResearchManager.givePlayerResearchNote(world, player, message.key);
-                    world.playSound(player.posX, player.posY, player.posZ, SoundsTC.learn, SoundCategory.MASTER, 0.75F, 1.0F, false);
-                } else {
-                    player.sendMessage(new TextComponentTranslation(I18n.format("tc.researcherror")));
+        IThreadListener mainThread = ctx.getServerHandler().player.getServerWorld();
+        mainThread.addScheduledTask(new Runnable() {
+            public void run() {
+                World world = ctx.getServerHandler().player.world;
+                EntityPlayer player = ctx.getServerHandler().player;
+                if(world != null && player != null && !ThaumcraftCapabilities.knowsResearchStrict(player, message.key)) {
+                    if(ResearchManager.doesPlayerHaveRequisites(player, message.key)) {
+                        OldResearchManager.givePlayerResearchNote(world, player, message.key);
+                        world.playSound(player.posX, player.posY, player.posZ, SoundsTC.learn, SoundCategory.MASTER, 0.75F, 1.0F, false);
+                    } else {
+                        player.sendMessage(new TextComponentTranslation(I18n.format("tc.researcherror")));
+                    }
                 }
             }
-        }
+        });
         return null;
     }
 }

@@ -5,10 +5,12 @@ item.researchnote.unknown.2=<Right click to reveal>
 item.discovery.name=§5Discovery
 #
 researchnote.complete=Research Note Completed!
+researchnote.click=§o§7Click to obtain.
 tc.addaspectdiscovery=You have discovered %s!
 tc.addaspectpool=Gained %s research point(s) for %s
 tc.discoveryerror=To understand this you need to study %s.
 tc.unknownobject=Nothing can be learned from this.
+tc.researchtheory=%s Theory
 #
 tc.forbidden=§l§5Forbidden knowledge (%n)§0
 tc.forbidden.level.1=Mostly Harmless

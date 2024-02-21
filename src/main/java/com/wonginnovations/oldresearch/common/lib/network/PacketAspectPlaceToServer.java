@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -61,22 +62,20 @@ public class PacketAspectPlaceToServer implements IMessage, IMessageHandler<Pack
     }
 
     public IMessage onMessage(PacketAspectPlaceToServer message, MessageContext ctx) {
-        World world = DimensionManager.getWorld(message.dim);
-        if(world != null && (ctx.getServerHandler().player == null || ctx.getServerHandler().player.getEntityId() == message.playerid)) {
-            Entity player = world.getEntityByID(message.playerid);
-            if(player == null) {
-                return null;
-            } else {
-                TileEntity rt = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
-                if(rt != null && rt instanceof TileResearchTable) {
-                    ((TileResearchTable)rt).placeAspect(message.q, message.r, message.aspect, (EntityPlayer)player);
+        IThreadListener mainThread = ctx.getServerHandler().player.getServerWorld();
+        mainThread.addScheduledTask(new Runnable() {
+            public void run() {
+                World world = ctx.getServerHandler().player.world;
+                EntityPlayer player = ctx.getServerHandler().player;
+                if(world != null && player != null) {
+                    TileEntity rt = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
+                    if(rt instanceof TileResearchTable) {
+                        ((TileResearchTable)rt).placeAspect(message.q, message.r, message.aspect, player);
+                    }
                 }
-
-                return null;
             }
-        } else {
-            return null;
-        }
+        });
+        return null;
     }
 }
 

@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AspectEventProxyMixin",
+    "BlockResearchTableMixin",
     "BlockTableMixin",
     "CommandThaumcraftMixin",
     "ItemThaumometerMixin",
@@ -15,6 +16,7 @@
   "client": [
     "GuiAccessor",
     "GuiResearchPageMixin",
+    "RenderEventHandlerMixin",
     "UtilsFXAccessor"
   ],
   "server": []

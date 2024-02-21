@@ -15,6 +15,11 @@ public class GroovyScriptModule implements GroovyPlugin {
     }
 
     @Override
+    public @NotNull String getContainerName() {
+        return getModId();
+    }
+
+    @Override
     public void onCompatLoaded(GroovyContainer<?> container) {
         container.getVirtualizedRegistrar().addFieldsOf(this);
     }

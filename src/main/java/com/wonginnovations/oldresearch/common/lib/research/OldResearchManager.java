@@ -45,7 +45,7 @@ public abstract class OldResearchManager {
     private static final String SCANNED_ENT_TAG = "THAUMCRAFT.SCAN.ENTITIES";
 
     private static final Map<String, ItemStack> NOTES = new HashMap<>();
-    private static final Map<Aspect, Integer> ASPECT_COMPLEXITY = new HashMap<>();
+    public static final Map<Aspect, Integer> ASPECT_COMPLEXITY = new HashMap<>();
 
     public static ResearchComplexityGenerator RESEARCH_COMPLEXITY_FUNCTION = new DefaultResearchComplexity();
     public static Map<String, AspectList> RESEARCH_ASPECTS = new HashMap<>(); // to be populated by external libs like GrS or CT
@@ -97,7 +97,7 @@ public abstract class OldResearchManager {
                     if (stage == null || stage.getKnow() == null || stage.getKnow().length == 0) continue;
                     for (ResearchStage.Knowledge knowledge : stage.getKnow()) {
                         if (knowledge.type == IPlayerKnowledge.EnumKnowledgeType.THEORY) {
-                            String key = "rn_" + entry.getKey() + (++i);
+                            String key = "rn_" + entry.getKey() + "_" + (++i);
                             stage.setResearch(ArrayUtils.add(stage.getResearch(), key));
                             NOTES.put(key, createNote(key));
                             if (stage.getResearchIcon() == null) stage.setResearchIcon(new String[]{null});
@@ -177,7 +177,11 @@ public abstract class OldResearchManager {
     }
 
     public static String getStrippedKey(ItemStack stack) {
-        return getData(stack).key.substring(3, getData(stack).key.length() - 1);
+        return getStrippedKey(getData(stack).key);
+    }
+
+    public static String getStrippedKey(String key) {
+        return key.substring(key.indexOf('_') + 1, key.lastIndexOf('_'));
     }
 
     public static boolean checkResearchCompletion(ItemStack contents, ResearchNoteData note, String username) {

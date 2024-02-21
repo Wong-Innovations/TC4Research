@@ -34,6 +34,7 @@ import thaumcraft.common.lib.utils.InventoryUtils;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 @Mixin(value = GuiResearchPage.class, remap = false)
 public abstract class GuiResearchPageMixin extends GuiScreen {
@@ -72,6 +73,10 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     private static int aspectsPage;
     @Shadow
     ResourceLocation tex3;
+    @Shadow
+    static ResourceLocation shownRecipe;
+    @Shadow
+    boolean allowWithPagePopup;
 
     @Shadow
     abstract boolean mouseInside(int x, int y, int w, int h, int mx, int my);
@@ -85,8 +90,19 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     @Shadow private boolean isComplete;
 
     @Shadow private IPlayerKnowledge playerKnowledge;
+    @Shadow private List tipText;
     @Unique
     private final Map<Point, ItemStack> oldresearch$renderedNotes = new HashMap<>();
+
+    @Unique
+    private void oldresearch$drawPopupAt(int x, int y, int mx, int my, String... text) {
+        if ((shownRecipe == null || this.allowWithPagePopup) && mx >= x && my >= y && mx < x + 16 && my < y + 16) {
+            ArrayList<String> s = new ArrayList<>();
+            for (String t : text)
+                s.add(I18n.format(t));
+            this.tipText = s;
+        }
+    }
 
     @Inject(method = "drawRequirements", at = @At("HEAD"), cancellable = true)
     public void drawRequirementsInjection(int x, int mx, int my, ResearchStage stage, CallbackInfo ci) {
@@ -290,6 +306,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                         continue;
                     } else {
                         loc = OldResearchManager.getNote(key);
+                        s = I18n.format("tc.researchtheory", I18n.format("research." + OldResearchManager.getStrippedKey(key) + ".title"));
                     }
 
                     GL11.glPushMatrix();
@@ -317,7 +334,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                         GlStateManager.enableDepth();
                     }
 
-                    this.drawPopupAt(x - 15 + shift, y, mx, my, s);
+                    this.oldresearch$drawPopupAt(x - 15 + shift, y, mx, my, s, I18n.format("researchnote.click"));
                     shift += ss;
                 }
             }
@@ -374,7 +391,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void mouseClickedInjection(int mx, int my, int button, CallbackInfo ci) {
         for (Point p : oldresearch$renderedNotes.keySet()) {
-            if ((mx >= p.x - 10 && mx <= p.x + 10) && (my >= p.y - 10 && my <= p.y + 10)) {
+            if ((mx >= p.x && mx <= p.x + 16) && (my >= p.y && my <= p.y + 16)) {
                 if (!OldResearchUtils.isPlayerCarrying(this.mc.player, ItemsTC.scribingTools)) {
                     this.mc.player.sendMessage(new TextComponentString("§cScribing tools required to create research notes."));
                     this.mc.displayGuiScreen(null);

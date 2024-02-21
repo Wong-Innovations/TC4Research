@@ -679,27 +679,27 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     private void playButtonClick() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.clack, SoundCategory.MASTER, 0.4F, 1.0F, false);
+        Minecraft.getMinecraft().player.world.playSound(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, SoundsTC.clack, SoundCategory.MASTER, 0.4F, 1.0F, false);
     }
 
     private void playButtonAspect() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.hhoff, SoundCategory.MASTER, 0.2F, 1.0F + this.mc.getRenderViewEntity().world.rand.nextFloat() * 0.1F, false);
+        Minecraft.getMinecraft().player.world.playSound(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, SoundsTC.hhoff, SoundCategory.MASTER, 0.2F, 1.0F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.1F, false);
     }
 
     private void playButtonCombine() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.hhon, SoundCategory.MASTER, 0.3F, 1.0F, false);
+        Minecraft.getMinecraft().player.world.playSound(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, SoundsTC.hhon, SoundCategory.MASTER, 0.3F, 1.0F, false);
     }
 
     private void playButtonWrite() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.write, SoundCategory.MASTER, 0.2F, 1.0F, false);
+        Minecraft.getMinecraft().player.world.playSound(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, SoundsTC.write, SoundCategory.MASTER, 0.2F, 1.0F, false);
     }
 
     private void playButtonErase() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.erase, SoundCategory.MASTER, 0.2F, 1.0F + this.mc.getRenderViewEntity().world.rand.nextFloat() * 0.1F, false);
+        Minecraft.getMinecraft().player.world.playSound(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, SoundsTC.erase, SoundCategory.MASTER, 0.2F, 1.0F + Minecraft.getMinecraft().player.world.rand.nextFloat() * 0.1F, false);
     }
 
     private void playButtonScroll() {
-        this.mc.getRenderViewEntity().world.playSound(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY, this.mc.getRenderViewEntity().posZ, SoundsTC.key, SoundCategory.MASTER, 0.3F, 1.0F, false);
+        Minecraft.getMinecraft().player.world.playSound(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, SoundsTC.key, SoundCategory.MASTER, 0.3F, 1.0F, false);
     }
 
     private void drawOrb(double x, double y) {

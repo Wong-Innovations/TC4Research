@@ -16,9 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
-import thaumcraft.client.fx.ParticleEngine;
 import thaumcraft.common.config.ModConfig;
 
 import java.awt.*;
@@ -49,8 +47,8 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
     }
 
     public static void drawCustomTooltip(GuiScreen gui, RenderItem itemRenderer, FontRenderer fr, List<String> list, int par2, int par3, int subTipColor) {
-//        GL11.glDisable(32836); // weird kanji open GL12 stuff maybe '耺'
-        GL11.glDisable(2929);
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.disableDepth();
         if(!list.isEmpty()) {
             int var5 = 0;
 
@@ -100,7 +98,7 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
         }
 
         itemRenderer.zLevel = 0.0F;
-        GL11.glEnable(2929);
+        GlStateManager.enableDepth();
     }
 
     public static void renderAnimatedQuadStrip(float scale, float alpha, int frames, int strip, int cframe, float partialTicks, int color) {
@@ -114,10 +112,10 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
             float f4 = (float)strip / (float)frames;
             float f5 = (float)(strip + 1) / (float)frames;
             tessellator.setNormal(0.0F, 0.0F, -1.0F);
-            tessellator.addVertexWithUV(-0.5D * (double)scale, 0.5D * (double)scale, 0.0D, (double)f2, (double)f5);
-            tessellator.addVertexWithUV(0.5D * (double)scale, 0.5D * (double)scale, 0.0D, (double)f3, (double)f5);
-            tessellator.addVertexWithUV(0.5D * (double)scale, -0.5D * (double)scale, 0.0D, (double)f3, (double)f4);
-            tessellator.addVertexWithUV(-0.5D * (double)scale, -0.5D * (double)scale, 0.0D, (double)f2, (double)f4);
+            tessellator.addVertexWithUV(-0.5D * (double)scale, 0.5D * (double)scale, 0.0D, f2, f5);
+            tessellator.addVertexWithUV(0.5D * (double)scale, 0.5D * (double)scale, 0.0D, f3, f5);
+            tessellator.addVertexWithUV(0.5D * (double)scale, -0.5D * (double)scale, 0.0D, f3, f4);
+            tessellator.addVertexWithUV(-0.5D * (double)scale, -0.5D * (double)scale, 0.0D, f2, f4);
             tessellator.draw();
         }
     }
@@ -134,10 +132,10 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
 
     public static void renderQuadCenteredFromTexture(float scale, float red, float green, float blue, int brightness, int blend, float opacity) {
         Tessellator tessellator = Tessellator.instance;
-        GL11.glScalef(scale, scale, scale);
-        GL11.glEnable(3042);
-        GL11.glBlendFunc(770, blend);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, opacity);
+        GlStateManager.scale(scale, scale, scale);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(770, blend);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, opacity);
         tessellator.startDrawingQuads();
         if(brightness > 0) {
             tessellator.setBrightness(brightness);
@@ -149,7 +147,7 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
         tessellator.addVertexWithUV(0.5D, -0.5D, 0.0D, 1.0D, 0.0D);
         tessellator.addVertexWithUV(-0.5D, -0.5D, 0.0D, 0.0D, 0.0D);
         tessellator.draw();
-        GL11.glDisable(3042);
+        GlStateManager.disableBlend();
     }
 
     public static void renderFacingStrip(double px, double py, double pz, float angle, float scale, float alpha, int frames, int strip, int frame, float partialTicks, int color) {
@@ -164,7 +162,7 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
             double iPX = player.prevPosX + (player.posX - player.prevPosX) * (double)partialTicks;
             double iPY = player.prevPosY + (player.posY - player.prevPosY) * (double)partialTicks;
             double iPZ = player.prevPosZ + (player.posZ - player.prevPosZ) * (double)partialTicks;
-            GL11.glTranslated(-iPX, -iPY, -iPZ);
+            GlStateManager.translate(-iPX, -iPY, -iPZ);
             tessellator.startDrawingQuads();
             tessellator.setBrightness(220);
             tessellator.setColorRGBA_I(color, (int)(alpha * 255.0F));
@@ -209,26 +207,26 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
     }
 
     public static void drawTag(int x, int y, Aspect aspect, float amount, int bonus, double z, int blend, float alpha, boolean bw) {
-        drawTag((double)x, (double)y, aspect, amount, bonus, z, blend, alpha, bw);
+        drawTag(x, (double)y, aspect, amount, bonus, z, blend, alpha, bw);
     }
 
     public static void drawTag(double x, double y, Aspect aspect, float amount, int bonus, double z, int blend, float alpha, boolean bw) {
         if (aspect != null) {
-            boolean blendon = GL11.glIsEnabled(3042);
+            boolean blendon = GlStateManager.blendState.blend.currentState;
             Minecraft mc = Minecraft.getMinecraft();
-            boolean isLightingEnabled = GL11.glIsEnabled(2896);
+            boolean isLightingEnabled = GlStateManager.lightingState.currentState;
             Color color = new Color(aspect.getColor());
-            GL11.glPushMatrix();
-            GL11.glDisable(2896);
-            GL11.glAlphaFunc(516, 0.003921569F);
-            GL11.glEnable(3042);
-            GL11.glBlendFunc(770, blend);
-            GL11.glPushMatrix();
+            GlStateManager.pushMatrix();
+            GlStateManager.disableLighting();
+            GlStateManager.alphaFunc(516, 0.003921569F);
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(770, blend);
+            GlStateManager.pushMatrix();
             mc.renderEngine.bindTexture(aspect.getImage());
             if (!bw) {
-                GL11.glColor4f((float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, alpha);
+                GlStateManager.color((float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, alpha);
             } else {
-                GL11.glColor4f(0.1F, 0.1F, 0.1F, alpha * 0.8F);
+                GlStateManager.color(0.1F, 0.1F, 0.1F, alpha * 0.8F);
             }
 
             net.minecraft.client.renderer.Tessellator var9 = net.minecraft.client.renderer.Tessellator.getInstance();
@@ -246,17 +244,17 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
             }
 
             var9.draw();
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
             if (amount > 0.0F) {
-                GL11.glPushMatrix();
+                GlStateManager.pushMatrix();
                 float q = 0.5F;
                 if (!ModConfig.CONFIG_GRAPHICS.largeTagText) {
-                    GL11.glScalef(0.5F, 0.5F, 0.5F);
+                    GlStateManager.scale(0.5F, 0.5F, 0.5F);
                     q = 1.0F;
                 }
 
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                String am = UtilsFXAccessor.getMyFormatter().format((double)amount);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                String am = UtilsFXAccessor.getMyFormatter().format(amount);
                 int sw = mc.fontRenderer.getStringWidth(am);
                 EnumFacing[] var20 = EnumFacing.HORIZONTALS;
                 int var21 = var20.length;
@@ -267,43 +265,43 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
                 }
 
                 mc.fontRenderer.drawString(am, (float)(32 - sw + (int)x * 2) * q, (float)(32 - mc.fontRenderer.FONT_HEIGHT + (int)y * 2) * q, 16777215, false);
-                GL11.glPopMatrix();
+                GlStateManager.popMatrix();
             }
 
             if (bonus > 0) {
-                GL11.glPushMatrix();
+                GlStateManager.pushMatrix();
                 mc.renderEngine.bindTexture(new ResourceLocation("oldresearch", "textures/misc/particles.png"));
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 int px = 16 * (mc.player.ticksExisted % 16);
                 drawTexturedQuad((float)((int)x - 4), (float)((int)y - 4), (float)px, 80.0F, 16.0F, 16.0F, z);
                 if (bonus > 1) {
                     float q = 0.5F;
                     if (!ModConfig.CONFIG_GRAPHICS.largeTagText) {
-                        GL11.glScalef(0.5F, 0.5F, 0.5F);
+                        GlStateManager.scale(0.5F, 0.5F, 0.5F);
                         q = 1.0F;
                     }
 
                     String am = "" + bonus;
                     int sw = mc.fontRenderer.getStringWidth(am) / 2;
-                    GL11.glTranslated(0.0, 0.0, -1.0);
+                    GlStateManager.translate(0.0, 0.0, -1.0);
                     mc.fontRenderer.drawStringWithShadow(am, (float)(8 - sw + (int)x * 2) * q, (float)(15 - mc.fontRenderer.FONT_HEIGHT + (int)y * 2) * q, 16777215);
                 }
 
-                GL11.glPopMatrix();
+                GlStateManager.popMatrix();
             }
 
             GlStateManager.blendFunc(770, 771);
             if (!blendon) {
-                GL11.glDisable(3042);
+                GlStateManager.disableBlend();
             }
 
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glAlphaFunc(516, 0.1F);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.alphaFunc(516, 0.1F);
             if (isLightingEnabled) {
-                GL11.glEnable(2896);
+                GlStateManager.enableLighting();
             }
 
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
     }
 

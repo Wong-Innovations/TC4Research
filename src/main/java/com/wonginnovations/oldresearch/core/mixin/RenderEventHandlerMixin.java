@@ -3,6 +3,7 @@ package com.wonginnovations.oldresearch.core.mixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
@@ -12,7 +13,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -78,35 +78,35 @@ public abstract class RenderEventHandlerMixin {
                 float shift = ((float)current - (float)div / 2.0F + 0.5F) * RenderEventHandler.tagscale * 4.0F;
                 shift *= RenderEventHandler.tagscale;
                 Color color = new Color(tag.getColor());
-                GL11.glPushMatrix();
-                GL11.glDisable(2929);
-                GL11.glTranslated(-iPX + x + 0.5 + (double)(RenderEventHandler.tagscale * 2.0F * (float)fox), -iPY + y - (double)shifty + 0.5 + (double)(RenderEventHandler.tagscale * 2.0F * (float)foy), -iPZ + z + 0.5 + (double)(RenderEventHandler.tagscale * 2.0F * (float)foz));
+                GlStateManager.pushMatrix();
+                GlStateManager.disableDepth();
+                GlStateManager.translate(-iPX + x + 0.5 + (double)(RenderEventHandler.tagscale * 2.0F * (float)fox), -iPY + y - (double)shifty + 0.5 + (double)(RenderEventHandler.tagscale * 2.0F * (float)foy), -iPZ + z + 0.5 + (double)(RenderEventHandler.tagscale * 2.0F * (float)foz));
                 float xd = (float)(iPX - (x + 0.5));
                 float yd = (float)(iPY - y);
                 float zd = (float)(iPZ - (z + 0.5));
                 float rotYaw = (float)(Math.atan2(xd, zd) * 180.0 / Math.PI);
                 float rotPitch = (float)(Math.atan2(yd, Math.sqrt(xd * xd + zd * zd)) * 180.0D / 3.141592653589793D);
-                GL11.glRotatef(rotYaw + 180.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glRotatef(rotPitch, 1.0F, 0.0F, 0.0F);
-                GL11.glTranslated(shift, 0.0, 0.0);
-                GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
-                GL11.glScalef(RenderEventHandler.tagscale, RenderEventHandler.tagscale, RenderEventHandler.tagscale);
+                GlStateManager.rotate(rotYaw + 180.0F, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(rotPitch, 1.0F, 0.0F, 0.0F);
+                GlStateManager.translate(shift, 0.0, 0.0);
+                GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
+                GlStateManager.scale(RenderEventHandler.tagscale, RenderEventHandler.tagscale, RenderEventHandler.tagscale);
                 UtilsFX.renderQuadCentered(tag.getImage(), 1.0F, (float)color.getRed() / 255.0F, (float)color.getGreen() / 255.0F, (float)color.getBlue() / 255.0F, bright, 771, 0.75F);
                 if (tags.getAmount(tag) >= 0) {
-                    GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
+                    GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
                     String am = "" + tags.getAmount(tag);
-                    GL11.glScalef(0.04F, 0.04F, 0.04F);
-                    GL11.glTranslated(0.0, 6.0, -0.1);
+                    GlStateManager.scale(0.04F, 0.04F, 0.04F);
+                    GlStateManager.translate(0.0, 6.0, -0.1);
                     int sw = Minecraft.getMinecraft().fontRenderer.getStringWidth(am);
-                    GL11.glEnable(3042);
-                    GL11.glBlendFunc(770, 771);
+                    GlStateManager.enableBlend();
+                    GlStateManager.blendFunc(770, 771);
                     Minecraft.getMinecraft().fontRenderer.drawString(am, 14 - sw, 1, 1118481);
-                    GL11.glTranslated(0.0, 0.0, -0.1);
+                    GlStateManager.translate(0.0, 0.0, -0.1);
                     Minecraft.getMinecraft().fontRenderer.drawString(am, 13 - sw, 0, 16777215);
                 }
 
-                GL11.glEnable(2929);
-                GL11.glPopMatrix();
+                GlStateManager.enableDepth();
+                GlStateManager.popMatrix();
                 ++current;
             }
         }

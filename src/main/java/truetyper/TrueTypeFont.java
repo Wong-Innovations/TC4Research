@@ -7,6 +7,7 @@ package truetyper;
 import java.util.*;
 
 import com.wonginnovations.oldresearch.client.lib.Tessellator;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.*;
 import org.lwjgl.*;
 import org.lwjgl.util.glu.*;
@@ -212,8 +213,8 @@ public class TrueTypeFont
         if (rgba.length == 0) {
             rgba = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
         }
-        GL11.glPushMatrix();
-        GL11.glScalef(scaleX, scaleY, 1.0f);
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scaleX, scaleY, 1.0f);
         FloatObject floatObject = null;
         float totalwidth = 0.0f;
         int i = startIndex;
@@ -302,7 +303,7 @@ public class TrueTypeFont
             }
         }
         t.draw();
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
     
     public static int loadImage(final BufferedImage bufferedImage) {

@@ -6,6 +6,7 @@ package truetyper;
 
 import net.minecraft.client.*;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.*;
@@ -31,7 +32,7 @@ public class FontHelper
         matrix.load(matrixData);
         set2DMode();
         y = mc.displayHeight - y * sr.getScaleFactor() - font.getLineHeight() / amt;
-        GL11.glEnable(3042);
+        GlStateManager.enableBlend();
         if (s.contains(FontHelper.formatEscape)) {
             final String[] pars = s.split(FontHelper.formatEscape);
             float totalOffset = 0.0f;
@@ -49,26 +50,26 @@ public class FontHelper
         else {
             font.drawString(x * sr.getScaleFactor(), y - matrix.m31 * sr.getScaleFactor(), s, scaleX / amt, scaleY / amt, format, rgba);
         }
-        GL11.glDisable(3042);
+        GlStateManager.disableBlend();
         set3DMode();
     }
     
     private static void set2DMode() {
         final Minecraft mc = Minecraft.getMinecraft();
         GL11.glMatrixMode(5889);
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         GL11.glLoadIdentity();
         GL11.glOrtho(0.0, (double)mc.displayWidth, 0.0, (double)mc.displayHeight, -1.0, 1.0);
         GL11.glMatrixMode(5888);
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         GL11.glLoadIdentity();
     }
     
     private static void set3DMode() {
         GL11.glMatrixMode(5889);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
         GL11.glMatrixMode(5888);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
     
     static {

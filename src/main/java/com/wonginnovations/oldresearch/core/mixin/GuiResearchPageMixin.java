@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
-import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.api.research.*;
 import thaumcraft.client.gui.GuiResearchPage;
@@ -107,7 +105,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     @Inject(method = "drawRequirements", at = @At("HEAD"), cancellable = true)
     public void drawRequirementsInjection(int x, int mx, int my, ResearchStage stage, CallbackInfo ci) {
         int y = (this.height - this.paneHeight) / 2 - 16 + 210;
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         boolean b = false;
         int shift;
         int ss;
@@ -138,7 +136,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                     s = I18n.format("research." + key + ".text");
                     if (key.startsWith("!")) {
                         String k = key.replaceAll("!", "");
-                        Aspect as = (Aspect)Aspect.aspects.get(k);
+                        Aspect as = Aspect.aspects.get(k);
                         if (as != null) {
                             loc = as;
                             s = as.getName();
@@ -165,30 +163,30 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                         continue;
                     }
 
-                    GL11.glPushMatrix();
-                    GL11.glEnable(3042);
-                    GL11.glBlendFunc(770, 771);
+                    GlStateManager.pushMatrix();
+                    GlStateManager.enableBlend();
+                    GlStateManager.blendFunc(770, 771);
                     if (loc instanceof Aspect) {
                         this.mc.renderEngine.bindTexture(((Aspect)loc).getImage());
                         Color cc = new Color(((Aspect)loc).getColor());
                         GlStateManager.color((float)cc.getRed() / 255.0F, (float)cc.getGreen() / 255.0F, (float)cc.getBlue() / 255.0F, 1.0F);
-                        UtilsFX.drawTexturedQuadFull((float)(x - 15 + shift), (float)y, (double)this.zLevel);
+                        UtilsFX.drawTexturedQuadFull((float)(x - 15 + shift), (float)y, this.zLevel);
                     } else if (loc instanceof ResourceLocation) {
                         this.mc.renderEngine.bindTexture((ResourceLocation)loc);
-                        UtilsFX.drawTexturedQuadFull((float)(x - 15 + shift), (float)y, (double)this.zLevel);
+                        UtilsFX.drawTexturedQuadFull((float)(x - 15 + shift), (float)y, this.zLevel);
                     } else if (loc instanceof ItemStack) {
                         RenderHelper.enableGUIStandardItemLighting();
-                        GL11.glDisable(2896);
-                        GL11.glEnable(32826);
-                        GL11.glEnable(2903);
-                        GL11.glEnable(2896);
+                        GlStateManager.disableLighting();
+                        GlStateManager.enableRescaleNormal();
+                        GlStateManager.enableColorMaterial();
+                        GlStateManager.enableLighting();
                         this.itemRender.renderItemAndEffectIntoGUI(InventoryUtils.cycleItemStack(loc), x - 15 + shift, y);
-                        GL11.glDisable(2896);
-                        GL11.glDepthMask(true);
-                        GL11.glEnable(2929);
+                        GlStateManager.disableLighting();
+                        GlStateManager.depthMask(true);
+                        GlStateManager.enableDepth();
                     }
 
-                    GL11.glPopMatrix();
+                    GlStateManager.popMatrix();
                     if (this.hasResearch[a]) {
                         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                         this.mc.renderEngine.bindTexture(this.tex1);
@@ -309,23 +307,23 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                         s = I18n.format("tc.researchtheory", I18n.format("research." + OldResearchManager.getStrippedKey(key) + ".title"));
                     }
 
-                    GL11.glPushMatrix();
-                    GL11.glEnable(3042);
-                    GL11.glBlendFunc(770, 771);
+                    GlStateManager.pushMatrix();
+                    GlStateManager.enableBlend();
+                    GlStateManager.blendFunc(770, 771);
                     if (loc != null) {
                         RenderHelper.enableGUIStandardItemLighting();
-                        GL11.glDisable(2896);
-                        GL11.glEnable(32826);
-                        GL11.glEnable(2903);
-                        GL11.glEnable(2896);
+                        GlStateManager.disableLighting();
+                        GlStateManager.enableRescaleNormal();
+                        GlStateManager.enableColorMaterial();
+                        GlStateManager.enableLighting();
                         oldresearch$renderedNotes.put(new Point(x - 15 + shift, y), (ItemStack) loc);
                         this.itemRender.renderItemAndEffectIntoGUI(InventoryUtils.cycleItemStack(loc), x - 15 + shift, y);
-                        GL11.glDisable(2896);
-                        GL11.glDepthMask(true);
-                        GL11.glEnable(2929);
+                        GlStateManager.disableLighting();
+                        GlStateManager.depthMask(true);
+                        GlStateManager.enableDepth();
                     }
 
-                    GL11.glPopMatrix();
+                    GlStateManager.popMatrix();
                     if (this.hasResearch[a]) {
                         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                         this.mc.renderEngine.bindTexture(this.tex1);
@@ -373,7 +371,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
             }
         }
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
         ci.cancel();
     }
 
@@ -433,7 +431,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
     @Inject(method = "drawAspectPage", at = @At("HEAD"), cancellable = true)
     public void drawAspectPageInjection(int x, int y, int mx, int my, CallbackInfo ci) {
         if (this.knownPlayerAspects != null && this.knownPlayerAspects.size() > 0) {
-            GL11.glPushMatrix();
+            GlStateManager.pushMatrix();
             int count = -1;
             int start = aspectsPage * 5;
             Aspect[] var9 = this.knownPlayerAspects.getAspectsSortedByAmount();
@@ -451,71 +449,71 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                         int ty = y + count % 5 * 40;
                         if (mx >= x && my >= ty && mx < x + 40 && my < ty + 40) {
                             this.mc.renderEngine.bindTexture(this.tex3);
-                            GL11.glPushMatrix();
+                            GlStateManager.pushMatrix();
                             GlStateManager.enableBlend();
                             GlStateManager.blendFunc(770, 771);
-                            GL11.glTranslated((double)(x - 2), (double)(y + count % 5 * 40 - 2), 0.0);
-                            GL11.glScaled(2.0, 2.0, 0.0);
+                            GlStateManager.translate(x - 2, y + count % 5 * 40 - 2, 0.0);
+                            GlStateManager.scale(2.0, 2.0, 0.0);
                             GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
-                            UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, (double)this.zLevel);
-                            GL11.glPopMatrix();
+                            UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, this.zLevel);
+                            GlStateManager.popMatrix();
                         }
 
-                        GL11.glPushMatrix();
-                        GL11.glTranslated((double)(x + 2), (double)(y + 2 + count % 5 * 40), 0.0);
-                        GL11.glScalef(1.5F, 1.5F, 1.5F);
-                        UtilsFX.drawTag(0, 0, aspect, 0.0F, 0, (double)this.zLevel);
-                        GL11.glPopMatrix();
-                        GL11.glPushMatrix();
-                        GL11.glTranslated((double)(x + 16), (double)(y + 29 + count % 5 * 40), 0.0);
-                        GL11.glScalef(0.5F, 0.5F, 0.5F);
+                        GlStateManager.pushMatrix();
+                        GlStateManager.translate(x + 2, y + 2 + count % 5 * 40, 0.0);
+                        GlStateManager.scale(1.5F, 1.5F, 1.5F);
+                        UtilsFX.drawTag(0, 0, aspect, 0.0F, 0, this.zLevel);
+                        GlStateManager.popMatrix();
+                        GlStateManager.pushMatrix();
+                        GlStateManager.translate(x + 16, y + 29 + count % 5 * 40, 0.0);
+                        GlStateManager.scale(0.5F, 0.5F, 0.5F);
                         String text = aspect.getName();
                         int offset = this.mc.fontRenderer.getStringWidth(text) / 2;
                         this.mc.fontRenderer.drawString(text, -offset, 0, 5263440);
-                        GL11.glPopMatrix();
+                        GlStateManager.popMatrix();
                         if (aspect.getComponents() != null) {
-                            GL11.glPushMatrix();
-                            GL11.glTranslated((double)(x + 60), (double)(y + 4 + count % 5 * 40), 0.0);
-                            GL11.glScalef(1.25F, 1.25F, 1.25F);
+                            GlStateManager.pushMatrix();
+                            GlStateManager.translate(x + 60, y + 4 + count % 5 * 40, 0.0);
+                            GlStateManager.scale(1.25F, 1.25F, 1.25F);
                             if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[0])) {
-                                UtilsFX.drawTag(0, 0, aspect.getComponents()[0], 0.0F, 0, (double)this.zLevel);
+                                UtilsFX.drawTag(0, 0, aspect.getComponents()[0], 0.0F, 0, this.zLevel);
                             } else {
                                 this.mc.renderEngine.bindTexture(this.dummyResearch);
                                 GlStateManager.color(0.8F, 0.8F, 0.8F, 1.0F);
-                                UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, (double)this.zLevel);
+                                UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, this.zLevel);
                             }
 
-                            GL11.glPopMatrix();
-                            GL11.glPushMatrix();
-                            GL11.glTranslated((double)(x + 102), (double)(y + 4 + count % 5 * 40), 0.0);
-                            GL11.glScalef(1.25F, 1.25F, 1.25F);
+                            GlStateManager.popMatrix();
+                            GlStateManager.pushMatrix();
+                            GlStateManager.translate(x + 102, y + 4 + count % 5 * 40, 0.0);
+                            GlStateManager.scale(1.25F, 1.25F, 1.25F);
                             if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[1])) {
-                                UtilsFX.drawTag(0, 0, aspect.getComponents()[1], 0.0F, 0, (double)this.zLevel);
+                                UtilsFX.drawTag(0, 0, aspect.getComponents()[1], 0.0F, 0, this.zLevel);
                             } else {
                                 this.mc.renderEngine.bindTexture(this.dummyResearch);
                                 GlStateManager.color(0.8F, 0.8F, 0.8F, 1.0F);
-                                UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, (double)this.zLevel);
+                                UtilsFX.drawTexturedQuadFull(0.0F, 0.0F, this.zLevel);
                             }
 
-                            GL11.glPopMatrix();
+                            GlStateManager.popMatrix();
                             if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[0])) {
                                 text = aspect.getComponents()[0].getName();
                                 offset = this.mc.fontRenderer.getStringWidth(text) / 2;
-                                GL11.glPushMatrix();
-                                GL11.glTranslated((double)(x + 22 + 50), (double)(y + 29 + count % 5 * 40), 0.0);
-                                GL11.glScalef(0.5F, 0.5F, 0.5F);
+                                GlStateManager.pushMatrix();
+                                GlStateManager.translate(x + 22 + 50, y + 29 + count % 5 * 40, 0.0);
+                                GlStateManager.scale(0.5F, 0.5F, 0.5F);
                                 this.mc.fontRenderer.drawString(text, -offset, 0, 5263440);
-                                GL11.glPopMatrix();
+                                GlStateManager.popMatrix();
                             }
 
                             if (OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.mc.player.getGameProfile().getName(), aspect.getComponents()[1])) {
                                 text = aspect.getComponents()[1].getName();
                                 offset = this.mc.fontRenderer.getStringWidth(text) / 2;
-                                GL11.glPushMatrix();
-                                GL11.glTranslated((double)(x + 22 + 92), (double)(y + 29 + count % 5 * 40), 0.0);
-                                GL11.glScalef(0.5F, 0.5F, 0.5F);
+                                GlStateManager.pushMatrix();
+                                GlStateManager.translate(x + 22 + 92, y + 29 + count % 5 * 40, 0.0);
+                                GlStateManager.scale(0.5F, 0.5F, 0.5F);
                                 this.mc.fontRenderer.drawString(text, -offset, 0, 5263440);
-                                GL11.glPopMatrix();
+                                GlStateManager.popMatrix();
                             }
 
                             this.mc.fontRenderer.drawString("=", x + 9 + 32, y + 12 + count % 5 * 40, 10066329);
@@ -537,7 +535,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                 this.drawTexturedModalRectScaled(x + 144, y + 208, 12, 184, 12, 8, bob);
             }
 
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
         ci.cancel();
     }

@@ -21,6 +21,7 @@ import com.wonginnovations.oldresearch.client.lib.UtilsFX;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +32,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
@@ -91,9 +91,9 @@ public class GuiResearchTable extends GuiContainer {
         Minecraft mc = Minecraft.getMinecraft();
         long time = System.nanoTime() / 1000000L;
         if(PlayerNotifications.getListAndUpdate(time).size() > 0) {
-            GL11.glPushMatrix();
+            GlStateManager.pushMatrix();
             RenderEventHandler.notifyHandler.renderNotifyHUD((double)this.width, (double)this.height, time);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
 
     }
@@ -109,9 +109,9 @@ public class GuiResearchTable extends GuiContainer {
             int var8 = my - (gy + 5);
             if(var7 >= 0 && var8 >= 0 && var7 < 24 && var8 < 24) {
                 RenderHelper.enableGUIStandardItemLighting();
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 String ss = I18n.format("tc.research.copy");
-                GL11.glEnable(3042);
+                GlStateManager.enableBlend();
                 UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
                 this.drawTexturedModalRect(gx + 100, gy + 21, 184, 224, 48, 16);
                 AspectList al = this.note.aspects.copy();
@@ -127,13 +127,13 @@ public class GuiResearchTable extends GuiContainer {
                     ++count;
                 }
 
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 this.fontRenderer.drawStringWithShadow(ss, gx + 100, gy + 12, -1);
             }
         }
 
         RenderHelper.disableStandardItemLighting();
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         if(Mouse.isButtonDown(0)) {
             int sx = gx + 10;
             int sy = gy + 40;
@@ -145,9 +145,9 @@ public class GuiResearchTable extends GuiContainer {
                     this.draggedAspect = aspect;
                 }
             } else if(this.isMouseButtonDown == 1 && this.draggedAspect != null) {
-                GL11.glEnable(3042);
+                GlStateManager.enableBlend();
                 this.drawOrb(mx - 8, my - 8, this.draggedAspect.getColor());
-                GL11.glDisable(3042);
+                GlStateManager.disableBlend();
             }
         } else {
             if(this.isMouseButtonDown == 1 && this.draggedAspect != null) {
@@ -208,8 +208,8 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glEnable(3042);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableBlend();
         UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, 255, 167);
         this.drawTexturedModalRect(this.guiLeft + 40, this.guiTop + 167, 0, 166, 184, 88);
@@ -234,7 +234,7 @@ public class GuiResearchTable extends GuiContainer {
         }
 
         this.drawAspects(this.guiLeft + 10, this.guiTop + 40);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         RenderHelper.disableStandardItemLighting();
         this.drawResearchData(this.guiLeft, this.guiTop, par2, par3);
     }
@@ -295,24 +295,24 @@ public class GuiResearchTable extends GuiContainer {
                     if(var7 >= 0 && var8 >= 0 && var7 < 16 && var8 < 16) {
                         UtilsFX.drawCustomTooltip(this, itemRender, this.fontRenderer, Arrays.asList(aspect.getName(), aspect.getLocalizedDescription()), mx, my - 8, 11);
                         if(RESEARCHEXPERTISE && !aspect.isPrimal()) {
-                            GL11.glPushMatrix();
-                            GL11.glEnable(3042);
-                            GL11.glBlendFunc(770, 771);
+                            GlStateManager.pushMatrix();
+                            GlStateManager.enableBlend();
+                            GlStateManager.blendFunc(770, 771);
                             UtilsFX.bindTexture(new ResourceLocation("thaumcraft", "textures/aspects/_back.png"));
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(mx + 6, my + 6, 0.0D);
-                            GL11.glScaled(1.25D, 1.25D, 0.0D);
+                            GlStateManager.pushMatrix();
+                            GlStateManager.translate(mx + 6, my + 6, 0.0D);
+                            GlStateManager.scale(1.25D, 1.25D, 0.0D);
                             UtilsFX.drawTexturedQuadFull(0, 0, 0.0D);
-                            GL11.glPopMatrix();
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(mx + 24, my + 6, 0.0D);
-                            GL11.glScaled(1.25D, 1.25D, 0.0D);
+                            GlStateManager.popMatrix();
+                            GlStateManager.pushMatrix();
+                            GlStateManager.translate(mx + 24, my + 6, 0.0D);
+                            GlStateManager.scale(1.25D, 1.25D, 0.0D);
                             UtilsFX.drawTexturedQuadFull(0, 0, 0.0D);
-                            GL11.glPopMatrix();
+                            GlStateManager.popMatrix();
                             UtilsFX.drawTag(mx + 26, my + 8, aspect.getComponents()[1], 0.0F, 0, 0.0D);
                             UtilsFX.drawTag(mx + 8, my + 8, aspect.getComponents()[0], 0.0F, 0, 0.0D);
-                            GL11.glDisable(3042);
-                            GL11.glPopMatrix();
+                            GlStateManager.disableBlend();
+                            GlStateManager.popMatrix();
                         }
 
                         return;
@@ -343,20 +343,20 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     private void drawResearchData(int x, int y, int mx, int my) {
-        GL11.glPushMatrix();
-        GL11.glEnable(3042);
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
         this.drawSheet(x, y, mx, my);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     private void drawHex(HexUtils.Hex hex, int x, int y) {
-        GL11.glPushMatrix();
-        GL11.glAlphaFunc(516, 0.003921569F);
-        GL11.glEnable(3042);
+        GlStateManager.pushMatrix();
+        GlStateManager.alphaFunc(516, 0.003921569F);
+        GlStateManager.enableBlend();
         UtilsFX.bindTexture("textures/gui/hex1.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.25F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 0.25F);
         HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
-        GL11.glTranslated((double)x + pix.x, (double)y + pix.y, 0.0D);
+        GlStateManager.translate((double)x + pix.x, (double)y + pix.y, 0.0D);
         Tessellator tessellator = new Tessellator();
         tessellator.startDrawingQuads();
         tessellator.setBrightness(240);
@@ -366,19 +366,19 @@ public class GuiResearchTable extends GuiContainer {
         tessellator.addVertexWithUV(8.0D, -8.0D, this.zLevel, 1.0D, 0.0D);
         tessellator.addVertexWithUV(-8.0D, -8.0D, this.zLevel, 0.0D, 0.0D);
         tessellator.draw();
-        GL11.glAlphaFunc(516, 0.1F);
-        GL11.glPopMatrix();
+        GlStateManager.alphaFunc(516, 0.1F);
+        GlStateManager.popMatrix();
     }
 
     private void drawHexHighlight(HexUtils.Hex hex, int x, int y) {
-        GL11.glPushMatrix();
-        GL11.glAlphaFunc(516, 0.003921569F);
-        GL11.glEnable(3042);
-        GL11.glBlendFunc(770, 1);
+        GlStateManager.pushMatrix();
+        GlStateManager.alphaFunc(516, 0.003921569F);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(770, 1);
         UtilsFX.bindTexture("textures/gui/hex2.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
-        GL11.glTranslated((double)x + pix.x, (double)y + pix.y, 0.0D);
+        GlStateManager.translate((double)x + pix.x, (double)y + pix.y, 0.0D);
         Tessellator tessellator = new Tessellator();
         tessellator.startDrawingQuads();
         tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F);
@@ -387,29 +387,29 @@ public class GuiResearchTable extends GuiContainer {
         tessellator.addVertexWithUV(8.0D, -8.0D, this.zLevel, 1.0D, 0.0D);
         tessellator.addVertexWithUV(-8.0D, -8.0D, this.zLevel, 0.0D, 0.0D);
         tessellator.draw();
-        GL11.glBlendFunc(770, 771);
-        GL11.glAlphaFunc(516, 0.1F);
-        GL11.glPopMatrix();
+        GlStateManager.blendFunc(770, 771);
+        GlStateManager.alphaFunc(516, 0.1F);
+        GlStateManager.popMatrix();
     }
 
     private void drawLine(double x, double y, double x2, double y2) {
         int count = FMLClientHandler.instance().getClient().player.ticksExisted;
         float alpha = 0.3F + MathHelper.sin((float)((double)((float)count) + x)) * 0.3F + 0.3F;
         Tessellator tessellator = new Tessellator();
-        GL11.glPushMatrix();
-        GL11.glLineWidth(3.0F);
-        GL11.glDisable(3553);
-        GL11.glEnable('耺');
-        GL11.glBlendFunc(770, 1);
+        GlStateManager.pushMatrix();
+        GlStateManager.glLineWidth(3.0F);
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.blendFunc(770, 1);
         tessellator.startDrawing(3);
         tessellator.setColorRGBA_F(0.0F, 0.6F, 0.8F, alpha);
         tessellator.addVertex(x, y, 0.0D);
         tessellator.addVertex(x2, y2, 0.0D);
         tessellator.draw();
-        GL11.glBlendFunc(770, 771);
-        GL11.glDisable('耺');
-        GL11.glEnable(3553);
-        GL11.glPopMatrix();
+        GlStateManager.blendFunc(770, 771);
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
     }
 
     private void drawSheet(int x, int y, int mx, int my) {
@@ -470,7 +470,7 @@ public class GuiResearchTable extends GuiContainer {
             }
 
             UtilsFX.bindTexture("textures/gui/hex1.png");
-            GL11.glPushMatrix();
+            GlStateManager.pushMatrix();
             if(!this.note.isComplete()) {
                 for(HexUtils.Hex hex : this.note.hexes.values()) {
                     if(this.note.hexEntries.get(hex.toString()).type != 1) {
@@ -491,14 +491,14 @@ public class GuiResearchTable extends GuiContainer {
                 if(this.note.hexEntries.get(hex.toString()).aspect != null && !OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, this.note.hexEntries.get(hex.toString()).aspect)) {
                     HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
                     UtilsFX.bindTexture(new ResourceLocation("thaumcraft", "textures/aspects/_unknown.png"));
-                    GL11.glPushMatrix();
-                    GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.5F);
-                    GL11.glEnable(3042);
-                    GL11.glBlendFunc(770, 771);
-                    GL11.glTranslated((double)(x + 161) + pix.x, (double)(y + 75) + pix.y, 0.0D);
+                    GlStateManager.pushMatrix();
+                    GlStateManager.color(0.0F, 0.0F, 0.0F, 0.5F);
+                    GlStateManager.enableBlend();
+                    GlStateManager.blendFunc(770, 771);
+                    GlStateManager.translate((double)(x + 161) + pix.x, (double)(y + 75) + pix.y, 0.0D);
                     UtilsFX.drawTexturedQuadFull(0, 0, this.zLevel);
-                    GL11.glDisable(3042);
-                    GL11.glPopMatrix();
+                    GlStateManager.disableBlend();
+                    GlStateManager.popMatrix();
                 } else if(this.note.hexEntries.get(hex.toString()).type != 1 && !this.highlight.contains(hex.toString())) {
                     if(this.note.hexEntries.get(hex.toString()).type == 2) {
                         HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
@@ -510,7 +510,7 @@ public class GuiResearchTable extends GuiContainer {
                 }
             }
 
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         } else {
             this.runes.clear();
         }
@@ -540,12 +540,12 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     private void drawRune(double x, double y, int rune, float alpha) {
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         UtilsFX.bindTexture("textures/misc/script.png");
-        GL11.glColor4f(0.0F, 0.0F, 0.0F, alpha);
-        GL11.glTranslated(x, y, 0.0D);
+        GlStateManager.color(0.0F, 0.0F, 0.0F, alpha);
+        GlStateManager.translate(x, y, 0.0D);
         if(rune < 16) {
-            GL11.glRotatef(90.0F, 0.0F, 0.0F, -1.0F);
+            GlStateManager.rotate(90.0F, 0.0F, 0.0F, -1.0F);
         }
 
         Tessellator tessellator = new Tessellator();
@@ -560,7 +560,7 @@ public class GuiResearchTable extends GuiContainer {
         tessellator.addVertexWithUV(5.0D, -5.0D, this.zLevel, var8, var10);
         tessellator.addVertexWithUV(-5.0D, -5.0D, this.zLevel, var8, var11);
         tessellator.draw();
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     @Override
@@ -723,10 +723,10 @@ public class GuiResearchTable extends GuiContainer {
 //            blue /= 1.8F;
 //        }
 
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         UtilsFX.bindTexture("textures/misc/particles.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glTranslated(x, y, 0.0D);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.translate(x, y, 0.0D);
         Tessellator tessellator = new Tessellator();
         int part = count % 8;
         float var8 = 0.5F + (float)part / 8.0F;
@@ -741,7 +741,7 @@ public class GuiResearchTable extends GuiContainer {
         tessellator.addVertexWithUV(16.0D, 0.0D, this.zLevel, var8, var10);
         tessellator.addVertexWithUV(0.0D, 0.0D, this.zLevel, var8, var11);
         tessellator.draw();
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     private static class Rune {

@@ -139,8 +139,8 @@ public abstract class OldResearchManager {
             ResearchNoteData data = getData(note);
             AspectList aspects = (RESEARCH_ASPECTS.containsKey(key))
                                     ? RESEARCH_ASPECTS.get(key)
-                                    : getRandomAspects(world.rand, complexity, (complexity - 1) * world.rand.nextInt() * 3 + 3);
-            data.generateHexes(world, aspects, complexity);
+                                    : getRandomAspects(world.rand, complexity, complexity + 2);
+            data.generateHexes(world, player, aspects, complexity);
             updateData(note, data);
             if(!player.inventory.addItemStackToInventory(note)) {
                 ForgeHooks.onPlayerTossEvent(player, note, false);

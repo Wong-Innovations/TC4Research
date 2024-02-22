@@ -9,6 +9,7 @@ import com.wonginnovations.oldresearch.common.lib.research.IScanEventHandler;
 import com.wonginnovations.oldresearch.common.lib.research.ScanManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,9 +31,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.internal.CommonInternals;
-import thaumcraft.api.items.ItemsTC;
 import thaumcraft.api.research.ScanningManager;
 import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.client.lib.events.RenderEventHandler;
@@ -74,6 +73,7 @@ public abstract class ItemThaumometerMixin extends Item {
                     this.oldresearch$startScan = null;
                     RayTraceResult rtr = this.getRayTraceResultFromPlayerWild(p.world, (EntityPlayer) p, true);
                     BlockPos bp = (rtr != null)? rtr.getBlockPos() : null;
+                    if (bp != null && p.world.getBlockState(rtr.getBlockPos()).getBlock() != Block.getBlockFromItem(Item.getItemById(scan.id))) return;
                     p.stopActiveHand();
                     p.world.playSound(p.posX, p.posY, p.posZ, SoundsTC.scan, SoundCategory.MASTER, 1F, 1F, false);
                     if(ScanManager.completeScan((EntityPlayer) p, scan, "@")) {
@@ -127,6 +127,15 @@ public abstract class ItemThaumometerMixin extends Item {
         }
 
         ci.cancel();
+    }
+
+    @Inject(method = "getRayTraceResultFromPlayerWild", at = @At("HEAD"), cancellable = true, remap = false)
+    protected void getRTRInjection(World worldIn, EntityPlayer playerIn, boolean useLiquids, CallbackInfoReturnable<RayTraceResult> cir) {
+        float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+        Vec3d vec3d = playerIn.getPositionEyes(partialTicks);
+        Vec3d vec3d1 = playerIn.getLook(partialTicks);
+        Vec3d vec3d2 = vec3d.add(vec3d1.x * 10.0D, vec3d1.y * 10.0D, vec3d1.z * 10.0D);
+        cir.setReturnValue(worldIn.rayTraceBlocks(vec3d, vec3d2, useLiquids, !useLiquids, false));
     }
 
     @Unique

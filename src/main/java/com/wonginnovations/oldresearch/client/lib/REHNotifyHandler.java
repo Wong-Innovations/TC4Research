@@ -7,8 +7,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
-import thaumcraft.client.fx.ParticleEngine;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ public class REHNotifyHandler {
     public void renderNotifyHUD(double sw, double sh, long time) {
         Minecraft mc = Minecraft.getMinecraft();
         GlStateManager.pushMatrix();
-//        GL11.glClear(256);
+        GlStateManager.clear(256);
         GlStateManager.matrixMode(5889);
         GlStateManager.loadIdentity();
         GlStateManager.ortho(0.0D, sw, sh, 0.0D, 1000.0D, 3000.0D);
@@ -39,8 +37,7 @@ public class REHNotifyHandler {
         GlStateManager.disableDepth();
         GlStateManager.depthMask(false);
         GlStateManager.disableAlpha();
-        GlStateManager.glEnableClientState(2881);
-        GL11.glHint(3155, 4354);
+//        GL11.glHint(3155, 4354);
         int k = (int)sw;
         int l = (int)sh;
         ArrayList<PlayerNotifications.Notification> notifications = PlayerNotifications.getListAndUpdate(time);
@@ -76,7 +73,6 @@ public class REHNotifyHandler {
                 GlStateManager.translate((float)(k - 9), (float)(l - entry * 8) + shift - 6.0F, 0.0F);
                 GlStateManager.scale(0.03125F, 0.03125F, 0.03125F);
                 mc.renderEngine.bindTexture(li.image);
-                Tessellator tessellator = Tessellator.instance;
                 Color c = new Color(li.color);
                 GlStateManager.color((float)c.getRed() / 255.0F, (float)c.getGreen() / 255.0F, (float)c.getBlue() / 255.0F, (float)alpha / 511.0F);
                 UtilsFX.drawTexturedQuad(0, 0, 0, 0, 256, 256, -90.0D);
@@ -90,7 +86,7 @@ public class REHNotifyHandler {
                 GlStateManager.translate((float)(k - 5) - 8.0F * scale - (1.0F - scale) * (1.0F - scale) * (1.0F - scale) * (float)size * 3.0F, (float)(l - entry * 8) + shift - 2.0F - 8.0F * scale, 0.0F);
                 GlStateManager.scale(scale, scale, scale);
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F - (float)alpha / 511.0F);
-                UtilsFX.bindTexture(new ResourceLocation("oldresearch", "textures/misc/particles.png"));
+                mc.renderEngine.bindTexture(new ResourceLocation("oldresearch", "textures/misc/particles.png"));
                 int px = 16 * ((mc.player.ticksExisted + entry * 3) % 16);
                 UtilsFX.drawTexturedQuad(0, 0, px, 80, 16, 16, -90 - notifications.size());
                 GlStateManager.popMatrix();
@@ -100,7 +96,6 @@ public class REHNotifyHandler {
         GlStateManager.depthMask(true);
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
-        GlStateManager.glDisableClientState(2881);
         GlStateManager.enableAlpha();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.popMatrix();
@@ -110,7 +105,7 @@ public class REHNotifyHandler {
     public void renderAspectHUD(double sw, double sh, long time) {
         Minecraft mc = Minecraft.getMinecraft();
         GlStateManager.pushMatrix();
-//        GL11.glClear(256);
+        GlStateManager.clear(256);
         GlStateManager.matrixMode(5889);
         GlStateManager.loadIdentity();
         GlStateManager.ortho(0.0D, sw, sh, 0.0D, 1000.0D, 3000.0D);
@@ -120,8 +115,7 @@ public class REHNotifyHandler {
         GlStateManager.disableDepth();
         GlStateManager.depthMask(false);
         GlStateManager.disableAlpha();
-        GlStateManager.glEnableClientState(2881);
-        GL11.glHint(3155, 4354);
+//        GL11.glHint(3155, 4354);
         int k = (int)sw;
         int l = (int)sh;
         float mainAlpha = 0.0F;
@@ -168,7 +162,7 @@ public class REHNotifyHandler {
         if(mainAlpha > 0.0F) {
             try {
                 GlStateManager.pushMatrix();
-                UtilsFX.bindTexture("textures/items/thaumonomicon.png");
+                mc.renderEngine.bindTexture(new ResourceLocation("oldresearch", "textures/items/thaumonomicon.png"));
                 GlStateManager.color(1.0F, 1.0F, 1.0F, mainAlpha);
                 GlStateManager.translate(k - 16, 0.0D, 0.0D);
                 GlStateManager.scale(0.0625D, 0.0625D, 0.0625D);
@@ -180,7 +174,6 @@ public class REHNotifyHandler {
         GlStateManager.depthMask(true);
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
-        GlStateManager.glDisableClientState(2881);
         GlStateManager.enableAlpha();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.popMatrix();

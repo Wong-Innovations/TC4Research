@@ -3,6 +3,8 @@ package com.wonginnovations.oldresearch.common.lib.research;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.wonginnovations.oldresearch.OldResearch;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
@@ -24,7 +26,7 @@ public class ResearchNoteData {
         return this.complete;
     }
 
-    public void generateHexes(World world, AspectList aspects, int complexity) {
+    public void generateHexes(World world, EntityPlayer player, AspectList aspects, int complexity) {
         this.aspects = aspects;
         int radius = 1 + Math.min(3, complexity);
         HashMap<String, HexUtils.Hex> hexLocs = HexUtils.generateHexes(radius);
@@ -44,7 +46,10 @@ public class ResearchNoteData {
         }
 
         if(complexity > 1) {
-            int blanks = complexity * 2;
+            int researchCompleted = OldResearch.proxy.getPlayerKnowledge().getResearchCompleted(player.getGameProfile().getName());
+            int blanks = (researchCompleted % 10 < 2) ? 0
+                            : (researchCompleted % 10 < 5) ? 1 : 2;
+            blanks = blanks * (radius - 3);
             HexUtils.Hex[] temp = hexes.values().toArray(new HexUtils.Hex[0]);
 
             while(blanks > 0) {

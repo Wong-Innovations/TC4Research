@@ -2,15 +2,16 @@
 {
   "modid": "oldresearch",
   "name": "TC4 Research Port",
-  "description": "TC4 Research Port for TC6.",
+  "description": "Thaumcraft 4 research system ported to Thaumcraft 6.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["SumTingWong886"],
   "credits": "Authors of this project",
-  "logoFile": "",
+  "logoFile": "assets/oldresearch/logo.png",
   "screenshots": [],
-  "dependencies": ["thaumcraft"]
+  "dependencies": ["thaumcraft"],
+  "requiredMods": ["thaumcraft"]
 }
 ]

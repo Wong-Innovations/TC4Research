@@ -37,7 +37,7 @@ public class PacketSyncScannedToServer implements IMessage, IMessageHandler<Pack
         buffer.writeInt(this.playerid);
         buffer.writeInt(this.dim);
         buffer.writeInt(this.entityid);
-        buffer.writeLong(this.bp.toLong());
+        buffer.writeLong(this.bp == null? 0L : this.bp.toLong());
     }
 
     public void fromBytes(ByteBuf buffer) {

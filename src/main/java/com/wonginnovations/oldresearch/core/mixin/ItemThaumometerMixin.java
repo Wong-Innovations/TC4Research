@@ -46,9 +46,6 @@ public abstract class ItemThaumometerMixin extends Item {
     ScanResult oldresearch$startScan = null;
 
     @Shadow(remap = false)
-    public abstract void doScan(World worldIn, EntityPlayer playerIn);
-
-    @Shadow(remap = false)
     protected abstract RayTraceResult getRayTraceResultFromPlayerWild(World worldIn, EntityPlayer playerIn, boolean useLiquids);
 
     @Shadow(remap = false)
@@ -75,11 +72,12 @@ public abstract class ItemThaumometerMixin extends Item {
             if(scan != null && scan.equals(this.oldresearch$startScan)) {
                 if(count <= 5) {
                     this.oldresearch$startScan = null;
-                    BlockPos bp = this.getRayTraceResultFromPlayerWild(p.world, (EntityPlayer) p, true).getBlockPos();
+                    RayTraceResult rtr = this.getRayTraceResultFromPlayerWild(p.world, (EntityPlayer) p, true);
+                    BlockPos bp = (rtr != null)? rtr.getBlockPos() : null;
                     p.stopActiveHand();
                     p.world.playSound(p.posX, p.posY, p.posZ, SoundsTC.scan, SoundCategory.MASTER, 1F, 1F, false);
-                    if(ScanManager.completeScan(((EntityPlayer)p), scan, "@")) {
-                        PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(scan, ((EntityPlayer)p), "@"));
+                    if(ScanManager.completeScan((EntityPlayer) p, scan, "@")) {
+                        PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(scan, (EntityPlayer) p, "@"));
                         PacketHandler.INSTANCE.sendToServer(new PacketSyncScannedToServer((EntityPlayer) p, scan.entity, bp));
                     }
                 }

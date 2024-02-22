@@ -14,7 +14,6 @@
     "ThaumcraftCraftingManagerAccessor"
   ],
   "client": [
-    "GuiAccessor",
     "GuiResearchPageMixin",
     "RenderEventHandlerMixin",
     "UtilsFXAccessor"

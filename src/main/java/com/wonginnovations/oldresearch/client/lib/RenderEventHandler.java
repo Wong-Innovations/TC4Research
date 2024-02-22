@@ -36,7 +36,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = Tags.MODID)
+@Mod.EventBusSubscriber(modid = Tags.MODID, value = Side.CLIENT)
 public abstract class RenderEventHandler {
     public static List<Object> blockTags = new ArrayList<>();
     public static float tagscale = 0.0F;

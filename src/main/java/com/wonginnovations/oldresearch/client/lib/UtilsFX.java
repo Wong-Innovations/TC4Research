@@ -1,12 +1,9 @@
 package com.wonginnovations.oldresearch.client.lib;
 
-import com.wonginnovations.oldresearch.core.mixin.GuiAccessor;
 import com.wonginnovations.oldresearch.core.mixin.UtilsFXAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
@@ -32,18 +29,6 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
 
     public static void bindTexture(ResourceLocation rl) {
         Minecraft.getMinecraft().renderEngine.bindTexture(rl);
-    }
-
-    public static int getGuiXSize(GuiContainer gui) {
-        return gui.getXSize();
-    }
-
-    public static int getGuiYSize(GuiContainer gui) {
-        return gui.getYSize();
-    }
-
-    public static float getGuiZLevel(Gui gui) {
-        return ((GuiAccessor) gui).getZLevel();
     }
 
     public static void drawCustomTooltip(GuiScreen gui, RenderItem itemRenderer, FontRenderer fr, List<String> list, int par2, int par3, int subTipColor) {

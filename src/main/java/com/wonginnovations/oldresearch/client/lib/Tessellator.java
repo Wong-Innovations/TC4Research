@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11;
 
 import java.nio.*;
 import java.util.Arrays;
-import java.util.PriorityQueue;
 
 @SideOnly(Side.CLIENT)
 public class Tessellator {
@@ -17,7 +16,6 @@ public class Tessellator {
     public static boolean renderingWorldRenderer;
     public boolean defaultTexture = false;
     private int rawBufferSize = 0;
-    public int textureID = 0;
     private static ByteBuffer byteBuffer;
     private static IntBuffer intBuffer;
     private static FloatBuffer floatBuffer;
@@ -42,8 +40,6 @@ public class Tessellator {
     private int normal;
     public static final Tessellator instance;
     private boolean isDrawing;
-    private int bufferSize;
-    private static final String __OBFID = "CL_00000960";
 
     private Tessellator(int p_i1250_1_) {
     }
@@ -127,46 +123,6 @@ public class Tessellator {
         }
     }
 
-    public TessellatorVertexState getVertexState(float p_147564_1_, float p_147564_2_, float p_147564_3_) {
-        int[] aint = new int[this.rawBufferIndex];
-        PriorityQueue priorityqueue = new PriorityQueue(this.rawBufferIndex, new QuadComparator(this.rawBuffer, p_147564_1_ + (float)this.xOffset, p_147564_2_ + (float)this.yOffset, p_147564_3_ + (float)this.zOffset));
-        byte b0 = 32;
-
-        int i;
-        for(i = 0; i < this.rawBufferIndex; i += b0) {
-            priorityqueue.add(i);
-        }
-
-        for(i = 0; !priorityqueue.isEmpty(); i += b0) {
-            int j = (Integer)priorityqueue.remove();
-
-            for(int k = 0; k < b0; ++k) {
-                aint[i + k] = this.rawBuffer[j + k];
-            }
-        }
-
-        System.arraycopy(aint, 0, this.rawBuffer, 0, aint.length);
-        return new TessellatorVertexState(aint, this.rawBufferIndex, this.vertexCount, this.hasTexture, this.hasBrightness, this.hasNormals, this.hasColor);
-    }
-
-    public void setVertexState(TessellatorVertexState p_147565_1_) {
-        while(p_147565_1_.getRawBuffer().length > this.rawBufferSize && this.rawBufferSize > 0) {
-            this.rawBufferSize <<= 1;
-        }
-
-        if (this.rawBufferSize > this.rawBuffer.length) {
-            this.rawBuffer = new int[this.rawBufferSize];
-        }
-
-        System.arraycopy(p_147565_1_.getRawBuffer(), 0, this.rawBuffer, 0, p_147565_1_.getRawBuffer().length);
-        this.rawBufferIndex = p_147565_1_.getRawBufferIndex();
-        this.vertexCount = p_147565_1_.getVertexCount();
-        this.hasTexture = p_147565_1_.getHasTexture();
-        this.hasBrightness = p_147565_1_.getHasBrightness();
-        this.hasColor = p_147565_1_.getHasColor();
-        this.hasNormals = p_147565_1_.getHasNormals();
-    }
-
     private void reset() {
         this.vertexCount = 0;
         byteBuffer.clear();
@@ -202,10 +158,6 @@ public class Tessellator {
     public void setBrightness(int p_78380_1_) {
         this.hasBrightness = true;
         this.brightness = p_78380_1_;
-    }
-
-    public void setColorOpaque_F(float p_78386_1_, float p_78386_2_, float p_78386_3_) {
-        this.setColorOpaque((int)(p_78386_1_ * 255.0F), (int)(p_78386_2_ * 255.0F), (int)(p_78386_3_ * 255.0F));
     }
 
     public void setColorRGBA_F(float p_78369_1_, float p_78369_2_, float p_78369_3_, float p_78369_4_) {
@@ -260,10 +212,6 @@ public class Tessellator {
 
     }
 
-    public void func_154352_a(byte p_154352_1_, byte p_154352_2_, byte p_154352_3_) {
-        this.setColorOpaque(p_154352_1_ & 255, p_154352_2_ & 255, p_154352_3_ & 255);
-    }
-
     public void addVertexWithUV(double p_78374_1_, double p_78374_3_, double p_78374_5_, double p_78374_7_, double p_78374_9_) {
         this.setTextureUV(p_78374_7_, p_78374_9_);
         this.addVertex(p_78374_1_, p_78374_3_, p_78374_5_);
@@ -298,18 +246,11 @@ public class Tessellator {
             this.rawBuffer[this.rawBufferIndex + 6] = this.normal;
         }
 
-        this.rawBuffer[this.rawBufferIndex + 0] = Float.floatToRawIntBits((float)(p_78377_1_ + this.xOffset));
+        this.rawBuffer[this.rawBufferIndex] = Float.floatToRawIntBits((float)(p_78377_1_ + this.xOffset));
         this.rawBuffer[this.rawBufferIndex + 1] = Float.floatToRawIntBits((float)(p_78377_3_ + this.yOffset));
         this.rawBuffer[this.rawBufferIndex + 2] = Float.floatToRawIntBits((float)(p_78377_5_ + this.zOffset));
         this.rawBufferIndex += 8;
         ++this.vertexCount;
-    }
-
-    public void setColorOpaque_I(int p_78378_1_) {
-        int j = p_78378_1_ >> 16 & 255;
-        int k = p_78378_1_ >> 8 & 255;
-        int l = p_78378_1_ & 255;
-        this.setColorOpaque(j, k, l);
     }
 
     public void setColorRGBA_I(int p_78384_1_, int p_78384_2_) {
@@ -319,28 +260,12 @@ public class Tessellator {
         this.setColorRGBA(k, l, i1, p_78384_2_);
     }
 
-    public void disableColor() {
-        this.isColorDisabled = true;
-    }
-
     public void setNormal(float p_78375_1_, float p_78375_2_, float p_78375_3_) {
         this.hasNormals = true;
         byte b0 = (byte)((int)(p_78375_1_ * 127.0F));
         byte b1 = (byte)((int)(p_78375_2_ * 127.0F));
         byte b2 = (byte)((int)(p_78375_3_ * 127.0F));
         this.normal = b0 & 255 | (b1 & 255) << 8 | (b2 & 255) << 16;
-    }
-
-    public void setTranslation(double p_78373_1_, double p_78373_3_, double p_78373_5_) {
-        this.xOffset = p_78373_1_;
-        this.yOffset = p_78373_3_;
-        this.zOffset = p_78373_5_;
-    }
-
-    public void addTranslation(float p_78372_1_, float p_78372_2_, float p_78372_3_) {
-        this.xOffset += p_78372_1_;
-        this.yOffset += p_78372_2_;
-        this.zOffset += p_78372_3_;
     }
 
     static {

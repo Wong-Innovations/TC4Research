@@ -39,19 +39,19 @@ import thaumcraft.common.items.tools.ItemThaumometer;
 import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.utils.EntityUtils;
 
-@Mixin(value = ItemThaumometer.class, remap = false)
+@Mixin(ItemThaumometer.class)
 public abstract class ItemThaumometerMixin extends Item {
 
     @Unique
     ScanResult oldresearch$startScan = null;
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract void doScan(World worldIn, EntityPlayer playerIn);
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract RayTraceResult getRayTraceResultFromPlayerWild(World worldIn, EntityPlayer playerIn, boolean useLiquids);
 
-    @Shadow
+    @Shadow(remap = false)
     private void updateAura(ItemStack stack, World world, EntityPlayerMP player) {}
 
     @Inject(method = "onItemRightClick", at = @At("HEAD"), cancellable = true)

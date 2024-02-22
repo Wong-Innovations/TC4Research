@@ -18,7 +18,7 @@ import thaumcraft.common.blocks.IBlockFacingHorizontal;
 import thaumcraft.common.blocks.basic.BlockTable;
 import thaumcraft.common.container.InventoryFake;
 
-@Mixin(value = BlockTable.class, remap = false)
+@Mixin(BlockTable.class)
 public abstract class BlockTableMixin {
 
     @Inject(method = "onBlockActivated(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)Z", shift = At.Shift.BY, by = -2), cancellable = true)

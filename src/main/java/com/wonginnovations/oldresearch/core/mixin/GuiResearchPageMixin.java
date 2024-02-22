@@ -34,61 +34,64 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-@Mixin(value = GuiResearchPage.class, remap = false)
+@Mixin(GuiResearchPage.class)
 public abstract class GuiResearchPageMixin extends GuiScreen {
 
-    @Shadow
+    @Shadow(remap = false)
     protected int paneHeight;
-    @Shadow
+    @Shadow(remap = false)
     int hrx;
-    @Shadow
+    @Shadow(remap = false)
     int hry;
-    @Shadow
+    @Shadow(remap = false)
     ResourceLocation tex1;
-    @Shadow
+    @Shadow(remap = false)
     ResourceLocation dummyResearch;
-    @Shadow
+    @Shadow(remap = false)
     ResourceLocation dummyMap;
-    @Shadow
+    @Shadow(remap = false)
     ResourceLocation dummyFlask;
-    @Shadow
+    @Shadow(remap = false)
     ResourceLocation dummyChest;
-    @Shadow
+    @Shadow(remap = false)
     boolean[] hasResearch;
-    @Shadow
+    @Shadow(remap = false)
     boolean[] hasItem;
-    @Shadow
+    @Shadow(remap = false)
     boolean[] hasCraft;
-    @Shadow
+    @Shadow(remap = false)
     boolean hasAllRequisites;
-    @Shadow
+    @Shadow(remap = false)
     boolean hold;
-    @Shadow
+    @Shadow(remap = false)
     AspectList knownPlayerAspects;
-    @Shadow
+    @Shadow(remap = false)
     private int maxAspectPages;
-    @Shadow
+    @Shadow(remap = false)
     private static int aspectsPage;
-    @Shadow
+    @Shadow(remap = false)
     ResourceLocation tex3;
-    @Shadow
+    @Shadow(remap = false)
     static ResourceLocation shownRecipe;
-    @Shadow
+    @Shadow(remap = false)
     boolean allowWithPagePopup;
 
-    @Shadow
+    @Shadow(remap = false)
     abstract boolean mouseInside(int x, int y, int w, int h, int mx, int my);
-    @Shadow
+    @Shadow(remap = false)
     abstract void drawPopupAt(int x, int y, int mx, int my, String text);
-    @Shadow
+    @Shadow(remap = false)
     abstract void drawStackAt(ItemStack itemstack, int x, int y, int mx, int my, boolean clickthrough);
-    @Shadow
+    @Shadow(remap = false)
     public abstract void drawTexturedModalRectScaled(int par1, int par2, int par3, int par4, int par5, int par6, float scale);
 
-    @Shadow private boolean isComplete;
+    @Shadow(remap = false)
+    boolean isComplete;
 
-    @Shadow private IPlayerKnowledge playerKnowledge;
-    @Shadow private List tipText;
+    @Shadow(remap = false)
+    IPlayerKnowledge playerKnowledge;
+    @Shadow(remap = false)
+    List tipText;
     @Unique
     private final Map<Point, ItemStack> oldresearch$renderedNotes = new HashMap<>();
 
@@ -102,7 +105,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
         }
     }
 
-    @Inject(method = "drawRequirements", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawRequirements", at = @At("HEAD"), cancellable = true, remap = false)
     public void drawRequirementsInjection(int x, int mx, int my, ResearchStage stage, CallbackInfo ci) {
         int y = (this.height - this.paneHeight) / 2 - 16 + 210;
         GlStateManager.pushMatrix();
@@ -377,7 +380,8 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
 
     @Redirect(
         method = "parsePages",
-        at = @At(value = "INVOKE", target = "Lthaumcraft/api/research/ResearchStage;getKnow()[Lthaumcraft/api/research/ResearchStage$Knowledge;")
+        at = @At(value = "INVOKE", target = "Lthaumcraft/api/research/ResearchStage;getKnow()[Lthaumcraft/api/research/ResearchStage$Knowledge;"),
+        remap = false
     )
     public ResearchStage.Knowledge[] parsePagesGetKnow(ResearchStage instance) {
         if (instance.getCraft() == null && instance.getObtain() == null && instance.getResearch() == null) {
@@ -428,7 +432,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
         this.maxAspectPages = this.knownPlayerAspects != null ? MathHelper.ceil((float)this.knownPlayerAspects.size() / 5.0F) : 0;
     }
 
-    @Inject(method = "drawAspectPage", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawAspectPage", at = @At("HEAD"), cancellable = true, remap = false)
     public void drawAspectPageInjection(int x, int y, int mx, int my, CallbackInfo ci) {
         if (this.knownPlayerAspects != null && this.knownPlayerAspects.size() > 0) {
             GlStateManager.pushMatrix();
@@ -540,7 +544,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
         ci.cancel();
     }
 
-    @Redirect(method = "drawPage", at = @At(value = "INVOKE", target = "Lthaumcraft/api/capabilities/IPlayerKnowledge;isResearchComplete(Ljava/lang/String;)Z"))
+    @Redirect(method = "drawPage", at = @At(value = "INVOKE", target = "Lthaumcraft/api/capabilities/IPlayerKnowledge;isResearchComplete(Ljava/lang/String;)Z", remap = false), remap = false)
     public boolean drawPageInjection(IPlayerKnowledge instance, String s) {
         return !"KNOWLEDGETYPES".equals(s) && instance.isResearchComplete(s);
     }

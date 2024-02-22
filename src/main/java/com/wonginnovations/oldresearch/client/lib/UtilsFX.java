@@ -13,6 +13,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.config.ModConfig;
 
@@ -197,9 +198,9 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
 
     public static void drawTag(double x, double y, Aspect aspect, float amount, int bonus, double z, int blend, float alpha, boolean bw) {
         if (aspect != null) {
-            boolean blendon = GlStateManager.blendState.blend.currentState;
+            boolean blendon = GL11.glIsEnabled(3042);
             Minecraft mc = Minecraft.getMinecraft();
-            boolean isLightingEnabled = GlStateManager.lightingState.currentState;
+            boolean isLightingEnabled = GL11.glIsEnabled(2896);
             Color color = new Color(aspect.getColor());
             GlStateManager.pushMatrix();
             GlStateManager.disableLighting();

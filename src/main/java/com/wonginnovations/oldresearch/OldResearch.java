@@ -2,7 +2,6 @@ package com.wonginnovations.oldresearch;
 
 import com.wonginnovations.oldresearch.api.registration.IModelRegister;
 import com.wonginnovations.oldresearch.client.ResearchNoteColorHandler;
-import com.wonginnovations.oldresearch.client.lib.RenderEventHandler;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.proxy.Proxy;
 import net.minecraft.item.Item;

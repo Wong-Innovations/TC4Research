@@ -12,7 +12,7 @@ import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.common.lib.CommandThaumcraft;
 
 @Mixin(value = CommandThaumcraft.class, remap = false)
-public class CommandThaumcraftMixin {
+public abstract class CommandThaumcraftMixin {
 
     @Inject(method = "revokeResearch", at = @At("HEAD"), cancellable = true)
     public void revokeResearchInjection(ICommandSender icommandsender, EntityPlayerMP player, String research, CallbackInfo ci) {

@@ -20,35 +20,14 @@ import java.util.Iterator;
 
 public class ResearchTableData {
     public EntityPlayer researcher = null;
-//    public NonNullList<ItemStack> contents = NonNullList.withSize(2, ItemStack.EMPTY);
     public AspectList bonusAspects = new AspectList();
-
     public ResearchNoteData note = null;
-
-    public ResearchTableData() {
-    }
-
-    public ResearchTableData(EntityPlayer player2) {
-        this.researcher = player2;
-    }
 
     public NBTTagCompound serialize() {
         NBTTagCompound nbt = new NBTTagCompound();
         if (this.researcher != null) {
             nbt.setString("player", this.researcher.getName());
         }
-
-//        NBTTagList savedTag = new NBTTagList();
-//
-//        for (ItemStack stack : this.contents) {
-//            if (stack != null) {
-//                NBTTagCompound tc = new NBTTagCompound();
-//                tc.setTag("item", stack.serializeNBT());
-//                savedTag.appendTag(tc);
-//            }
-//        }
-//
-//        nbt.setTag("contents", savedTag);
 
         NBTTagList savedTag = new NBTTagList();
         Aspect[] list = this.bonusAspects.getAspects();
@@ -71,13 +50,6 @@ public class ResearchTableData {
             if (nbt.hasKey("player")) {
                 this.researcher = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getPlayerEntityByName(nbt.getString("player"));// nbt.getString("player"); // get EntityPlayer from name somehow
             }
-
-//            NBTTagList list = nbt.getTagList("contents", 9);
-//            for (int i = 0; i < list.tagCount(); i++) {
-//                NBTTagCompound tc = list.getCompoundTagAt(i);
-//                ItemStack stack = new ItemStack(tc.getCompoundTag("item"));
-//                this.contents.add(stack);
-//            }
 
             NBTTagList list = nbt.getTagList("aspects", 10);
             for (int i = 0; i < list.tagCount(); i++) {

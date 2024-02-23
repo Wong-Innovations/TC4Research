@@ -30,6 +30,7 @@ import com.wonginnovations.oldresearch.api.OldResearchApi;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.common.golems.EntityThaumcraftGolem;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 
@@ -520,6 +521,7 @@ public class ScanManager implements IScanEventHandler {
                 EntityItem item = (EntityItem)scan.entity;
                 ItemStack t = item.getItem().copy();
                 t.setCount(1);
+//                if (CommonInternals.objectTags.containsKey())
                 if(OldResearchApi.groupedObjectTags.containsKey(Arrays.asList(t.getItem(), t.getItemDamage()))) {
                     t.setItemDamage(((int[])OldResearchApi.groupedObjectTags.get(Arrays.asList(t.getItem(), t.getItemDamage())))[0]);
                 }

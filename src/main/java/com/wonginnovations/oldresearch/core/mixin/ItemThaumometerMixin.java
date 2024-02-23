@@ -12,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -73,13 +74,22 @@ public abstract class ItemThaumometerMixin extends Item {
                     this.oldresearch$startScan = null;
                     RayTraceResult rtr = this.getRayTraceResultFromPlayerWild(p.world, (EntityPlayer) p, true);
                     BlockPos bp = (rtr != null)? rtr.getBlockPos() : null;
-                    if (bp != null && p.world.getBlockState(rtr.getBlockPos()).getBlock() != Block.getBlockFromItem(Item.getItemById(scan.id))) return;
                     p.stopActiveHand();
                     p.world.playSound(p.posX, p.posY, p.posZ, SoundsTC.scan, SoundCategory.MASTER, 1F, 1F, false);
-                    if(ScanManager.completeScan((EntityPlayer) p, scan, "@")) {
-                        PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(scan, (EntityPlayer) p, "@"));
-                        PacketHandler.INSTANCE.sendToServer(new PacketSyncScannedToServer((EntityPlayer) p, scan.entity, bp));
+                    if (scan.entity instanceof EntityItem) {
+                        Entity e = scan.entity;
+                        scan.entity = null;
+                        if (ScanManager.completeScan((EntityPlayer) p, scan, "@")) {
+                            PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(scan, (EntityPlayer) p, "@"));
+                            PacketHandler.INSTANCE.sendToServer(new PacketSyncScannedToServer((EntityPlayer) p, e, bp));
+                        }
+                    } else if (bp != null && p.world.getBlockState(rtr.getBlockPos()).getBlock() == Block.getBlockFromItem(Item.getItemById(scan.id))) {
+                        if(ScanManager.completeScan((EntityPlayer) p, scan, "@")) {
+                            PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(scan, (EntityPlayer) p, "@"));
+                            PacketHandler.INSTANCE.sendToServer(new PacketSyncScannedToServer((EntityPlayer) p, scan.entity, bp));
+                        }
                     }
+                    return;
                 }
 
                 if(count % 2 == 0) {
@@ -140,15 +150,16 @@ public abstract class ItemThaumometerMixin extends Item {
 
     @Unique
     private ScanResult oldresearch$doScan(ItemStack stack, World world, EntityPlayer p) {
+        ScanResult sr = null;
         Entity pointedEntity = EntityUtils.getPointedEntity(world, p, 0.5D, 10.0D, 0.0F, true);
         if(pointedEntity != null) {
-            ScanResult sr = new ScanResult((byte)2, 0, 0, pointedEntity, "");
-            if(ScanManager.isValidScanTarget(p, sr, "@")) {
-//                Thaumcraft.proxy.blockRunes(world, pointedEntity.posX - 0.5D, pointedEntity.posY + (double)(pointedEntity.getEyeHeight() / 2.0F), pointedEntity.posZ - 0.5D, 0.3F + world.rand.nextFloat() * 0.7F, 0.0F, 0.3F + world.rand.nextFloat() * 0.7F, (int)(pointedEntity.height * 15.0F), 0.03F);
-                return sr;
+            if (pointedEntity instanceof EntityItem) {
+                ItemStack s = ((EntityItem) pointedEntity).getItem();
+                sr = new ScanResult((byte) 1, Item.getIdFromItem(s.getItem()), s.getItemDamage(), pointedEntity, "");
             } else {
-                return null;
+                sr = new ScanResult((byte) 2, 0, 0, pointedEntity, "");
             }
+            if (!ScanManager.isValidScanTarget(p, sr, "@")) return null;
         } else {
             RayTraceResult mop = this.getRayTraceResultFromPlayerWild(world, p, true);
             if(mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK) {
@@ -168,7 +179,6 @@ public abstract class ItemThaumometerMixin extends Item {
                 if(bi != Blocks.AIR) {
                     int md = bi.getMetaFromState(bs);
                     ItemStack is = bi.getPickBlock(bs, mop, world, mop.getBlockPos(), p);
-                    ScanResult sr = null;
 
                     try {
                         if(is.isEmpty()) {
@@ -181,11 +191,10 @@ public abstract class ItemThaumometerMixin extends Item {
                     } catch (Exception ignored) {}
 
                     if(ScanningManager.isThingStillScannable(p, is)) {
-//                        Thaumcraft.proxy.blockRunes(world, (double)mop.blockX, (double)mop.blockY + 0.25D, (double)mop.blockZ, 0.3F + world.rand.nextFloat() * 0.7F, 0.0F, 0.3F + world.rand.nextFloat() * 0.7F, 15, 0.03F);
                         return sr;
+                    } else {
+                        return null;
                     }
-
-                    return null;
                 }
             }
 
@@ -198,6 +207,8 @@ public abstract class ItemThaumometerMixin extends Item {
 
             return null;
         }
+
+        return sr;
     }
 
 }

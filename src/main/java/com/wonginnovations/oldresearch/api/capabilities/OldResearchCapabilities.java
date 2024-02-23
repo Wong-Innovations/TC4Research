@@ -11,9 +11,6 @@ public class OldResearchCapabilities {
     @CapabilityInject(IPlayerAspects.class)
     public static final Capability<IPlayerAspects> ASPECTS = null;
 
-    public OldResearchCapabilities() {
-    }
-
     public static IPlayerAspects getPlayerAspects(@Nonnull EntityPlayer player) {
         return (ASPECTS != null)? player.getCapability(ASPECTS, null) : null;
     }

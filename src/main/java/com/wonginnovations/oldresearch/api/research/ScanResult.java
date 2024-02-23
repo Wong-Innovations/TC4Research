@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class ScanResult {
-    public byte type = 0;
+    public byte type;
     public int id;
     public int meta;
     public Entity entity;

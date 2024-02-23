@@ -12,7 +12,6 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.lib.network.PacketHandler;
-import thaumcraft.common.lib.network.playerdata.PacketSyncKnowledge;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,11 +19,8 @@ import java.util.HashMap;
 
 public class PlayerAspects {
 
-    public PlayerAspects() {
-    }
-
     public static void preInit() {
-        CapabilityManager.INSTANCE.register(IPlayerAspects.class, new Capability.IStorage<IPlayerAspects>() {
+        CapabilityManager.INSTANCE.register(IPlayerAspects.class, new Capability.IStorage<>() {
             @Nullable
             @Override
             public NBTTagCompound writeNBT(Capability<IPlayerAspects> capability, IPlayerAspects instance, EnumFacing side) {
@@ -41,9 +37,6 @@ public class PlayerAspects {
     public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
         public static final ResourceLocation NAME = new ResourceLocation("oldresearch", "aspects");
         private final PlayerAspects.DefaultImpl aspects = new PlayerAspects.DefaultImpl();
-
-        public Provider() {
-        }
 
         public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
             return capability == OldResearchCapabilities.ASPECTS;

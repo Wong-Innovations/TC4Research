@@ -177,7 +177,8 @@ public abstract class OldResearchManager {
     }
 
     public static String getStrippedKey(ItemStack stack) {
-        return getStrippedKey(getData(stack).key);
+        ResearchNoteData data = getData(stack);
+        return (data != null)? getStrippedKey(data.key) : null;
     }
 
     public static String getStrippedKey(String key) {

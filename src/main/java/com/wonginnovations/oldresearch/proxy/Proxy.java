@@ -1,7 +1,6 @@
 package com.wonginnovations.oldresearch.proxy;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.api.capabilities.PlayerAspects;
 import com.wonginnovations.oldresearch.common.blocks.ModBlocks;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
@@ -24,7 +23,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.blocks.BlocksTC;
-import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.api.research.ResearchCategories;
 
 import java.util.ArrayList;
@@ -82,7 +80,6 @@ public class Proxy implements IGuiHandler {
         OldResearchManager.patchResearch();
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.RESEARCHTABLE, 1, 32767), new AspectList(new ItemStack(BlocksTC.researchTable)));
         OldResearchManager.computeAspectComplexity();
-        this.syncAspects();
     }
 
     public void registerDisplayInformation() {
@@ -106,16 +103,6 @@ public class Proxy implements IGuiHandler {
 
     public World getClientWorld() {
         return null;
-    }
-
-    private void syncAspects() {
-        CommonInternals.scanEntities.forEach(tag -> {
-            OldResearchApi.EntityTagsNBT[] nbts = new OldResearchApi.EntityTagsNBT[tag.nbts.length];
-            for (int i = 0; i < tag.nbts.length; i++) {
-                nbts[i] = new OldResearchApi.EntityTagsNBT(tag.nbts[i].name, tag.nbts[i].value);
-            }
-            OldResearchApi.registerEntityTag(tag.entityName, tag.aspects, nbts);
-        });
     }
 
 }

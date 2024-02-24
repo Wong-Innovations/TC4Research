@@ -15,8 +15,7 @@ import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.lib.utils.InventoryUtils;
 
 public class BlockTCTile extends BlockTC implements ITileEntityProvider {
-    protected final Class tileClass;
-    protected static boolean keepInventory = false;
+    protected final Class<?> tileClass;
     protected static boolean spillEssentia = true;
 
     public BlockTCTile(Material mat, Class tc, String name) {

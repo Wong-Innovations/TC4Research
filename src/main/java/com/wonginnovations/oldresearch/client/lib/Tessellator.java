@@ -164,10 +164,6 @@ public class Tessellator {
         this.setColorRGBA((int)(p_78369_1_ * 255.0F), (int)(p_78369_2_ * 255.0F), (int)(p_78369_3_ * 255.0F), (int)(p_78369_4_ * 255.0F));
     }
 
-    public void setColorOpaque(int p_78376_1_, int p_78376_2_, int p_78376_3_) {
-        this.setColorRGBA(p_78376_1_, p_78376_2_, p_78376_3_, 255);
-    }
-
     public void setColorRGBA(int red, int green, int blue, int alpha) {
         if (!this.isColorDisabled) {
             if (red > 255) {

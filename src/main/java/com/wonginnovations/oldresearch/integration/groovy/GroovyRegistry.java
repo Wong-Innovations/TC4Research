@@ -4,7 +4,6 @@ import com.cleanroommc.groovyscript.api.GroovyBlacklist;
 import com.cleanroommc.groovyscript.compat.mods.thaumcraft.aspect.AspectStack;
 import com.cleanroommc.groovyscript.registry.VirtualizedRegistry;
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.common.lib.research.DefaultResearchComplexity;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import groovy.lang.Closure;
@@ -24,7 +23,6 @@ public class GroovyRegistry extends VirtualizedRegistry<Boolean> {
     @GroovyBlacklist
     public void afterScriptLoad() {
         OldResearchManager.ASPECT_COMPLEXITY.clear();
-        OldResearchApi.scanEntities.clear();
         OldResearch.proxy.postInit(null);
     }
 

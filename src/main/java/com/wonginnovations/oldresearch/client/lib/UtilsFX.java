@@ -87,25 +87,6 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
         GlStateManager.enableDepth();
     }
 
-    public static void renderAnimatedQuadStrip(float scale, float alpha, int frames, int strip, int cframe, float partialTicks, int color) {
-        if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
-            Tessellator tessellator = Tessellator.instance;
-            tessellator.startDrawingQuads();
-            tessellator.setBrightness(220);
-            tessellator.setColorRGBA_I(color, (int)(alpha * 255.0F));
-            float f2 = (float)cframe / (float)frames;
-            float f3 = (float)(cframe + 1) / (float)frames;
-            float f4 = (float)strip / (float)frames;
-            float f5 = (float)(strip + 1) / (float)frames;
-            tessellator.setNormal(0.0F, 0.0F, -1.0F);
-            tessellator.addVertexWithUV(-0.5D * (double)scale, 0.5D * (double)scale, 0.0D, f2, f5);
-            tessellator.addVertexWithUV(0.5D * (double)scale, 0.5D * (double)scale, 0.0D, f3, f5);
-            tessellator.addVertexWithUV(0.5D * (double)scale, -0.5D * (double)scale, 0.0D, f3, f4);
-            tessellator.addVertexWithUV(-0.5D * (double)scale, -0.5D * (double)scale, 0.0D, f2, f4);
-            tessellator.draw();
-        }
-    }
-
     public static void renderQuadCenteredFromTexture(String texture, float scale, float red, float green, float blue, int brightness, int blend, float opacity) {
         bindTexture(texture);
         renderQuadCenteredFromTexture(scale, red, green, blue, brightness, blend, opacity);
@@ -186,10 +167,6 @@ public class UtilsFX extends thaumcraft.client.lib.UtilsFX {
 
     public static void drawTag(int x, int y, Aspect aspect, float amt, int bonus, double z) {
         drawTag(x, y, aspect, amt, bonus, z, 771, 1.0F, false);
-    }
-
-    public static void drawTag(int x, int y, Aspect aspect) {
-        drawTag(x, y, aspect, 0.0F, 0, 0.0, 771, 1.0F, true);
     }
 
     public static void drawTag(int x, int y, Aspect aspect, float amount, int bonus, double z, int blend, float alpha, boolean bw) {

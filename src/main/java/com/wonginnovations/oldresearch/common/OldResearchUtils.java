@@ -67,42 +67,4 @@ public class OldResearchUtils {
         return false;
     }
 
-    public static float sqrt_double(double val) {
-        return (float)Math.sqrt(val);
-    }
-
-    public static int floor_double(double val) {
-        int i = (int)val;
-        return val < (double)i ? i - 1 : i;
-    }
-
-    public static Object getNBTDataFromId(NBTTagCompound nbt, byte id, String key) {
-        switch(id) {
-            case 1:
-                return nbt.getByte(key);
-            case 2:
-                return nbt.getShort(key);
-            case 3:
-                return nbt.getInteger(key);
-            case 4:
-                return nbt.getLong(key);
-            case 5:
-                return nbt.getFloat(key);
-            case 6:
-                return nbt.getDouble(key);
-            case 7:
-                return nbt.getByteArray(key);
-            case 8:
-                return nbt.getString(key);
-            case 9:
-                return nbt.getTagList(key, 10);
-            case 10:
-                return nbt.getTag(key);
-            case 11:
-                return nbt.getIntArray(key);
-            default:
-                return null;
-        }
-    }
-
 }

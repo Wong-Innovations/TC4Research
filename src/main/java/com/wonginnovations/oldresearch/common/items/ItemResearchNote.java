@@ -2,7 +2,6 @@ package com.wonginnovations.oldresearch.common.items;
 
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.Tags;
-import com.wonginnovations.oldresearch.api.OldResearchApi;
 import com.wonginnovations.oldresearch.api.registration.IModelRegister;
 import com.wonginnovations.oldresearch.client.gui.ResearchNoteToast;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
@@ -24,6 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.research.ResearchCategories;
+import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.research.ResearchManager;
 
@@ -82,19 +82,20 @@ public class ItemResearchNote extends Item implements IModelRegister {
         }
 
         ResearchNoteData rd = OldResearchManager.getData(stack);
-        if(rd != null && rd.key != null && ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)) != null) {
-            tooltip.add(TextFormatting.GOLD + ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)).getLocalizedName());
-            int warp = OldResearchApi.getWarp(rd.key);
-            if(warp > 0) {
-                if(warp > 5) {
-                    warp = 5;
-                }
-
-                String ws = I18n.format("tc.forbidden");
-                String wr = I18n.format("tc.forbidden.level." + warp);
-                String wte = ws.replaceAll("%n", wr);
-                tooltip.add(TextFormatting.DARK_PURPLE + wte);
-            }
+        ResearchEntry re = ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack));
+        if(rd != null && rd.key != null && re != null) {
+            tooltip.add(TextFormatting.GOLD + re.getLocalizedName());
+//            int warp = OldResearchApi.getWarp(rd.key);
+//            if(warp > 0) {
+//                if(warp > 5) {
+//                    warp = 5;
+//                }
+//
+//                String ws = I18n.format("tc.forbidden");
+//                String wr = I18n.format("tc.forbidden.level." + warp);
+//                String wte = ws.replaceAll("%n", wr);
+//                tooltip.add(TextFormatting.DARK_PURPLE + wte);
+//            }
         }
 
     }

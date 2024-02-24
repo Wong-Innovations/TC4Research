@@ -5,12 +5,11 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "AspectEventProxyMixin",
-    "BlockResearchTableMixin",
     "BlockTableMixin",
     "CommandThaumcraftMixin",
     "ItemThaumometerMixin",
     "ResearchManagerAccessor",
+    "ScanGenericMixin",
     "ThaumcraftCraftingManagerAccessor"
   ],
   "client": [

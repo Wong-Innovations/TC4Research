@@ -2,6 +2,7 @@ package com.wonginnovations.oldresearch.client.lib;
 
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.Tags;
+import com.wonginnovations.oldresearch.common.lib.research.ScanManager;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -66,8 +67,7 @@ public abstract class RenderEventHandler {
                 && (event.getPlayer().getHeldItemMainhand().getItem() == ItemsTC.thaumometer
                     || event.getPlayer().getHeldItemOffhand().getItem() == ItemsTC.thaumometer)
                 && !ScanningManager.isThingStillScannable(event.getPlayer(), target.getBlockPos())) {
-            IBlockState bs = event.getPlayer().world.getBlockState(target.getBlockPos());
-            AspectList ot = CommonInternals.objectTags.get(CommonInternals.generateUniqueItemstackId(new ItemStack(bs.getBlock())));
+            AspectList ot = ScanManager.getScanAspects(event.getPlayer(), target.getBlockPos());
             boolean spaceAbove = event.getPlayer().world.isAirBlock(target.getBlockPos().up());
             EnumFacing dir = spaceAbove ? EnumFacing.UP : target.sideHit;
             if(tagscale < 0.5F) {

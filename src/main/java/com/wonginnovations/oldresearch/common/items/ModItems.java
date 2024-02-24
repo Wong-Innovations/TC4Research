@@ -1,6 +1,5 @@
 package com.wonginnovations.oldresearch.common.items;
 
-import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.Tags;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;

@@ -49,13 +49,18 @@ public class ItemResearchNote extends Item implements IModelRegister {
                 OldResearch.proxy.getPlayerKnowledge().incrementResearchCompleted(player.getGameProfile().getName());
                 ResearchManager.progressResearch(player, OldResearchManager.getData(stack).key);
             } else {
-                Minecraft.getMinecraft().getToastGui().add(new ResearchNoteToast(ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack))));
+                displayToast(ResearchCategories.getResearch(OldResearchManager.getStrippedKey(stack)));
                 world.playSound(player.posX, player.posY, player.posZ, SoundsTC.learn, SoundCategory.MASTER, 0.75F, 1.0F, false);
             }
             stack = ItemStack.EMPTY;
         }
 
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void displayToast(ResearchEntry entry) {
+        Minecraft.getMinecraft().getToastGui().add(new ResearchNoteToast(entry));
     }
 
     @SideOnly(Side.CLIENT)
@@ -70,11 +75,13 @@ public class ItemResearchNote extends Item implements IModelRegister {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public @NotNull String getItemStackDisplayName(ItemStack itemstack) {
         return itemstack.getItemDamage() < 64 ? I18n.format("item.researchnote.name") : I18n.format("item.discovery.name");
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World worldIn, @NotNull List<String> tooltip, @NotNull ITooltipFlag flagIn) {
         if(stack.getItemDamage() == 24 || stack.getItemDamage() == 42) {
             tooltip.add(TextFormatting.GOLD + I18n.format("item.researchnote.unknown.1"));

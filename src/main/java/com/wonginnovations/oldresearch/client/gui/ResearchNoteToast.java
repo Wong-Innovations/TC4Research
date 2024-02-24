@@ -11,10 +11,13 @@ import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
 import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.client.gui.GuiResearchBrowser;
 
+@SideOnly(Side.CLIENT)
 public class ResearchNoteToast implements IToast {
     ResearchEntry entry;
     private long firstDrawTime;

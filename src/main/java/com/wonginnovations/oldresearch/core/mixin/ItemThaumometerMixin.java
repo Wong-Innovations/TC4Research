@@ -117,6 +117,7 @@ public abstract class ItemThaumometerMixin extends Item {
                     ScanningManager.scanTheThing(playerIn, mop.getBlockPos());
                 } else {
                     // don't prevaildate this scan so things like the sky can still be scanned
+                    // wait that isn't needed sky is for celestial events, idk tbh
                     // Hopefully this won't cause bugs D:
                     ScanningManager.scanTheThing(playerIn, null);
                 }

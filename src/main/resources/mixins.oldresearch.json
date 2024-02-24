@@ -10,7 +10,8 @@
     "ItemThaumometerMixin",
     "ResearchManagerAccessor",
     "ScanGenericMixin",
-    "ThaumcraftCraftingManagerAccessor"
+    "ThaumcraftCraftingManagerAccessor",
+    "vanilla.EntityLivingBaseMixin"
   ],
   "client": [
     "GuiResearchPageMixin",

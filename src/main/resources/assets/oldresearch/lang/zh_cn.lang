@@ -4,13 +4,21 @@ item.researchnote.unknown.1=未知知识
 item.researchnote.unknown.2=<右击以揭晓> 
 item.discovery.name=§5发现
 #
+tc.research.copy=复制此项研究需耗费:
+tc.research.copy.failure=没有足够的 %s 来复制研究。
 researchnote.complete=研究笔记已完成！
 researchnote.click=§o§7点击以研究
+researchnote.missing.tools=你需要笔与墨才能获取研究笔记.
+researchnote.missing.paper=你需要纸张才能获取研究笔记.
 tc.addaspectdiscovery=您已发现%s!
 tc.addaspectpool=取得%s研究点:%s
 tc.discoveryerror=要窥破个中真谛你需要研究%1$s.
 tc.unknownobject=您一无所获。
 tc.researchtheory=%s理论
+#
+tc.inventoryscan.scanning=扫描中
+tc.inventoryscan.tooltip=可在物品栏中扫描
+tc.inventoryscan.tooltip.more=将\n魔导透镜 悬停在物品上进行扫描。
 #
 tc.forbidden=§l§5禁忌知识(%n)§0
 tc.forbidden.level.1=近乎无害

@@ -5,6 +5,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import thaumcraft.api.items.ItemsTC;
 
 public class OldResearchUtils {
 
@@ -65,6 +66,10 @@ public class OldResearchUtils {
         }
 
         return false;
+    }
+
+    public static boolean isThaumometer(ItemStack stack) {
+        return stack.getItem() == ItemsTC.thaumometer;
     }
 
 }

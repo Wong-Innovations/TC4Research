@@ -17,4 +17,6 @@ public class ModConfig {
 
     public static boolean instantScans = false;
 
+    public static boolean inventoryScanning = true;
+
 }

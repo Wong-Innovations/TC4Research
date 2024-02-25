@@ -12,6 +12,10 @@ tc.discoveryerror=To understand this you need to study %s.
 tc.unknownobject=Nothing can be learned from this.
 tc.researchtheory=%s Theory
 #
+tc.inventoryscan.scanning=Scanning
+tc.inventoryscan.tooltip=Inventory Scanning available
+tc.inventoryscan.tooltip.more=Hover over items with the\nThaumometer to scan.
+#
 tc.forbidden=§l§5Forbidden knowledge (%n)§0
 tc.forbidden.level.1=Mostly Harmless
 tc.forbidden.level.2=Minor

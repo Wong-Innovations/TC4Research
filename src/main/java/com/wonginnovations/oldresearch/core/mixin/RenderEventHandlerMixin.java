@@ -1,10 +1,12 @@
 package com.wonginnovations.oldresearch.core.mixin;
 
+import com.wonginnovations.oldresearch.proxy.ProxyInventoryScanning;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -15,6 +17,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -159,10 +162,7 @@ public abstract class RenderEventHandlerMixin {
     private static void tooltipEventInjection1(ItemTooltipEvent event, CallbackInfo ci) {
         Minecraft mc = FMLClientHandler.instance().getClient();
         GuiScreen gui = mc.currentScreen;
-        if (gui instanceof GuiContainer && GuiScreen.isShiftKeyDown() != ModConfig.CONFIG_GRAPHICS.showTags
-                                        && !Mouse.isGrabbed()
-                                        && !ScanningManager.isThingStillScannable(event.getEntityPlayer(), event.getItemStack())
-        ) {
+        if (oldresearch$shouldRenderAspects(gui, event.getEntityPlayer(), event.getItemStack())) {
             AspectList tags = ThaumcraftCraftingManager.getObjectTags(event.getItemStack());
             int index = 0;
             if (tags != null && tags.size() > 0) {
@@ -195,23 +195,31 @@ public abstract class RenderEventHandlerMixin {
     private static void tooltipEventInjection2(RenderTooltipEvent.PostBackground event, CallbackInfo ci) {
         Minecraft mc = FMLClientHandler.instance().getClient();
         GuiScreen gui = mc.currentScreen;
-        if (gui instanceof GuiContainer && GuiScreen.isShiftKeyDown() != ModConfig.CONFIG_GRAPHICS.showTags
-                                        && !Mouse.isGrabbed()
-                                        && !ScanningManager.isThingStillScannable(mc.player, event.getStack())
-        ) {
+        if (oldresearch$shouldRenderAspects(gui, mc.player, event.getStack())) {
             int bot = event.getHeight();
             if (!event.getLines().isEmpty()) {
-                for(int a = event.getLines().size() - 1; a >= 0; --a) {
+                for (int a = event.getLines().size() - 1; a >= 0; --a) {
                     if (event.getLines().get(a) != null && !event.getLines().get(a).contains("    ")) {
                         bot -= 10;
                     } else if (a > 0 && event.getLines().get(a - 1) != null && event.getLines().get(a - 1).contains("    ")) {
-                        RenderEventHandler.hudHandler.renderAspectsInGui((GuiContainer)gui, mc.player, event.getStack(), bot, event.getX(), event.getY());
+                        RenderEventHandler.hudHandler.renderAspectsInGui((GuiContainer) gui, mc.player, event.getStack(), bot, event.getX(), event.getY());
                         break;
                     }
                 }
             }
         }
         ci.cancel();
+    }
+
+    @Unique
+    private static boolean oldresearch$shouldRenderAspects(GuiScreen gui, EntityPlayer player, ItemStack stack) {
+        if (!(gui instanceof GuiContainer)) return false;
+        if ((GuiScreen.isShiftKeyDown() != ModConfig.CONFIG_GRAPHICS.showTags && !Mouse.isGrabbed())
+                || (com.wonginnovations.oldresearch.config.ModConfig.inventoryScanning && ProxyInventoryScanning.isHoldingThaumometer())
+        ){
+            return !ScanningManager.isThingStillScannable(player, stack);
+        }
+        return false;
     }
 
 }

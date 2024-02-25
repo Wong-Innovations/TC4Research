@@ -407,12 +407,7 @@ public abstract class GuiResearchPageMixin extends GuiScreen {
                 } else {
 
                     PacketHandler.INSTANCE.sendToServer(
-                        new PacketGivePlayerNoteToServer(
-                            OldResearchManager.getData(oldresearch$renderedNotes.get(p)).key,
-                            this.mc.player.getGameProfile().getName(),
-                            this.mc.player.world.provider.getDimension(),
-                            (byte) 1
-                        )
+                        new PacketGivePlayerNoteToServer(OldResearchManager.getData(oldresearch$renderedNotes.get(p)).key)
                     );
                 }
                 ci.cancel();

@@ -4,8 +4,12 @@ item.researchnote.unknown.1=Unknown Knowledge
 item.researchnote.unknown.2=<Right click to reveal>
 item.discovery.name=§5Discovery
 #
+tc.research.copy=Cost to copy this research:
+tc.research.copy.failure=Insufficient %s to copy discovery.
 researchnote.complete=Research Note Completed!
 researchnote.click=§o§7Click to obtain.
+researchnote.missing.tools=Scribing tools required to create research notes.
+researchnote.missing.paper=Paper required to create research notes.
 tc.addaspectdiscovery=You have discovered %s!
 tc.addaspectpool=Gained %s research point(s) for %s
 tc.discoveryerror=To understand this you need to study %s.

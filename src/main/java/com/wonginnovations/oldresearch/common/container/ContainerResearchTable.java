@@ -2,6 +2,7 @@ package com.wonginnovations.oldresearch.common.container;
 
 import java.util.HashMap;
 
+import com.wonginnovations.oldresearch.common.items.ItemResearchNote;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +26,7 @@ public class ContainerResearchTable extends Container {
         this.tileEntity = tableInventory;
         this.aspects = Aspect.aspects.keySet().toArray(new String[0]);
         this.addSlotToContainer(new SlotLimitedByClass(IScribeTools.class, tableInventory, 0, 14, 10));
-        this.addSlotToContainer(new SlotLimitedByItemstack(new ItemStack(ModItems.RESEARCHNOTE), tableInventory, 1, 70, 10));
+        this.addSlotToContainer(new SlotLimitedByClass(ItemResearchNote.class, tableInventory, 1, 70, 10));
         this.bindPlayerInventory(playerInventory);
     }
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.client.lib.RenderEventHandler;
 import com.wonginnovations.oldresearch.common.container.ContainerResearchTable;
+import com.wonginnovations.oldresearch.common.lib.network.PacketCopyPlayerNoteToServer;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectCombinationToServer;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPlaceToServer;
@@ -35,6 +36,7 @@ import org.lwjgl.input.Mouse;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
+import thaumcraft.common.config.ModConfig;
 import thaumcraft.common.lib.SoundsTC;
 import thaumcraft.common.lib.utils.HexUtils;
 
@@ -199,7 +201,7 @@ public class GuiResearchTable extends GuiContainer {
         }
 
         this.drawAspectText(this.guiLeft + 10, this.guiTop + 40, mx, my);
-        if(this.note != null && (this.tileEntity.getStackInSlot(0) == null || this.tileEntity.getStackInSlot(0).getItemDamage() == this.tileEntity.getStackInSlot(0).getMaxDamage())) {
+        if(this.note != null && (this.tileEntity.getStackInSlot(0) == null || this.tileEntity.getStackInSlot(0).isEmpty() || this.tileEntity.getStackInSlot(0).getItemDamage() == this.tileEntity.getStackInSlot(0).getMaxDamage())) {
             int sx = Math.max(this.fontRenderer.getStringWidth(I18n.format("tile.researchtable.noink.0")), this.fontRenderer.getStringWidth(I18n.format("tile.researchtable.noink.1"))) / 2;
             UtilsFX.drawCustomTooltip(this, itemRender, this.fontRenderer, Arrays.asList(I18n.format("tile.researchtable.noink.0"), I18n.format("tile.researchtable.noink.1")), gx + 157 - sx, gy + 84, 11);
         }
@@ -230,6 +232,7 @@ public class GuiResearchTable extends GuiContainer {
         }
 
         if(RESEARCHDUPE && this.note != null && this.note.isComplete()) {
+            UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
             this.drawTexturedModalRect(this.guiLeft + 37, this.guiTop + 5, 232, 200, 24, 24);
         }
 
@@ -617,7 +620,8 @@ public class GuiResearchTable extends GuiContainer {
                                 var7 = mx - (gx + 37);
                                 var8 = my - (gy + 5);
                                 if(var7 >= 0 && var8 >= 0 && var7 < 24 && var8 < 24) {
-                                    this.mc.playerController.sendEnchantPacket(this.inventorySlots.windowId, 5);
+                                    PacketHandler.INSTANCE.sendToServer(new PacketCopyPlayerNoteToServer(this.tileEntity.getPos()));
+//                                    this.mc.playerController.sendEnchantPacket(this.inventorySlots.windowId, 5);
                                     this.playButtonClick();
                                     return;
                                 }

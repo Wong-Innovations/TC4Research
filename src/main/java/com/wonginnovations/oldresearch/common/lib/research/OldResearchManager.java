@@ -1,5 +1,6 @@
 package com.wonginnovations.oldresearch.common.lib.research;
 
+import akka.dispatch.UnboundedDequeBasedMailbox;
 import com.cleanroommc.groovyscript.sandbox.ClosureHelper;
 import com.google.common.io.Files;
 import com.google.gson.JsonArray;
@@ -274,6 +275,15 @@ public abstract class OldResearchManager {
                     data.hexes.put(hex.toString(), hex);
                 }
 
+                NBTTagList aspects = stack.getTagCompound().getTagList("aspects", 10);
+                data.aspects = new AspectList();
+
+                for (int x = 0; x < aspects.tagCount(); x++) {
+                    NBTTagCompound nbt = aspects.getCompoundTagAt(x);
+                    String tag = nbt.getString("aspect");
+                    data.aspects.add(Aspect.getAspect(tag), 1);
+                }
+
                 return data;
             }
         }
@@ -303,6 +313,16 @@ public abstract class OldResearchManager {
         }
 
         stack.getTagCompound().setTag("hexgrid", gridtag);
+
+        NBTTagList aspects = new NBTTagList();
+
+        for (Aspect aspect : data.aspects.getAspects()) {
+            NBTTagCompound asp = new NBTTagCompound();
+            asp.setString("aspect", aspect.getTag());
+            aspects.appendTag(asp);
+        }
+
+        stack.getTagCompound().setTag("aspects", aspects);
     }
 
     public static Aspect getCombinationResult(Aspect aspect1, Aspect aspect2) {
@@ -365,14 +385,6 @@ public abstract class OldResearchManager {
         }
 
         return true;
-    }
-
-    public static void completeScannedObject(EntityPlayer player, String object) {
-        completeScannedObjectUnsaved(player.getGameProfile().getName(), object);
-    }
-
-    public static void completeScannedEntity(EntityPlayer player, String key) {
-        completeScannedEntityUnsaved(player.getGameProfile().getName(), key);
     }
 
     public static void loadPlayerData(EntityPlayer player, File file1, File file2, boolean legacy) {

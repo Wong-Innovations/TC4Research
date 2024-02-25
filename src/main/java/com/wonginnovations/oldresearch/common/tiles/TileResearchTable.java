@@ -294,7 +294,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
                     return true;
                 }
             case 1:
-                if (itemstack.getItem() == ModItems.RESEARCHNOTE && itemstack.getItemDamage() == 0) {
+                if (itemstack.getItem() == ModItems.RESEARCHNOTE) {
                     return true;
                 }
         }

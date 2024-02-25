@@ -8,7 +8,6 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -19,28 +18,20 @@ import thaumcraft.common.lib.research.ResearchManager;
 
 public class PacketGivePlayerNoteToServer implements IMessage, IMessageHandler<PacketGivePlayerNoteToServer, IMessage> {
     private String key;
-    private int dim;
-    private String username;
 
     public PacketGivePlayerNoteToServer() {
     }
 
-    public PacketGivePlayerNoteToServer(String key, String username, int dim, byte type) {
+    public PacketGivePlayerNoteToServer(String key) {
         this.key = key;
-        this.dim = dim;
-        this.username = username;
     }
 
     public void toBytes(ByteBuf buffer) {
         ByteBufUtils.writeUTF8String(buffer, this.key);
-        buffer.writeInt(this.dim);
-        ByteBufUtils.writeUTF8String(buffer, this.username);
     }
 
     public void fromBytes(ByteBuf buffer) {
         this.key = ByteBufUtils.readUTF8String(buffer);
-        this.dim = buffer.readInt();
-        this.username = ByteBufUtils.readUTF8String(buffer);
     }
 
     public IMessage onMessage(PacketGivePlayerNoteToServer message, MessageContext ctx) {

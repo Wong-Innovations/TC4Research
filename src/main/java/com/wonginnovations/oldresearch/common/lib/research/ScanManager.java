@@ -105,7 +105,7 @@ public class ScanManager {
 
     public static boolean canScanThing(EntityPlayer player, Object thing, boolean notify) {
         AspectList al = getScanAspects(player, thing);
-        if (al == null || al.size() < 0) return false;
+        if (al == null || al.size() < 0) return true;
         PlayerKnowledge rp = OldResearch.proxy.getPlayerKnowledge();
         for (Aspect aspect : al.getAspects()) {
             if (aspect.getComponents() != null) {

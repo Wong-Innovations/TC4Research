@@ -3,6 +3,8 @@ item.researchnote.name=Research Note
 item.researchnote.unknown.1=Unknown Knowledge
 item.researchnote.unknown.2=<Right click to reveal>
 item.discovery.name=§5Discovery
+item.curio.basic.name=Basic Curiosity
+item.curio.crimson.name=Crimson Rites
 #
 tc.research.copy=Cost to copy this research:
 tc.research.copy.failure=Insufficient %s to copy discovery.

@@ -10,11 +10,13 @@ import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.IPlayerWarp;
+import thaumcraft.api.research.ResearchCategories;
 
 public class BaseCurio {
 
     private String name;
-    private AspectList aspects;
+    private String category;
+    private AspectList aspects = new AspectList();
     private final int[] warp = new int[]{0,0,0};
     private ResourceLocation texture;
 
@@ -32,6 +34,20 @@ public class BaseCurio {
 
     public BaseCurio setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public BaseCurio setCategory(String category) {
+        this.category = category;
+        return this;
+    }
+
+    public BaseCurio aspect(Aspect aspect) {
+        return this.aspect(aspect, 1);
+    }
+
+    public BaseCurio aspect(Aspect aspect, int amount) {
+        this.aspects.add(aspect, amount);
         return this;
     }
 
@@ -63,21 +79,25 @@ public class BaseCurio {
         return this.texture;
     }
 
-    public void onItemRightClick(World worldIn, EntityPlayer player, EnumHand hand) {
+    public boolean onItemRightClick(World worldIn, EntityPlayer player, EnumHand hand) {
         if (!worldIn.isRemote) {
-            for (Aspect aspect : aspects.getAspects()) {
-                if (OldResearch.proxy.playerKnowledge.hasDiscoveredAspect(player.getGameProfile().getName(), aspect)
-                    || OldResearch.proxy.playerKnowledge.hasDiscoveredParentAspects(player.getGameProfile().getName(), aspect)
-                ) {
-                    ScanManager.checkAndSyncAspectKnowledge(player, aspect, (int) Math.floor(aspects.getAmount(aspect) * (player.getRNG().nextFloat() / 2.0F)));
+            AspectList aspectList = (this.category != null && ResearchCategories.getResearchCategory(this.category) != null)
+                    ? ResearchCategories.getResearchCategory(this.category).formula
+                    : aspects;
+            for (Aspect aspect : aspectList.getAspects()) {
+                if (OldResearch.proxy.playerKnowledge.hasDiscoveredParentAspects(player.getGameProfile().getName(), aspect)) {
+                    ScanManager.checkAndSyncAspectKnowledge(player, aspect, (int) Math.floor(aspectList.getAmount(aspect) * (player.getRNG().nextFloat() / 2.0F)));
                 }
             }
-            for (int i : warp) {
-                if (i != 0) {
-                    ThaumcraftApi.internalMethods.addWarpToPlayer(player, i, IPlayerWarp.EnumWarpType.values()[i]);
+            int i = 0;
+            for (int n : warp) {
+                if (n != 0) {
+                    ThaumcraftApi.internalMethods.addWarpToPlayer(player, n, IPlayerWarp.EnumWarpType.values()[i]);
                 }
+                ++i;
             }
         }
+        return true;
     }
 
 }

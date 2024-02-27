@@ -646,18 +646,21 @@ public abstract class OldResearchManager {
         }
     }
 
-    public static void initCurioMeta() {
-        CURIOS.add((new BaseCurio("arcane")).setAspects(ResearchCategories.getResearchCategory("AUROMANCY").formula));
-        CURIOS.add((new BaseCurio("preserved")).setAspects(ResearchCategories.getResearchCategory("ALCHEMY").formula));
-        CURIOS.add((new BaseCurio("ancient")).setAspects(ResearchCategories.getResearchCategory("GOLEMANCY").formula));
+    public static void initCurios() {
+        BaseCurio basic = new BaseCurio("basic");
+        for (Aspect aspect : Aspect.getPrimalAspects()) basic.aspect(aspect, 15);
+        CURIOS.add(basic);
+        CURIOS.add((new BaseCurio("arcane")).setCategory("AUROMANCY"));
+        CURIOS.add((new BaseCurio("preserved")).setCategory("ALCHEMY"));
+        CURIOS.add((new BaseCurio("ancient")).setCategory("GOLEMANCY"));
         CURIOS.add(
-                (new BaseCurio("eldritch"))
-                        .setAspects(ResearchCategories.getResearchCategory("ELDRITCH").formula)
-                        .setWarp(IPlayerWarp.EnumWarpType.NORMAL, 1)
-                        .setWarp(IPlayerWarp.EnumWarpType.TEMPORARY, 5)
+            (new BaseCurio("eldritch"))
+                .setCategory("ELDRITCH")
+                .setWarp(IPlayerWarp.EnumWarpType.NORMAL, 1)
+                .setWarp(IPlayerWarp.EnumWarpType.TEMPORARY, 5)
         );
-        CURIOS.add((new BaseCurio("knowledge")).setAspects(ResearchCategories.getResearchCategory("INFUSION").formula));
-        CURIOS.add((new BaseCurio("twisted")).setAspects(ResearchCategories.getResearchCategory("ARTIFICE").formula));
+        CURIOS.add((new BaseCurio("knowledge")).setCategory("INFUSION"));
+        CURIOS.add((new BaseCurio("twisted")).setCategory("ARTIFICE"));
         CURIOS.add(new RitesCurio());
     }
 

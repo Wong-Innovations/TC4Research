@@ -3,6 +3,8 @@ item.researchnote.name=研究笔记
 item.researchnote.unknown.1=未知知识
 item.researchnote.unknown.2=<右击以揭晓> 
 item.discovery.name=§5发现
+item.curio.basic.name=Basic Curiosity
+item.curio.crimson.name=血腥仪式
 #
 tc.research.copy=复制此项研究需耗费:
 tc.research.copy.failure=没有足够的 %s 来复制研究。

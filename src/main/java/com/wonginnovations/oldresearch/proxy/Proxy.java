@@ -4,6 +4,7 @@ import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.api.capabilities.PlayerAspects;
 import com.wonginnovations.oldresearch.common.blocks.ModBlocks;
 import com.wonginnovations.oldresearch.common.items.ItemCurio;
+import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
@@ -64,6 +65,7 @@ public class Proxy implements IGuiHandler {
         PacketHandler.preInit();
         PlayerAspects.preInit();
         GameRegistry.registerTileEntity(TileResearchTable.class, new ResourceLocation("oldresearch:TileResearchTable"));
+        OldResearchManager.initCurios();
 
         MinecraftForge.EVENT_BUS.register(OldResearch.instance);
     }
@@ -77,11 +79,11 @@ public class Proxy implements IGuiHandler {
         ResearchCategories.getResearchCategory("BASICS").research.remove("KNOWLEDGETYPES");
         ResearchCategories.getResearchCategory("BASICS").research.remove("THEORYRESEARCH");
         ResearchCategories.getResearchCategory("BASICS").research.remove("CELESTIALSCANNING");
+        ResearchCategories.getResearch("CrimsonRites").getStages()[0].setObtain(new Object[]{new ItemStack(ModItems.CURIO, 1, 7)});
         OldResearchManager.parseJsonResearch(new ResourceLocation("oldresearch", "research/basics.json"));
         OldResearchManager.patchResearch();
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.RESEARCHTABLE, 1, 32767), new AspectList(new ItemStack(BlocksTC.researchTable)));
         OldResearchManager.computeAspectComplexity();
-        OldResearchManager.initCurioMeta();
     }
 
     public void registerDisplayInformation() {

@@ -3,6 +3,8 @@ item.researchnote.name=研究ノート
 item.researchnote.unknown.1=不明な知識
 item.researchnote.unknown.2=<右クリックで解放>
 item.discovery.name=§5研究成果
+item.curio.basic.name=Basic Curiosity
+item.curio.crimson.name=紅の儀典
 #
 researchnote.complete=研究が完了しました!
 researchnote.click=§o§7クリックで獲得。

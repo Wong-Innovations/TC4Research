@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Mod.EventBusSubscriber
-public class EntityEvents {
+public abstract class EntityEvents {
 
     @SubscribeEvent
     public static void playerLoad(PlayerEvent.LoadFromFile event) {

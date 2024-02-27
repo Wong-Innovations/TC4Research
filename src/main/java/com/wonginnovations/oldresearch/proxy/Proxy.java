@@ -3,6 +3,7 @@ package com.wonginnovations.oldresearch.proxy;
 import com.wonginnovations.oldresearch.OldResearch;
 import com.wonginnovations.oldresearch.api.capabilities.PlayerAspects;
 import com.wonginnovations.oldresearch.common.blocks.ModBlocks;
+import com.wonginnovations.oldresearch.common.items.ItemCurio;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
 import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
@@ -80,6 +81,7 @@ public class Proxy implements IGuiHandler {
         OldResearchManager.patchResearch();
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.RESEARCHTABLE, 1, 32767), new AspectList(new ItemStack(BlocksTC.researchTable)));
         OldResearchManager.computeAspectComplexity();
+        OldResearchManager.initCurioMeta();
     }
 
     public void registerDisplayInformation() {

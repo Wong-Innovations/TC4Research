@@ -13,6 +13,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.api.research.curio.BaseCurio;
+import com.wonginnovations.oldresearch.api.research.curio.RitesCurio;
 import com.wonginnovations.oldresearch.common.OldResearchUtils;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.core.mixin.ResearchManagerAccessor;
@@ -32,6 +34,7 @@ import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
+import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.items.IScribeTools;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategory;
@@ -40,6 +43,8 @@ import thaumcraft.api.research.ResearchStage;
 import thaumcraft.common.lib.utils.HexUtils;
 
 public abstract class OldResearchManager {
+
+    public static ArrayList<BaseCurio> CURIOS = new ArrayList<>();
     private static final String NOTES_TAG = "THAUMCRAFT.NOTE.COUNT";
     private static final String ASPECT_TAG = "THAUMCRAFT.ASPECTS";
     private static final String SCANNED_OBJ_TAG = "THAUMCRAFT.SCAN.OBJECTS";
@@ -639,6 +644,21 @@ public abstract class OldResearchManager {
         } else {
             Thaumcraft.log.warn("Research file not found: " + loc);
         }
+    }
+
+    public static void initCurioMeta() {
+        CURIOS.add((new BaseCurio("arcane")).setAspects(ResearchCategories.getResearchCategory("AUROMANCY").formula));
+        CURIOS.add((new BaseCurio("preserved")).setAspects(ResearchCategories.getResearchCategory("ALCHEMY").formula));
+        CURIOS.add((new BaseCurio("ancient")).setAspects(ResearchCategories.getResearchCategory("GOLEMANCY").formula));
+        CURIOS.add(
+                (new BaseCurio("eldritch"))
+                        .setAspects(ResearchCategories.getResearchCategory("ELDRITCH").formula)
+                        .setWarp(IPlayerWarp.EnumWarpType.NORMAL, 1)
+                        .setWarp(IPlayerWarp.EnumWarpType.TEMPORARY, 5)
+        );
+        CURIOS.add((new BaseCurio("knowledge")).setAspects(ResearchCategories.getResearchCategory("INFUSION").formula));
+        CURIOS.add((new BaseCurio("twisted")).setAspects(ResearchCategories.getResearchCategory("ARTIFICE").formula));
+        CURIOS.add(new RitesCurio());
     }
 
     public static class HexEntry {

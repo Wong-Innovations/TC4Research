@@ -80,7 +80,7 @@ public class Proxy implements IGuiHandler {
         ResearchCategories.getResearchCategory("BASICS").research.remove("THEORYRESEARCH");
         ResearchCategories.getResearchCategory("BASICS").research.remove("CELESTIALSCANNING");
         ResearchCategories.getResearch("CrimsonRites").getStages()[0].setObtain(new Object[]{new ItemStack(ModItems.CURIO, 1, 7)});
-        OldResearchManager.parseJsonResearch(new ResourceLocation("oldresearch", "research/basics.json"));
+        OldResearchManager.parseJsonResearch(new ResourceLocation("oldresearch", "research.json"));
         OldResearchManager.patchResearch();
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.RESEARCHTABLE, 1, 32767), new AspectList(new ItemStack(BlocksTC.researchTable)));
         OldResearchManager.computeAspectComplexity();

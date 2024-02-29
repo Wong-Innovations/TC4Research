@@ -2,8 +2,12 @@ package com.wonginnovations.oldresearch.common.lib.events;
 
 import com.google.common.io.Files;
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
+import com.wonginnovations.oldresearch.common.lib.network.PacketSyncAspects;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -74,6 +78,13 @@ public abstract class EntityEvents {
     public static void playerSave(PlayerEvent.SaveToFile event) {
         EntityPlayer p = event.getEntityPlayer();
         OldResearchManager.savePlayerData(p, getPlayerFile("thaum", event.getPlayerDirectory(), p.getGameProfile().getName()), getPlayerFile("thaumback", event.getPlayerDirectory(), p.getGameProfile().getName()));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(EntityJoinWorldEvent event) {
+        if (event.getEntity() instanceof EntityPlayerMP) {
+            PacketHandler.INSTANCE.sendTo(new PacketSyncAspects(), (EntityPlayerMP) event.getEntity());
+        }
     }
 
 }

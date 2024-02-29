@@ -57,7 +57,6 @@ public class GuiResearchTable extends GuiContainer {
     EntityPlayer player;
     public Aspect select1 = null;
     public Aspect select2 = null;
-    private final AspectList aspectlist = new AspectList();
     private final HashMap<String, GuiResearchTable.Rune> runes = new HashMap<>();
     private final float popupScale = 0.05F;
     private Aspect draggedAspect;
@@ -78,13 +77,6 @@ public class GuiResearchTable extends GuiContainer {
         RESEARCHEXPERTISE = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHEXPERTISE");
         RESEARCHMASTERY = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHMASTERY");
         RESEARCHDUPE = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHDUPE");
-        int count = 0;
-
-        for(Aspect aspect : Aspect.aspects.values()) {
-            this.aspectlist.add(aspect, count);
-            ++count;
-        }
-
     }
 
     public void drawScreen(int mx, int my, float par3) {

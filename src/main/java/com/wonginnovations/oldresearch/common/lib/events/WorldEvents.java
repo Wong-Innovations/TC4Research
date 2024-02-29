@@ -1,6 +1,5 @@
 package com.wonginnovations.oldresearch.common.lib.events;
 
-import com.wonginnovations.oldresearch.common.items.ModItems;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.KilledByPlayer;
 import net.minecraft.world.storage.loot.conditions.LootCondition;

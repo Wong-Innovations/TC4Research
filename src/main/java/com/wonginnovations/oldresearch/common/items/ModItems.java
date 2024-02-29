@@ -11,12 +11,12 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
+import thaumcraft.api.items.ItemsTC;
 
 @Mod.EventBusSubscriber(modid = Tags.MODID)
 public class ModItems {
 
     public static final Item RESEARCHNOTE = new ItemResearchNote();
-    public static final Item CURIO = new ItemCurio();
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
@@ -24,7 +24,6 @@ public class ModItems {
         IForgeRegistry<Item> r = event.getRegistry();
 
         r.register(RESEARCHNOTE);
-        r.register(CURIO);
 
     }
 
@@ -32,7 +31,7 @@ public class ModItems {
     public static void registerModels(ModelRegistryEvent event) {
         int i = 0;
         for (BaseCurio curio : OldResearchManager.CURIOS) {
-            ModelLoader.setCustomModelResourceLocation(ModItems.CURIO, i++, new ModelResourceLocation(curio.getTexture().toString()));
+            ModelLoader.setCustomModelResourceLocation(ItemsTC.curio, i++, new ModelResourceLocation(curio.getTexture().toString()));
         }
     }
 

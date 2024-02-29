@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
+import thaumcraft.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 public class ItemCurio extends Item {
 
     public ItemCurio() {
-        this.setRegistryName(Tags.MODID + ":curio");
+        this.setRegistryName(Thaumcraft.MODID + ":curio");
         this.setTranslationKey("curio");
         this.setCreativeTab(ConfigItems.TABTC);
         this.setHasSubtypes(true);

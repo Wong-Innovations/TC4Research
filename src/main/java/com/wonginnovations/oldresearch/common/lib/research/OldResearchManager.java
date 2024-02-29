@@ -647,9 +647,6 @@ public abstract class OldResearchManager {
     }
 
     public static void initCurios() {
-        BaseCurio basic = new BaseCurio("basic");
-        for (Aspect aspect : Aspect.getPrimalAspects()) basic.aspect(aspect, 15);
-        CURIOS.add(basic);
         CURIOS.add((new BaseCurio("arcane")).setCategory("AUROMANCY"));
         CURIOS.add((new BaseCurio("preserved")).setCategory("ALCHEMY"));
         CURIOS.add((new BaseCurio("ancient")).setCategory("GOLEMANCY"));
@@ -662,6 +659,9 @@ public abstract class OldResearchManager {
         CURIOS.add((new BaseCurio("knowledge")).setCategory("INFUSION"));
         CURIOS.add((new BaseCurio("twisted")).setCategory("ARTIFICE"));
         CURIOS.add(new RitesCurio());
+        BaseCurio basic = new BaseCurio("basic");
+        for (Aspect aspect : Aspect.getPrimalAspects()) basic.aspect(aspect, 15);
+        CURIOS.add(basic);
     }
 
     public static class HexEntry {

@@ -2,6 +2,7 @@ package com.wonginnovations.oldresearch.common.lib.events;
 
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import net.minecraft.world.storage.loot.*;
+import net.minecraft.world.storage.loot.conditions.KilledByPlayer;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraft.world.storage.loot.conditions.RandomChance;
 import net.minecraft.world.storage.loot.functions.LootFunction;
@@ -10,6 +11,7 @@ import net.minecraft.world.storage.loot.functions.SetMetadata;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import thaumcraft.api.items.ItemsTC;
 
 @Mod.EventBusSubscriber
 public abstract class WorldEvents {
@@ -18,11 +20,11 @@ public abstract class WorldEvents {
 
     private static final LootEntry[] SOME = new LootEntry[] {
         new LootEntryItem(
-            ModItems.CURIO,
+            ItemsTC.curio,
             1,
             1,
             new LootFunction[]{
-                new SetMetadata(new LootCondition[0], new RandomValueRange(0)),
+                new SetMetadata(new LootCondition[0], new RandomValueRange(7)),
                 new SetCount(new LootCondition[0], new RandomValueRange(1,3))
             },
             CHANCE,
@@ -32,11 +34,11 @@ public abstract class WorldEvents {
 
     private static final LootEntry[] MORE = new LootEntry[] {
         new LootEntryItem(
-            ModItems.CURIO,
+            ItemsTC.curio,
             1,
             1,
             new LootFunction[]{
-                new SetMetadata(new LootCondition[0], new RandomValueRange(0)),
+                new SetMetadata(new LootCondition[0], new RandomValueRange(7)),
                 new SetCount(new LootCondition[0], new RandomValueRange(3,6))
             },
             CHANCE,
@@ -46,11 +48,11 @@ public abstract class WorldEvents {
 
     private static final LootEntry[] ALWAYS = new LootEntry[] {
         new LootEntryItem(
-            ModItems.CURIO,
+            ItemsTC.curio,
             1,
             1,
             new LootFunction[]{
-                new SetMetadata(new LootCondition[0], new RandomValueRange(0)),
+                new SetMetadata(new LootCondition[0], new RandomValueRange(7)),
                 new SetCount(new LootCondition[0], new RandomValueRange(1,3))
             },
             new LootCondition[0],
@@ -83,19 +85,17 @@ public abstract class WorldEvents {
                 );
                 break;
             case "thaumcraft:cultist":
-                event.getTable().getPool("special_1").removeEntry("thaumcraft:curio");
-                event.getTable().getPool("special_1").addEntry(new LootEntryItem(
-                    ModItems.CURIO,
-                    2,
-                    0,
-                    new LootFunction[]{
-                        new SetMetadata(new LootCondition[0], new RandomValueRange(7))
-                    },
-                    new LootCondition[0],
-                    "thaumcraft:curio"
-                ));
                 event.getTable().addPool(
-                    new LootPool(SOME, new LootCondition[]{new RandomChance(0.5f)}, new RandomValueRange(1), new RandomValueRange(0), "knowledgefrags")
+                    new LootPool(
+                        SOME,
+                        new LootCondition[]{
+                            new RandomChance(0.5f),
+                            new KilledByPlayer(false)
+                        },
+                        new RandomValueRange(1),
+                        new RandomValueRange(0),
+                        "knowledgefrags"
+                    )
                 );
                 break;
         }

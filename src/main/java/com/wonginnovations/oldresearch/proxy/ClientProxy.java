@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import thaumcraft.api.items.ItemsTC;
 
 public class ClientProxy extends Proxy {
 
@@ -68,7 +69,7 @@ public class ClientProxy extends Proxy {
     public void registerModels() {
         int i = 0;
         for (BaseCurio curio : OldResearchManager.CURIOS) {
-            ModelLoader.setCustomModelResourceLocation(ModItems.CURIO, i++, new ModelResourceLocation(curio.getTexture(), "inventory"));
+            ModelLoader.setCustomModelResourceLocation(ItemsTC.curio, i++, new ModelResourceLocation(curio.getTexture(), "inventory"));
         }
     }
 

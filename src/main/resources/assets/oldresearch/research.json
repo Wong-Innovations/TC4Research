@@ -22,7 +22,7 @@
     {
       "key": "RESEARCHEXPERTISE",
       "name": "research.RESEARCHEXPERTISE.title",
-      "icons": [ "thaumcraft:textures/items/scribing_tools.png" ],
+      "icons": [ "oldresearch:textures/research/r_researcher1.png" ],
       "category": "BASICS", "location": [ 4,-1 ],
       "parents": [ "RESEARCH" ],
       "meta": [ "ROUND" , "HIDDEN" ],
@@ -39,14 +39,15 @@
     {
       "key": "RESEARCHMASTERY",
       "name": "research.RESEARCHMASTERY.title",
-      "icons": [ "thaumcraft:textures/items/scribing_tools.png" ],
+      "icons": [ "oldresearch:textures/research/r_researcher2.png" ],
       "category": "BASICS", "location": [ 4,1 ],
       "parents": [ "RESEARCHEXPERTISE" ],
-      "meta": [ "ROUND" , "HIDDEN" ],
+      "meta": [ "ROUND" , "SPIKY", "HIDDEN" ],
       "stages": [
         {
           "text": "research.RESEARCHMASTERY.stage.1",
-          "required_knowledge":["THEORY;AUROMANCY;1"]
+          "required_knowledge":["THEORY;AUROMANCY;1"],
+          "warp": 1
         },
         {
           "text": "research.RESEARCHMASTERY.stage.2"
@@ -56,7 +57,7 @@
     {
       "key": "RESEARCHDUPE",
       "name": "research.RESEARCHDUPE.title",
-      "icons": [ "thaumcraft:textures/items/scribing_tools.png" ],
+      "icons": [ "oldresearch:textures/research/r_resdupe.png" ],
       "category": "BASICS", "location": [ 4,3 ],
       "parents": [ "RESEARCHMASTERY" ],
       "meta": [ "ROUND" , "HIDDEN" ],

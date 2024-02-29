@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.client.lib.RenderEventHandler;
 import com.wonginnovations.oldresearch.common.container.ContainerResearchTable;
 import com.wonginnovations.oldresearch.common.lib.network.PacketCopyPlayerNoteToServer;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
@@ -16,7 +15,6 @@ import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPlaceToSer
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
-import com.wonginnovations.oldresearch.client.lib.PlayerNotifications;
 import com.wonginnovations.oldresearch.client.lib.Tessellator;
 import com.wonginnovations.oldresearch.client.lib.UtilsFX;
 import net.minecraft.client.Minecraft;
@@ -85,17 +83,6 @@ public class GuiResearchTable extends GuiContainer {
         for(Aspect aspect : Aspect.aspects.values()) {
             this.aspectlist.add(aspect, count);
             ++count;
-        }
-
-    }
-
-    protected void drawGuiContainerForegroundLayer(int mx, int my) {
-        Minecraft mc = Minecraft.getMinecraft();
-        long time = System.nanoTime() / 1000000L;
-        if(PlayerNotifications.getListAndUpdate(time).size() > 0) {
-            GlStateManager.pushMatrix();
-            RenderEventHandler.notifyHandler.renderNotifyHUD((double)this.width, (double)this.height, time);
-            GlStateManager.popMatrix();
         }
 
     }

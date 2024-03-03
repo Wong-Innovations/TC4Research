@@ -10,7 +10,10 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -59,7 +62,7 @@ public class ItemCurio extends Item {
         ItemStack stack = player.getHeldItem(hand);
 
         if (!worldIn.isRemote && OldResearchManager.CURIOS.get(stack.getMetadata()).onItemRightClick(worldIn, player, hand)) {
-            player.sendStatusMessage(new TextComponentString("§5§o" + I18n.format("tc.knowledge.gained")), true);
+            player.sendStatusMessage(new TextComponentTranslation("tc.knowledge.gained").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE).setItalic(true)), true);
             if(!player.capabilities.isCreativeMode) {
                 stack.setCount(stack.getCount()-1);
             }

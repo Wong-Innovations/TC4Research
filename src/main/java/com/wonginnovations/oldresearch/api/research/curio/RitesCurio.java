@@ -3,7 +3,9 @@ package com.wonginnovations.oldresearch.api.research.curio;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import thaumcraft.api.ThaumcraftApi;
@@ -24,7 +26,7 @@ public class RitesCurio extends BaseCurio {
     public boolean onItemRightClick(World worldIn, EntityPlayer player, EnumHand hand) {
         int aw = ThaumcraftApi.internalMethods.getActualWarp(player);
         if (aw <= 20) {
-            player.sendMessage(new TextComponentString(TextFormatting.DARK_PURPLE + I18n.format("fail.crimsonrites")));
+            player.sendMessage(new TextComponentTranslation("fail.crimsonrites").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
             return false;
         }
 

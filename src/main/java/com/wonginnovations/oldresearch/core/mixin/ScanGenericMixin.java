@@ -36,13 +36,6 @@ public abstract class ScanGenericMixin {
                 for(Aspect aspect : al.getAspects()) {
                     ScanManager.checkAndSyncAspectKnowledge(player, aspect, al.getAmount(aspect));
                 }
-//                TODO: Saving this so I can reference it when making curios better.
-//                Iterator var6 = ResearchCategories.researchCategories.values().iterator();
-//
-//                while(var6.hasNext()) {
-//                    ResearchCategory category = (ResearchCategory)var6.next();
-//                    ThaumcraftApi.internalMethods.addKnowledge(player, IPlayerKnowledge.EnumKnowledgeType.OBSERVATION, category, category.applyFormula(al));
-//                }
             }
         }
         ci.cancel();

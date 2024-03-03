@@ -19,7 +19,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(PacketGivePlayerNoteToServer.class, PacketGivePlayerNoteToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketCopyPlayerNoteToServer.class, PacketCopyPlayerNoteToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketSyncAspects.class, PacketSyncAspects.class, discriminator++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncResearchTableData.class, PacketSyncResearchTableData.class, discriminator++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketSyncResearchTableAspects.class, PacketSyncResearchTableAspects.class, discriminator++, Side.CLIENT);
         INSTANCE.registerMessage(PacketScanSelfToServer.class, PacketScanSelfToServer.class, discriminator++, Side.SERVER);
         INSTANCE.registerMessage(PacketScanSlotToServer.class, PacketScanSlotToServer.class, discriminator++, Side.SERVER);
     }

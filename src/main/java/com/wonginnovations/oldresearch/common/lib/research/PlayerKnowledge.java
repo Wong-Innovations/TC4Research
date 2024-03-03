@@ -1,13 +1,9 @@
 package com.wonginnovations.oldresearch.common.lib.research;
 
-import net.minecraft.entity.player.EntityPlayer;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PlayerKnowledge {
     public Map<String, Integer> researchCompleted = new HashMap<>();
@@ -111,12 +107,12 @@ public class PlayerKnowledge {
         }
     }
 
-    public short getAspectPoolFor(String username, Aspect aspect) {
+    public int getAspectPoolFor(String username, Aspect aspect) {
         AspectList known = this.getAspectsDiscovered(username);
-        return known != null?(short)known.getAmount(aspect):0;
+        return known != null ? known.getAmount(aspect) : 0;
     }
 
-    public boolean addAspectPool(String username, Aspect aspect, short amount) {
+    public boolean addAspectPool(String username, Aspect aspect, int amount) {
         AspectList al = this.getAspectsDiscovered(username);
         if(al == null) {
             al = new AspectList();
@@ -142,14 +138,14 @@ public class PlayerKnowledge {
         }
     }
 
-    public boolean setAspectPool(String username, Aspect aspect, short amount) {
+    public boolean setAspectPool(String username, Aspect aspect, int amount) {
         AspectList al = this.getAspectsDiscovered(username);
         if(al == null) {
             al = new AspectList();
         }
 
         if(aspect != null) {
-            al.aspects.put(aspect, (int) amount);
+            al.aspects.put(aspect, amount);
             this.aspectsDiscovered.put(username, al);
             return true;
         } else {

@@ -1,14 +1,14 @@
 package com.wonginnovations.oldresearch.common.tiles;
 
 import com.wonginnovations.oldresearch.OldResearch;
-import com.wonginnovations.oldresearch.api.research.ResearchTableData;
 import com.wonginnovations.oldresearch.common.blocks.ModBlocks;
 import com.wonginnovations.oldresearch.common.items.ItemResearchNote;
 import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.lib.network.PacketAspectPool;
 import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
-import com.wonginnovations.oldresearch.common.lib.network.PacketSyncResearchTableData;
+import com.wonginnovations.oldresearch.common.lib.network.PacketSyncResearchTableAspects;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
+import com.wonginnovations.oldresearch.common.lib.research.ResearchNoteData;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -25,18 +26,21 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import org.jetbrains.annotations.NotNull;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.items.IScribeTools;
 import thaumcraft.common.blocks.essentia.BlockJar;
 import thaumcraft.common.blocks.world.ore.BlockCrystal;
 import thaumcraft.common.lib.SoundsTC;
-import thaumcraft.common.lib.research.ResearchManager;
 import thaumcraft.common.lib.utils.HexUtils;
 import thaumcraft.common.tiles.TileThaumcraftInventory;
 
 public class TileResearchTable extends TileThaumcraftInventory {
-    public ResearchTableData data = new ResearchTableData();
+
+    public AspectList bonusAspects = new AspectList();
+    public ResearchNoteData note;
     public int nextRecalc;
 
     public TileResearchTable() {
@@ -44,48 +48,38 @@ public class TileResearchTable extends TileThaumcraftInventory {
         this.syncedSlots = new int[]{0, 1};
     }
 
-    public void readSyncNBT(NBTTagCompound nbttagcompound) {
-        super.readSyncNBT(nbttagcompound);
-        this.data = new ResearchTableData();
-        if (nbttagcompound.hasKey("note")) {
-            this.data.deserialize(nbttagcompound.getCompoundTag("note"));
-        }
-    }
+    @Override
+    public NBTTagCompound writeSyncNBT(NBTTagCompound nbtCompound) {
+        NBTTagList savedTag = new NBTTagList();
+        Aspect[] list = this.bonusAspects.getAspects();
 
-    public NBTTagCompound writeSyncNBT(NBTTagCompound nbttagcompound) {
-        if (this.data != null) {
-            nbttagcompound.setTag("note", this.data.serialize());
-        } else {
-            nbttagcompound.removeTag("note");
+        for (Aspect aspect : list) {
+            if(aspect != null && this.bonusAspects.getAmount(aspect) > 0) {
+                NBTTagCompound tc = new NBTTagCompound();
+                tc.setString("aspect", aspect.getTag());
+                savedTag.appendTag(tc);
+            }
         }
 
-        return super.writeSyncNBT(nbttagcompound);
+        nbtCompound.setTag("bonusAspects", savedTag);
+        return super.writeSyncNBT(nbtCompound);
     }
 
-//    public void writeCustomNBT(NBTTagCompound compound) {
-//        NBTTagList nbt = new NBTTagList();
-//        for (int var3 = 0; var3 < this.contents.length; ++var3) {
-//            if (this.contents[var3] != null) {
-//                final NBTTagCompound var4 = new NBTTagCompound();
-//                var4.setByte("Slot", (byte)var3);
-//                this.contents[var3].writeToNBT(var4);
-//                nbt.appendTag((NBTBase)var4);
-//            }
-//        }
-//        compound.setTag("Inventory", nbt);
-//        compound.setInteger("nextRecalc", this.nextRecalc);
-//        nbt = new NBTTagList();
-//        for (final Aspect aspect : this.bonusAspects.getAspects()) {
-//            if (aspect != null && this.bonusAspects.getAmount(aspect) > 0) {
-//                final NBTTagCompound var5 = new NBTTagCompound();
-//                var5.setString("tag", aspect.getTag());
-//                nbt.appendTag((NBTBase)var5);
-//            }
-//        }
-//        compound.setTag("bonusAspects", nbt);
-//    }
+    @Override
+    public void readSyncNBT(NBTTagCompound nbtCompound) {
+        this.bonusAspects = new AspectList();
+        if (nbtCompound.hasKey("bonusAspects")) {
+            NBTTagList list = nbtCompound.getTagList("bonusAspects", 10);
+            for (int i = 0; i < list.tagCount(); i++) {
+                NBTTagCompound tc = list.getCompoundTagAt(i);
+                this.bonusAspects.add(Aspect.getAspect(tc.getString("aspect")), 1);
+            }
+        }
 
-    protected void setWorldCreate(World worldIn) {
+        super.readSyncNBT(nbtCompound);
+    }
+
+    protected void setWorldCreate(@NotNull World worldIn) {
         super.setWorldCreate(worldIn);
         if (!this.hasWorld()) {
             this.setWorld(worldIn);
@@ -93,14 +87,11 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
     }
 
-    public boolean consumeInkFromTable() {
+    public void consumeInkFromTable() {
         if (this.getStackInSlot(0).getItem() instanceof IScribeTools && this.getStackInSlot(0).getItemDamage() < this.getStackInSlot(0).getMaxDamage()) {
             this.getStackInSlot(0).setItemDamage(this.getStackInSlot(0).getItemDamage() + 1);
             this.syncTile(false);
             this.markDirty();
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -114,7 +105,7 @@ public class TileResearchTable extends TileThaumcraftInventory {
         if(!this.world.isRemote && this.nextRecalc++ > 600) {
             this.nextRecalc = 0;
             this.recalculateBonus();
-            PacketHandler.INSTANCE.sendToAllAround(new PacketSyncResearchTableData(this.getPos(), this.data), new NetworkRegistry.TargetPoint(this.getWorld().provider.getDimension(), (double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5, 128.0));
+            PacketHandler.INSTANCE.sendToAllAround(new PacketSyncResearchTableAspects(this.getPos(), this.bonusAspects), new NetworkRegistry.TargetPoint(this.getWorld().provider.getDimension(), (double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5, 128.0));
             this.markDirty();
         }
     }
@@ -125,19 +116,19 @@ public class TileResearchTable extends TileThaumcraftInventory {
     }
 
     public void gatherResults() {
-        this.data.note = null;
+        this.note = null;
         if(this.getStackInSlot(1).getItem() instanceof ItemResearchNote) {
-            this.data.note = OldResearchManager.getData(this.getStackInSlot(1));
+            this.note = OldResearchManager.getData(this.getStackInSlot(1));
         }
     }
 
     public void placeAspect(int q, int r, Aspect aspect, EntityPlayer player) {
-        if(this.data.note == null) {
+        if(this.note == null) {
             this.gatherResults();
         }
 
         if(this.canConsumeInkFromTable()) {
-            if(this.getStackInSlot(1).getItem() instanceof ItemResearchNote && this.data.note != null && this.getStackInSlot(1).getItemDamage() < 64) {
+            if(this.getStackInSlot(1).getItem() instanceof ItemResearchNote && this.note != null && this.getStackInSlot(1).getItemDamage() < 64) {
                 boolean r1 = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHER1");
                 boolean r2 = ThaumcraftCapabilities.getKnowledge(player).isResearchComplete("RESEARCHER2");
                 HexUtils.Hex hex = new HexUtils.Hex(q, r);
@@ -147,32 +138,33 @@ public class TileResearchTable extends TileThaumcraftInventory {
                     if(r2 && this.world.rand.nextFloat() < 0.1F) {
                         this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
                     } else if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect) <= 0) {
-                        this.data.bonusAspects.remove(aspect, 1);
+                        this.bonusAspects.remove(aspect, 1);
                         // this will cause problems later
                         player.world.notifyBlockUpdate(this.pos, world.getBlockState(this.pos), world.getBlockState(this.pos), 3);
                         this.markDirty();
                     } else {
-                        OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), aspect, (short)-1);
-                        PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect)), (EntityPlayerMP)player);
+                        OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), aspect, -1);
+                        PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect)), (EntityPlayerMP)player);
                     }
                 } else {
                     float f = this.world.rand.nextFloat();
-                    if(this.data.note.hexEntries.get(hex.toString()).aspect != null && (r1 && f < 0.25F || r2 && f < 0.5F)) {
+                    if(this.note.hexEntries.get(hex.toString()).aspect != null && (r1 && f < 0.25F || r2 && f < 0.5F)) {
                         this.world.playSound(player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation("entity.experience_orb.pickup")), SoundCategory.PLAYERS, 0.2F, 0.9F + player.world.rand.nextFloat() * 0.2F, false);
-                        OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect, (short)1);
-                        PacketHandler.INSTANCE.sendTo(new PacketAspectPool(this.data.note.hexEntries.get(hex.toString()).aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), this.data.note.hexEntries.get(hex.toString()).aspect)), (EntityPlayerMP)player);
+                        OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), this.note.hexEntries.get(hex.toString()).aspect, 1);
+                        PacketHandler.INSTANCE.sendTo(new PacketAspectPool(this.note.hexEntries.get(hex.toString()).aspect.getTag(), 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), this.note.hexEntries.get(hex.toString()).aspect)), (EntityPlayerMP)player);
                     }
 
                     he = new OldResearchManager.HexEntry(null, 0);
                 }
 
-                this.data.note.hexEntries.put(hex.toString(), he);
-                this.data.note.hexes.put(hex.toString(), hex);
-                OldResearchManager.updateData(this.getStackInSlot(1), this.data.note);
+                this.note.hexEntries.put(hex.toString(), he);
+                this.note.hexes.put(hex.toString(), hex);
+                OldResearchManager.updateData(this.getStackInSlot(1), this.note);
                 this.consumeInkFromTable();
-                if(!this.world.isRemote && OldResearchManager.checkResearchCompletion(this.getStackInSlot(1), this.data.note, player.getGameProfile().getName())) {
+                if(!this.world.isRemote && OldResearchManager.checkResearchCompletion(this.getStackInSlot(1), this.note, player.getGameProfile().getName())) {
                     this.getStackInSlot(1).setItemDamage(64);
                     this.world.addBlockEvent(this.pos, ModBlocks.RESEARCHTABLE, 1, 1);
+                    this.syncTile(false);
                 }
             }
 
@@ -183,19 +175,19 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
     private void recalculateBonus() {
         if(!this.world.isDaytime() && this.world.getLight(this.pos) < 4 && !this.world.canBlockSeeSky(this.pos) && this.world.rand.nextInt(20) == 0) {
-            this.data.bonusAspects.merge(Aspect.ENTROPY, 1);
+            this.bonusAspects.merge(Aspect.ENTROPY, 1);
         }
 
         if((float)this.pos.getY() > (float)this.world.getActualHeight() * 0.5F && this.world.rand.nextInt(20) == 0) {
-            this.data.bonusAspects.merge(Aspect.AIR, 1);
+            this.bonusAspects.merge(Aspect.AIR, 1);
         }
 
         if((float)this.pos.getY() > (float)this.world.getActualHeight() * 0.66F && this.world.rand.nextInt(20) == 0) {
-            this.data.bonusAspects.merge(Aspect.AIR, 1);
+            this.bonusAspects.merge(Aspect.AIR, 1);
         }
 
         if((float)this.pos.getY() > (float)this.world.getActualHeight() * 0.75F && this.world.rand.nextInt(20) == 0) {
-            this.data.bonusAspects.merge(Aspect.AIR, 1);
+            this.bonusAspects.merge(Aspect.AIR, 1);
         }
 
         for(int x = -8; x <= 8; ++x) {
@@ -207,54 +199,54 @@ public class TileResearchTable extends TileThaumcraftInventory {
                         int md = bi.getMetaFromState(bs);
                         Material bm = bs.getMaterial();
                         if(bi instanceof BlockCrystal && md == 0) {
-                            if(this.data.bonusAspects.getAmount(Aspect.AIR) < 1 && this.world.rand.nextInt(10) == 0) {
-                                this.data.bonusAspects.merge(Aspect.AIR, 1);
+                            if(this.bonusAspects.getAmount(Aspect.AIR) < 1 && this.world.rand.nextInt(10) == 0) {
+                                this.bonusAspects.merge(Aspect.AIR, 1);
                                 return;
                             }
                         } else if(bm != Material.FIRE && bm != Material.LAVA) {
                             if(bm == Material.GROUND) {
-                                if(this.data.bonusAspects.getAmount(Aspect.EARTH) < 1 && this.world.rand.nextInt(20) == 0) {
-                                    this.data.bonusAspects.merge(Aspect.EARTH, 1);
+                                if(this.bonusAspects.getAmount(Aspect.EARTH) < 1 && this.world.rand.nextInt(20) == 0) {
+                                    this.bonusAspects.merge(Aspect.EARTH, 1);
                                     return;
                                 }
                             } else if(bi instanceof BlockCrystal && md == 3) {
-                                if(this.data.bonusAspects.getAmount(Aspect.EARTH) < 1 && this.world.rand.nextInt(10) == 0) {
-                                    this.data.bonusAspects.merge(Aspect.EARTH, 1);
+                                if(this.bonusAspects.getAmount(Aspect.EARTH) < 1 && this.world.rand.nextInt(10) == 0) {
+                                    this.bonusAspects.merge(Aspect.EARTH, 1);
                                     return;
                                 }
                             } else if(bm == Material.WATER) {
-                                if(this.data.bonusAspects.getAmount(Aspect.WATER) < 1 && this.world.rand.nextInt(15) == 0) {
-                                    this.data.bonusAspects.merge(Aspect.WATER, 1);
+                                if(this.bonusAspects.getAmount(Aspect.WATER) < 1 && this.world.rand.nextInt(15) == 0) {
+                                    this.bonusAspects.merge(Aspect.WATER, 1);
                                     return;
                                 }
                             } else if(bi instanceof BlockCrystal && md == 2) {
-                                if(this.data.bonusAspects.getAmount(Aspect.WATER) < 1 && this.world.rand.nextInt(10) == 0) {
-                                    this.data.bonusAspects.merge(Aspect.WATER, 1);
+                                if(this.bonusAspects.getAmount(Aspect.WATER) < 1 && this.world.rand.nextInt(10) == 0) {
+                                    this.bonusAspects.merge(Aspect.WATER, 1);
                                     return;
                                 }
                             } else if(bm != Material.CIRCUITS && bm != Material.PISTON) {
                                 if(bi instanceof BlockCrystal && md == 4) {
-                                    if(this.data.bonusAspects.getAmount(Aspect.ORDER) < 1 && this.world.rand.nextInt(10) == 0) {
-                                        this.data.bonusAspects.merge(Aspect.ORDER, 1);
+                                    if(this.bonusAspects.getAmount(Aspect.ORDER) < 1 && this.world.rand.nextInt(10) == 0) {
+                                        this.bonusAspects.merge(Aspect.ORDER, 1);
                                         return;
                                     }
-                                } else if(bi instanceof BlockCrystal && md == 5 && this.data.bonusAspects.getAmount(Aspect.ENTROPY) < 1 && this.world.rand.nextInt(10) == 0) {
-                                    this.data.bonusAspects.merge(Aspect.ENTROPY, 1);
+                                } else if(bi instanceof BlockCrystal && md == 5 && this.bonusAspects.getAmount(Aspect.ENTROPY) < 1 && this.world.rand.nextInt(10) == 0) {
+                                    this.bonusAspects.merge(Aspect.ENTROPY, 1);
                                     return;
                                 }
-                            } else if(this.data.bonusAspects.getAmount(Aspect.ORDER) < 1 && this.world.rand.nextInt(20) == 0) {
-                                this.data.bonusAspects.merge(Aspect.ORDER, 1);
+                            } else if(this.bonusAspects.getAmount(Aspect.ORDER) < 1 && this.world.rand.nextInt(20) == 0) {
+                                this.bonusAspects.merge(Aspect.ORDER, 1);
                                 return;
                             }
-                        } else if(this.data.bonusAspects.getAmount(Aspect.FIRE) < 1 && this.world.rand.nextInt(20) == 0) {
-                            this.data.bonusAspects.merge(Aspect.FIRE, 1);
+                        } else if(this.bonusAspects.getAmount(Aspect.FIRE) < 1 && this.world.rand.nextInt(20) == 0) {
+                            this.bonusAspects.merge(Aspect.FIRE, 1);
                             return;
                         }
 
                         if(bi == Blocks.BOOKSHELF && this.world.rand.nextInt(300) == 0 || bi instanceof BlockJar && md == 1 && this.world.rand.nextInt(200) == 0) {
                             Aspect[] aspects = new Aspect[0];
                             aspects = Aspect.aspects.values().toArray(aspects);
-                            this.data.bonusAspects.merge(aspects[this.world.rand.nextInt(aspects.length)], 1);
+                            this.bonusAspects.merge(aspects[this.world.rand.nextInt(aspects.length)], 1);
                             return;
                         }
                     }
@@ -277,10 +269,6 @@ public class TileResearchTable extends TileThaumcraftInventory {
 
     public ItemStack getStackInSlot(int var1) {
         return (this.getSyncedStackInSlot(var1).isEmpty())? super.getStackInSlot(var1) : this.getSyncedStackInSlot(var1);
-    }
-
-    public void setTableData(ResearchTableData data) {
-        this.data = data;
     }
 
     public String getName() {

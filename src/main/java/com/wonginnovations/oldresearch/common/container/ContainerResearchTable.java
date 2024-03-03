@@ -1,20 +1,16 @@
 package com.wonginnovations.oldresearch.common.container;
 
-import java.util.HashMap;
-
 import com.wonginnovations.oldresearch.common.items.ItemResearchNote;
-import com.wonginnovations.oldresearch.common.items.ModItems;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.items.IScribeTools;
 import thaumcraft.common.container.slot.SlotLimitedByClass;
-import thaumcraft.common.container.slot.SlotLimitedByItemstack;
 
 public class ContainerResearchTable extends Container {
     public TileResearchTable tileEntity;
@@ -44,7 +40,7 @@ public class ContainerResearchTable extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex) {
+    public @NotNull ItemStack transferStackInSlot(@NotNull EntityPlayer player, int slotIndex) {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(slotIndex);
         if (slot != null && slot.getHasStack()) {
@@ -69,7 +65,8 @@ public class ContainerResearchTable extends Container {
         return stack;
     }
 
-    public boolean canInteractWith(EntityPlayer player) {
+    public boolean canInteractWith(@NotNull EntityPlayer player) {
         return this.tileEntity.isUsableByPlayer(player);
     }
+
 }

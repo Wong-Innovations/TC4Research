@@ -11,6 +11,8 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,9 +83,9 @@ public abstract class EntityEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerJoin(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof EntityPlayerMP) {
-            PacketHandler.INSTANCE.sendTo(new PacketSyncAspects(), (EntityPlayerMP) event.getEntity());
+    public static void onPlayerJoin(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.player instanceof EntityPlayerMP) {
+            PacketHandler.INSTANCE.sendTo(new PacketSyncAspects(event.player), (EntityPlayerMP) event.player);
         }
     }
 

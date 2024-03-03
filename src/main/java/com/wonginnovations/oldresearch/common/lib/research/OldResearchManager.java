@@ -1,13 +1,10 @@
 package com.wonginnovations.oldresearch.common.lib.research;
 
-import akka.dispatch.UnboundedDequeBasedMailbox;
-import com.cleanroommc.groovyscript.sandbox.ClosureHelper;
 import com.google.common.io.Files;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-//import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -254,9 +251,7 @@ public abstract class OldResearchManager {
     }
 
     public static ResearchNoteData getData(ItemStack stack) {
-        if(stack == null) {
-            return null;
-        } else {
+        if(stack != null && stack.getItem() == ModItems.RESEARCHNOTE) {
             ResearchNoteData data = new ResearchNoteData();
             if(stack.getTagCompound() == null) {
                 return null;
@@ -292,6 +287,7 @@ public abstract class OldResearchManager {
                 return data;
             }
         }
+        return null;
     }
 
     public static void updateData(ItemStack stack, ResearchNoteData data) {
@@ -340,7 +336,7 @@ public abstract class OldResearchManager {
         return null;
     }
 
-    public static boolean completeAspectUnsaved(String username, Aspect aspect, short amount) {
+    public static boolean completeAspectUnsaved(String username, Aspect aspect, int amount) {
         if(aspect == null) {
             return false;
         } else {
@@ -350,7 +346,7 @@ public abstract class OldResearchManager {
         }
     }
 
-    public static void completeAspect(EntityPlayer player, Aspect aspect, short amount) {
+    public static void completeAspect(EntityPlayer player, Aspect aspect, int amount) {
         completeAspectUnsaved(player.getGameProfile().getName(), aspect, amount);
     }
 
@@ -451,10 +447,8 @@ public abstract class OldResearchManager {
                     OldResearch.proxy.getPlayerKnowledge().setWarpCounter(player.getGameProfile().getName(), 0);
                 }
             } else {
-                for(Aspect aspect : Aspect.aspects.values()) {
-                    if(aspect.getComponents() == null) {
-                        completeAspectUnsaved(player.getGameProfile().getName(), aspect, (short)(15 + player.world.rand.nextInt(5)));
-                    }
+                for(Aspect aspect : Aspect.getPrimalAspects()) {
+                    completeAspectUnsaved(player.getGameProfile().getName(), aspect, 15 + player.world.rand.nextInt(5));
                 }
 
                 Thaumcraft.log.info("Assigning initial aspects to " + player.getGameProfile().getName());
@@ -480,7 +474,7 @@ public abstract class OldResearchManager {
                 NBTTagCompound rs = tagList.getCompoundTagAt(j);
                 if(rs.hasKey("key")) {
                     Aspect aspect = Aspect.getAspect(rs.getString("key"));
-                    short amount = rs.getShort("amount");
+                    int amount = rs.getInteger("amount");
                     if(aspect != null) {
                         completeAspectUnsaved(player.getGameProfile().getName(), aspect, amount);
                     }
@@ -572,7 +566,7 @@ public abstract class OldResearchManager {
                 if(aspect != null) {
                     NBTTagCompound f = new NBTTagCompound();
                     f.setString("key", aspect.getTag());
-                    f.setShort("amount", (short)res.getAmount(aspect));
+                    f.setInteger("amount", res.getAmount(aspect));
                     tagList.appendTag(f);
                 }
             }

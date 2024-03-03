@@ -83,26 +83,26 @@ public class PacketAspectCombinationToServer implements IMessage, IMessageHandle
                             TileEntity rt = player.world.getTileEntity(new BlockPos(message.x, message.y, message.z));
                             if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), message.aspect1) <= 0 && message.ab1) {
                                 if(rt instanceof TileResearchTable) {
-                                    ((TileResearchTable)rt).data.bonusAspects.remove(message.aspect1, 1);
+                                    ((TileResearchTable)rt).bonusAspects.remove(message.aspect1, 1);
                                     BlockPos pos = new BlockPos(message.x, message.y, message.z);
                                     player.world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
                                     rt.markDirty();
                                 }
                             } else {
-                                OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), message.aspect1, (short)-1);
-                                PacketHandler.INSTANCE.sendTo(new PacketAspectPool(message.aspect1.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), message.aspect1)), player);
+                                OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), message.aspect1, -1);
+                                PacketHandler.INSTANCE.sendTo(new PacketAspectPool(message.aspect1.getTag(), 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), message.aspect1)), player);
                             }
 
                             if(OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), message.aspect2) <= 0 && message.ab2) {
                                 if(rt instanceof TileResearchTable) {
-                                    ((TileResearchTable)rt).data.bonusAspects.remove(message.aspect2, 1);
+                                    ((TileResearchTable)rt).bonusAspects.remove(message.aspect2, 1);
                                     BlockPos pos = new BlockPos(message.x, message.y, message.z);
                                     player.world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
                                     rt.markDirty();
                                 }
                             } else {
-                                OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), message.aspect2, (short)-1);
-                                PacketHandler.INSTANCE.sendTo(new PacketAspectPool(message.aspect2.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), message.aspect2)), player);
+                                OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), message.aspect2, -1);
+                                PacketHandler.INSTANCE.sendTo(new PacketAspectPool(message.aspect2.getTag(), 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), message.aspect2)), player);
                             }
 
                             if (combo != null) {

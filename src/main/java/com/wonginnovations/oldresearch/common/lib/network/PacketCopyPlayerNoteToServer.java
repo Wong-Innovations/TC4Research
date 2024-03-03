@@ -81,7 +81,7 @@ public class PacketCopyPlayerNoteToServer implements IMessage, IMessageHandler<P
                 ResearchNoteData data = OldResearchManager.getData(note);
                 for (Aspect aspect : data.aspects.getAspects()) {
                     if (OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect) < 1
-                        && ((TileResearchTable) te).data.bonusAspects.getAmount(aspect) < 1
+                        && ((TileResearchTable) te).bonusAspects.getAmount(aspect) < 1
                     ) {
                         player.sendMessage(new TextComponentString("§c" + I18n.format("tc.research.copy.failure", aspect.getName())));
                         failed = true;
@@ -93,10 +93,10 @@ public class PacketCopyPlayerNoteToServer implements IMessage, IMessageHandler<P
 
                     for (Aspect aspect : data.aspects.getAspects()) {
                         if (OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect) >= 1) {
-                            OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), aspect, (short)-1);
-                            PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), (short) 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect)), player);
+                            OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), aspect, -1);
+                            PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), 0, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), aspect)), player);
                         } else {
-                            ((TileResearchTable) te).data.bonusAspects.remove(aspect, 1);
+                            ((TileResearchTable) te).bonusAspects.remove(aspect, 1);
                             player.world.notifyBlockUpdate(blockPos, world.getBlockState(blockPos), world.getBlockState(blockPos), 3);
                             te.markDirty();
                         }

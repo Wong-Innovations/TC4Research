@@ -42,7 +42,7 @@ public class ItemKnowledgeFragment extends Item implements IModelRegister {
 
         if(!world.isRemote) {
             for(Aspect a : Aspect.getPrimalAspects()) {
-                short q = (short)(world.rand.nextInt(2) + 1);
+                int q = world.rand.nextInt(2) + 1;
                 OldResearch.proxy.playerKnowledge.addAspectPool(player.getGameProfile().getName(), a, q);
                 PacketHandler.INSTANCE.sendTo(new PacketAspectPool(a.getTag(), q, OldResearch.proxy.playerKnowledge.getAspectPoolFor(player.getGameProfile().getName(), a)), (EntityPlayerMP)player);
             }

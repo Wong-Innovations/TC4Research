@@ -17,14 +17,14 @@ import thaumcraft.api.aspects.Aspect;
 
 public class PacketAspectPool implements IMessage, IMessageHandler<PacketAspectPool, IMessage> {
     private String key;
-    private Short amount;
-    private Short total;
+    private int amount;
+    private int total;
     private static long lastSound = 0L;
 
     public PacketAspectPool() {
     }
 
-    public PacketAspectPool(String key, Short amount, Short total) {
+    public PacketAspectPool(String key, int amount, int total) {
         this.key = key;
         this.amount = amount;
         this.total = total;
@@ -32,14 +32,14 @@ public class PacketAspectPool implements IMessage, IMessageHandler<PacketAspectP
 
     public void toBytes(ByteBuf buffer) {
         ByteBufUtils.writeUTF8String(buffer, this.key);
-        buffer.writeShort(this.amount);
-        buffer.writeShort(this.total);
+        buffer.writeInt(this.amount);
+        buffer.writeInt(this.total);
     }
 
     public void fromBytes(ByteBuf buffer) {
         this.key = ByteBufUtils.readUTF8String(buffer);
-        this.amount = buffer.readShort();
-        this.total = buffer.readShort();
+        this.amount = buffer.readInt();
+        this.total = buffer.readInt();
     }
 
     @SideOnly(Side.CLIENT)

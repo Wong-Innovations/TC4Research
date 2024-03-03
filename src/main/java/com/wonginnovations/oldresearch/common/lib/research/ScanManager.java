@@ -79,8 +79,8 @@ public class ScanManager {
             amount = 1;
         }
 
-        if(rp.addAspectPool(player.getGameProfile().getName(), aspect, (short)amount)) {
-            PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), (short) amount, rp.getAspectPoolFor(player.getGameProfile().getName(), aspect)), (EntityPlayerMP)player);
+        if(rp.addAspectPool(player.getGameProfile().getName(), aspect, amount)) {
+            PacketHandler.INSTANCE.sendTo(new PacketAspectPool(aspect.getTag(), amount, rp.getAspectPoolFor(player.getGameProfile().getName(), aspect)), (EntityPlayerMP)player);
             save = amount;
         }
 

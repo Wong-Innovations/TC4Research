@@ -3,12 +3,15 @@ package com.wonginnovations.oldresearch.common.blocks;
 import java.util.Random;
 
 import com.wonginnovations.oldresearch.OldResearch;
+import com.wonginnovations.oldresearch.common.lib.network.PacketHandler;
+import com.wonginnovations.oldresearch.common.lib.network.PacketSyncAspects;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -17,6 +20,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 import thaumcraft.client.fx.ParticleEngine;
 import thaumcraft.client.fx.particles.FXGeneric;
 import thaumcraft.common.blocks.IBlockFacingHorizontal;
@@ -29,23 +33,19 @@ public class BlockResearchTable extends BlockTCDevice implements IBlockFacingHor
         this.setSoundType(SoundType.WOOD);
     }
 
-    public int damageDropped(IBlockState state) {
-        return 0;
-    }
-
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube(@NotNull IBlockState state) {
         return false;
     }
 
-    public boolean isFullCube(IBlockState state) {
+    public boolean isFullCube(@NotNull IBlockState state) {
         return false;
     }
 
-    public boolean isSideSolid(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public boolean isSideSolid(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull EnumFacing side) {
         return false;
     }
 
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, @NotNull BlockPos pos, @NotNull IBlockState state, @NotNull EntityPlayer player, @NotNull EnumHand hand, @NotNull EnumFacing side, float hitX, float hitY, float hitZ) {
         if (world.isRemote) {
             return true;
         } else {
@@ -61,10 +61,10 @@ public class BlockResearchTable extends BlockTCDevice implements IBlockFacingHor
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
+    public void randomDisplayTick(@NotNull IBlockState state, World world, @NotNull BlockPos pos, Random rand) {
         TileEntity te = world.getTileEntity(pos);
 //        if (te != null) te.invalidate();
-        if (rand.nextInt(5) == 0 && te != null && ((TileResearchTable)te).data != null) {
+        if (rand.nextInt(5) == 0 && te != null && ((TileResearchTable)te).hasResearchNote()) {
             double xx = rand.nextGaussian() / 2.0;
             double zz = rand.nextGaussian() / 2.0;
             double yy = 1.5 + (double)rand.nextFloat();
@@ -82,7 +82,7 @@ public class BlockResearchTable extends BlockTCDevice implements IBlockFacingHor
     }
 
     @Override
-    public String getTranslationKey()
+    public @NotNull String getTranslationKey()
     {
         return "tile.research_table";
     }

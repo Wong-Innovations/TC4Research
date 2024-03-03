@@ -31,7 +31,7 @@ public class PacketSyncAspects implements IMessage, IMessageHandler<PacketSyncAs
             for(Aspect a : this.data.getAspects()) {
                 if(a != null) {
                     ByteBufUtils.writeUTF8String(buffer, a.getTag());
-                    buffer.writeShort(this.data.getAmount(a));
+                    buffer.writeInt(this.data.getAmount(a));
                 }
             }
         } else {
@@ -46,7 +46,7 @@ public class PacketSyncAspects implements IMessage, IMessageHandler<PacketSyncAs
 
         for(int a = 0; a < size; ++a) {
             String tag = ByteBufUtils.readUTF8String(buffer);
-            short amount = buffer.readShort();
+            int amount = buffer.readInt();
             this.data.add(Aspect.getAspect(tag), amount);
         }
 
@@ -56,8 +56,10 @@ public class PacketSyncAspects implements IMessage, IMessageHandler<PacketSyncAs
     public IMessage onMessage(PacketSyncAspects message, MessageContext ctx) {
         Minecraft.getMinecraft().addScheduledTask(new Runnable() {
             public void run() {
+                OldResearch.proxy.getPlayerKnowledge().getAspectsDiscovered(Minecraft.getMinecraft().player.getGameProfile().getName());
                 for (Aspect key : message.data.getAspects()) {
-                    OldResearchManager.completeAspect(Minecraft.getMinecraft().player, key, (short) message.data.getAmount(key));
+                    OldResearch.proxy.getPlayerKnowledge().setAspectPool(Minecraft.getMinecraft().player.getGameProfile().getName(), key, message.data.getAmount(key));
+//                    OldResearchManager.completeAspect(Minecraft.getMinecraft().player, key, (short) message.data.getAmount(key));
                 }
             }
         });

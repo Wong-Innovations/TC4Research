@@ -60,7 +60,6 @@ public class GuiResearchTable extends GuiContainer {
     private final HashMap<String, GuiResearchTable.Rune> runes = new HashMap<>();
     private final float popupScale = 0.05F;
     private Aspect draggedAspect;
-    public ResearchNoteData note = null;
     long lastRuneCheck = 0L;
     private final HashMap<String, HexUtils.Hex[]> lines = new HashMap<>();
     private final ArrayList<String> checked = new ArrayList<>();
@@ -85,7 +84,7 @@ public class GuiResearchTable extends GuiContainer {
         this.ySize_lo = (float)my;
         int gx = (this.width - this.xSize) / 2;
         int gy = (this.height - this.ySize) / 2;
-        if(this.note != null && RESEARCHDUPE && this.note.isComplete()) {
+        if(this.tileEntity.note != null && RESEARCHDUPE && this.tileEntity.note.isComplete()) {
             int var7 = mx - (gx + 37);
             int var8 = my - (gy + 5);
             if(var7 >= 0 && var8 >= 0 && var7 < 24 && var8 < 24) {
@@ -95,10 +94,10 @@ public class GuiResearchTable extends GuiContainer {
                 GlStateManager.enableBlend();
                 UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
                 this.drawTexturedModalRect(gx + 100, gy + 21, 184, 224, 48, 16);
-                AspectList al = this.note.aspects.copy();
+                AspectList al = this.tileEntity.note.aspects.copy();
 
                 for(Aspect aspect : al.getAspects()) {
-                    al.add(aspect, this.note.copies);
+                    al.add(aspect, this.tileEntity.note.copies);
                 }
 
                 int count = 0;
@@ -132,11 +131,11 @@ public class GuiResearchTable extends GuiContainer {
             }
         } else {
             if(this.isMouseButtonDown == 1 && this.draggedAspect != null) {
-                if(this.note != null) {
+                if(this.tileEntity.note != null) {
                     int mouseX = mx - (gx + 169);
                     int mouseY = my - (gy + 83);
                     HexUtils.Hex hp = (new HexUtils.Pixel(mouseX, mouseY)).toHex(HEX_SIZE);
-                    if(this.note.hexEntries.containsKey(hp.toString()) && (this.note.hexEntries.get(hp.toString())).type == 0) {
+                    if(this.tileEntity.note.hexEntries.containsKey(hp.toString()) && (this.tileEntity.note.hexEntries.get(hp.toString())).type == 0) {
                         this.playButtonCombine();
                         this.playButtonWrite();
                         PacketHandler.INSTANCE.sendToServer(new PacketAspectPlaceToServer(this.player, (byte)hp.q, (byte)hp.r, this.tileEntity.getPos().getX(), this.tileEntity.getPos().getY(), this.tileEntity.getPos().getZ(), this.draggedAspect));
@@ -180,7 +179,7 @@ public class GuiResearchTable extends GuiContainer {
         }
 
         this.drawAspectText(this.guiLeft + 10, this.guiTop + 40, mx, my);
-        if(this.note != null && (this.tileEntity.getStackInSlot(0) == null || this.tileEntity.getStackInSlot(0).isEmpty() || this.tileEntity.getStackInSlot(0).getItemDamage() == this.tileEntity.getStackInSlot(0).getMaxDamage())) {
+        if(this.tileEntity.note != null && (this.tileEntity.getStackInSlot(0) == null || this.tileEntity.getStackInSlot(0).isEmpty() || this.tileEntity.getStackInSlot(0).getItemDamage() == this.tileEntity.getStackInSlot(0).getMaxDamage())) {
             int sx = Math.max(this.fontRenderer.getStringWidth(I18n.format("tile.researchtable.noink.0")), this.fontRenderer.getStringWidth(I18n.format("tile.researchtable.noink.1"))) / 2;
             UtilsFX.drawCustomTooltip(this, itemRender, this.fontRenderer, Arrays.asList(I18n.format("tile.researchtable.noink.0"), I18n.format("tile.researchtable.noink.1")), gx + 157 - sx, gy + 84, 11);
         }
@@ -210,7 +209,7 @@ public class GuiResearchTable extends GuiContainer {
             this.drawTexturedModalRect(this.guiLeft + 35, this.guiTop + 139, 184, 168, 32, 16);
         }
 
-        if(RESEARCHDUPE && this.note != null && this.note.isComplete()) {
+        if(RESEARCHDUPE && this.tileEntity.note != null && this.tileEntity.note.isComplete()) {
             UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
             this.drawTexturedModalRect(this.guiLeft + 37, this.guiTop + 5, 232, 200, 24, 24);
         }
@@ -232,20 +231,20 @@ public class GuiResearchTable extends GuiContainer {
             for(Aspect aspect : aspects.getAspects()) {
                 ++count;
                 if(count - 1 >= this.page * 5 && drawn < 25) {
-                    boolean faded = aspects.getAmount(aspect) <= 0 && this.tileEntity.data.bonusAspects.getAmount(aspect) <= 0;
+                    boolean faded = aspects.getAmount(aspect) <= 0 && this.tileEntity.bonusAspects.getAmount(aspect) <= 0;
                     int xx = drawn / 5 * 16;
                     int yy = drawn % 5 * 16;
-                    UtilsFX.drawTag(x + xx, y + yy, aspect, (float)aspects.getAmount(aspect), this.tileEntity.data.bonusAspects.getAmount(aspect), (double)this.zLevel, 771, faded?0.33F:1.0F);
+                    UtilsFX.drawTag(x + xx, y + yy, aspect, (float)aspects.getAmount(aspect), this.tileEntity.bonusAspects.getAmount(aspect), (double)this.zLevel, 771, faded?0.33F:1.0F);
                     ++drawn;
                 }
             }
         }
 
-        if(this.select1 != null && OldResearch.proxy.playerKnowledge.getAspectPoolFor(this.player.getGameProfile().getName(), this.select1) <= 0 && this.tileEntity.data.bonusAspects.getAmount(this.select1) <= 0) {
+        if(this.select1 != null && OldResearch.proxy.playerKnowledge.getAspectPoolFor(this.player.getGameProfile().getName(), this.select1) <= 0 && this.tileEntity.bonusAspects.getAmount(this.select1) <= 0) {
             this.select1 = null;
         }
 
-        if(this.select2 != null && OldResearch.proxy.playerKnowledge.getAspectPoolFor(this.player.getGameProfile().getName(), this.select2) <= 0 && this.tileEntity.data.bonusAspects.getAmount(this.select2) <= 0) {
+        if(this.select2 != null && OldResearch.proxy.playerKnowledge.getAspectPoolFor(this.player.getGameProfile().getName(), this.select2) <= 0 && this.tileEntity.bonusAspects.getAmount(this.select2) <= 0) {
             this.select2 = null;
         }
 
@@ -395,8 +394,8 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     private void drawSheet(int x, int y, int mx, int my) {
-        this.note = OldResearchManager.getData(this.tileEntity.getStackInSlot(1));
-        if(this.note != null && this.note.key != null && this.note.key.length() != 0) {
+        this.tileEntity.note = OldResearchManager.getData(this.tileEntity.getStackInSlot(1));
+        if(this.tileEntity.note != null && this.tileEntity.note.key != null && !this.tileEntity.note.key.isEmpty()) {
             UtilsFX.bindTexture("textures/misc/parchment3.png");
             this.drawTexturedModalRect(x + 94, y + 8, 0, 0, 150, 150);
             long time = System.currentTimeMillis();
@@ -405,12 +404,12 @@ public class GuiResearchTable extends GuiContainer {
                 int k = this.mc.world.rand.nextInt(120) - 60;
                 int l = this.mc.world.rand.nextInt(120) - 60;
                 HexUtils.Hex hp = (new HexUtils.Pixel(k, l)).toHex(HEX_SIZE);
-                if(!this.runes.containsKey(hp.toString()) && !this.note.hexes.containsKey(hp.toString())) {
+                if(!this.runes.containsKey(hp.toString()) && !this.tileEntity.note.hexes.containsKey(hp.toString())) {
                     this.runes.put(hp.toString(), new Rune(hp.q, hp.r, time, this.lastRuneCheck + 15000L + (long) this.mc.world.rand.nextInt(10000), this.mc.world.rand.nextInt(16)));
                 }
             }
 
-            if(this.runes.size() > 0) {
+            if(!this.runes.isEmpty()) {
                 GuiResearchTable.Rune[] rns = this.runes.values().toArray(new Rune[0]);
 
                 for(int a = 0; a < rns.length; ++a) {
@@ -439,8 +438,8 @@ public class GuiResearchTable extends GuiContainer {
             this.checked.clear();
             this.highlight.clear();
 
-            for(HexUtils.Hex hex : this.note.hexes.values()) {
-                if(this.note.hexEntries.get(hex.toString()).type == 1 && OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, this.note.hexEntries.get(hex.toString()).aspect)) {
+            for(HexUtils.Hex hex : this.tileEntity.note.hexes.values()) {
+                if(this.tileEntity.note.hexEntries.get(hex.toString()).type == 1 && OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, this.tileEntity.note.hexEntries.get(hex.toString()).aspect)) {
                     this.checkConnections(hex);
                 }
             }
@@ -453,10 +452,10 @@ public class GuiResearchTable extends GuiContainer {
 
             UtilsFX.bindTexture("textures/gui/hex1.png");
             GlStateManager.pushMatrix();
-            if(!this.note.isComplete()) {
-                for(HexUtils.Hex hex : this.note.hexes.values()) {
-                    if(this.note.hexEntries.get(hex.toString()).type != 1) {
-                        if(!this.note.isComplete()) {
+            if(!this.tileEntity.note.isComplete()) {
+                for(HexUtils.Hex hex : this.tileEntity.note.hexes.values()) {
+                    if(this.tileEntity.note.hexEntries.get(hex.toString()).type != 1) {
+                        if(!this.tileEntity.note.isComplete()) {
                             if(hex.equals(hp)) {
                                 this.drawHexHighlight(hex, x + 169, y + 83);
                             }
@@ -469,8 +468,8 @@ public class GuiResearchTable extends GuiContainer {
                 }
             }
 
-            for(HexUtils.Hex hex : this.note.hexes.values()) {
-                if(this.note.hexEntries.get(hex.toString()).aspect != null && !OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, this.note.hexEntries.get(hex.toString()).aspect)) {
+            for(HexUtils.Hex hex : this.tileEntity.note.hexes.values()) {
+                if(this.tileEntity.note.hexEntries.get(hex.toString()).aspect != null && !OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, this.tileEntity.note.hexEntries.get(hex.toString()).aspect)) {
                     HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
                     UtilsFX.bindTexture(new ResourceLocation("thaumcraft", "textures/aspects/_unknown.png"));
                     GlStateManager.pushMatrix();
@@ -481,14 +480,14 @@ public class GuiResearchTable extends GuiContainer {
                     UtilsFX.drawTexturedQuadFull(0, 0, this.zLevel);
                     GlStateManager.disableBlend();
                     GlStateManager.popMatrix();
-                } else if(this.note.hexEntries.get(hex.toString()).type != 1 && !this.highlight.contains(hex.toString())) {
-                    if(this.note.hexEntries.get(hex.toString()).type == 2) {
+                } else if(this.tileEntity.note.hexEntries.get(hex.toString()).type != 1 && !this.highlight.contains(hex.toString())) {
+                    if(this.tileEntity.note.hexEntries.get(hex.toString()).type == 2) {
                         HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
-                        UtilsFX.drawTag((double)(x + 161) + pix.x, (double)(y + 75) + pix.y, this.note.hexEntries.get(hex.toString()).aspect, 0.0F, 0, this.zLevel, 771, 0.66F, true);
+                        UtilsFX.drawTag((double)(x + 161) + pix.x, (double)(y + 75) + pix.y, this.tileEntity.note.hexEntries.get(hex.toString()).aspect, 0.0F, 0, this.zLevel, 771, 0.66F, true);
                     }
                 } else {
                     HexUtils.Pixel pix = hex.toPixel(HEX_SIZE);
-                    UtilsFX.drawTag((double)(x + 161) + pix.x, (double)(y + 75) + pix.y, this.note.hexEntries.get(hex.toString()).aspect, 0.0F, 0, this.zLevel, 771, 1.0F, false);
+                    UtilsFX.drawTag((double)(x + 161) + pix.x, (double)(y + 75) + pix.y, this.tileEntity.note.hexEntries.get(hex.toString()).aspect, 0.0F, 0, this.zLevel, 771, 1.0F, false);
                 }
             }
 
@@ -503,9 +502,9 @@ public class GuiResearchTable extends GuiContainer {
 
         for(int a = 0; a < 6; ++a) {
             HexUtils.Hex target = hex.getNeighbour(a);
-            if(!this.checked.contains(target.toString()) && this.note.hexEntries.containsKey(target.toString()) && this.note.hexEntries.get(target.toString()).type >= 1) {
-                Aspect aspect1 = (this.note.hexEntries.get(hex.toString())).aspect;
-                Aspect aspect2 = (this.note.hexEntries.get(target.toString())).aspect;
+            if(!this.checked.contains(target.toString()) && this.tileEntity.note.hexEntries.containsKey(target.toString()) && this.tileEntity.note.hexEntries.get(target.toString()).type >= 1) {
+                Aspect aspect1 = (this.tileEntity.note.hexEntries.get(hex.toString())).aspect;
+                Aspect aspect2 = (this.tileEntity.note.hexEntries.get(target.toString())).aspect;
                 if(OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, aspect1) && OldResearch.proxy.getPlayerKnowledge().hasDiscoveredAspect(this.username, aspect2) && (!aspect1.isPrimal() && (aspect1.getComponents()[0] == aspect2 || aspect1.getComponents()[1] == aspect2) || !aspect2.isPrimal() && (aspect2.getComponents()[0] == aspect1 || aspect2.getComponents()[1] == aspect1))) {
                     String k1 = hex + ":" + target;
                     String k2 = target + ":" + hex;
@@ -559,7 +558,7 @@ public class GuiResearchTable extends GuiContainer {
                 this.butcount2 = System.nanoTime() + 200000000L;
                 this.playButtonClick();
                 this.playButtonCombine();
-                PacketHandler.INSTANCE.sendToServer(new PacketAspectCombinationToServer(this.player, this.tileEntity.getPos().getX(), this.tileEntity.getPos().getY(), this.tileEntity.getPos().getZ(), this.select1, this.select2, this.tileEntity.data.bonusAspects.getAmount(this.select1) > 0, this.tileEntity.data.bonusAspects.getAmount(this.select2) > 0, true));
+                PacketHandler.INSTANCE.sendToServer(new PacketAspectCombinationToServer(this.player, this.tileEntity.getPos().getX(), this.tileEntity.getPos().getY(), this.tileEntity.getPos().getZ(), this.select1, this.select2, this.tileEntity.bonusAspects.getAmount(this.select1) > 0, this.tileEntity.bonusAspects.getAmount(this.select2) > 0, true));
             } else {
                 var7 = mx - (gx + 27);
                 var8 = my - (gy + 121);
@@ -593,9 +592,9 @@ public class GuiResearchTable extends GuiContainer {
                             }
                         }
 
-                        if(this.note != null) {
+                        if(this.tileEntity.note != null) {
                             this.checkClickedHex(mx, my, gx, gy);
-                            if(RESEARCHDUPE && this.note.isComplete()) {
+                            if(RESEARCHDUPE && this.tileEntity.note.isComplete()) {
                                 var7 = mx - (gx + 37);
                                 var8 = my - (gy + 5);
                                 if(var7 >= 0 && var8 >= 0 && var7 < 24 && var8 < 24) {
@@ -611,10 +610,10 @@ public class GuiResearchTable extends GuiContainer {
                             Aspect aspect = this.getClickedAspect(mx, my, gx, gy, true);
                             if(aspect != null && !aspect.isPrimal()) {
                                 AspectList aspects = OldResearch.proxy.getPlayerKnowledge().getAspectsDiscovered(this.username);
-                                if(aspects != null && (aspects.getAmount(aspect.getComponents()[0]) > 0 || this.tileEntity.data.bonusAspects.getAmount(aspect.getComponents()[0]) > 0) && (aspects.getAmount(aspect.getComponents()[1]) > 0 || this.tileEntity.data.bonusAspects.getAmount(aspect.getComponents()[1]) > 0)) {
+                                if(aspects != null && (aspects.getAmount(aspect.getComponents()[0]) > 0 || this.tileEntity.bonusAspects.getAmount(aspect.getComponents()[0]) > 0) && (aspects.getAmount(aspect.getComponents()[1]) > 0 || this.tileEntity.bonusAspects.getAmount(aspect.getComponents()[1]) > 0)) {
                                     this.draggedAspect = null;
                                     this.playButtonCombine();
-                                    PacketHandler.INSTANCE.sendToServer(new PacketAspectCombinationToServer(this.player, this.tileEntity.getPos().getX(), this.tileEntity.getPos().getY(), this.tileEntity.getPos().getZ(), aspect.getComponents()[0], aspect.getComponents()[1], this.tileEntity.data.bonusAspects.getAmount(aspect.getComponents()[0]) > 0, this.tileEntity.data.bonusAspects.getAmount(aspect.getComponents()[1]) > 0, true));
+                                    PacketHandler.INSTANCE.sendToServer(new PacketAspectCombinationToServer(this.player, this.tileEntity.getPos().getX(), this.tileEntity.getPos().getY(), this.tileEntity.getPos().getZ(), aspect.getComponents()[0], aspect.getComponents()[1], this.tileEntity.bonusAspects.getAmount(aspect.getComponents()[0]) > 0, this.tileEntity.bonusAspects.getAmount(aspect.getComponents()[1]) > 0, true));
                                 }
                             }
                         }
@@ -629,7 +628,7 @@ public class GuiResearchTable extends GuiContainer {
         int mouseX = mx - (gx + 169);
         int mouseY = my - (gy + 83);
         HexUtils.Hex hp = (new HexUtils.Pixel(mouseX, mouseY)).toHex(HEX_SIZE);
-        if(this.note.hexes.containsKey(hp.toString()) && this.note.hexEntries.get(hp.toString()).type == 2) {
+        if(this.tileEntity.note.hexes.containsKey(hp.toString()) && this.tileEntity.note.hexEntries.get(hp.toString()).type == 2) {
             this.playButtonCombine();
             this.playButtonErase();
             PacketHandler.INSTANCE.sendToServer(new PacketAspectPlaceToServer(this.player, (byte)hp.q, (byte)hp.r, this.tileEntity.getPos().getX(), this.tileEntity.getPos().getY(), this.tileEntity.getPos().getZ(), null));
@@ -649,7 +648,7 @@ public class GuiResearchTable extends GuiContainer {
                     int yy = drawn % 5 * 16;
                     int var7 = mx - (gx + xx + 10);
                     int var8 = my - (gy + yy + 40);
-                    if((ignoreZero || aspects.getAmount(aspect) > 0 || this.tileEntity.data.bonusAspects.getAmount(aspect) > 0) && var7 >= 0 && var8 >= 0 && var7 < 16 && var8 < 16) {
+                    if((ignoreZero || aspects.getAmount(aspect) > 0 || this.tileEntity.bonusAspects.getAmount(aspect) > 0) && var7 >= 0 && var8 >= 0 && var7 < 16 && var8 < 16) {
                         return aspect;
                     }
 

@@ -3,6 +3,8 @@ item.researchnote.name=研究ノート
 item.researchnote.unknown.1=不明な知識
 item.researchnote.unknown.2=<右クリックで解放>
 item.discovery.name=§5研究成果
+item.curio.basic.name=基本的好奇心
+item.curio.crimson.name=紅の儀典
 #
 tc.research.copy=研究成果を複製するためのコスト:
 tc.research.copy.failure=複製するには %s が不足しています。

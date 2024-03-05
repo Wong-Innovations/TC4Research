@@ -3,16 +3,22 @@ item.researchnote.name=研究ノート
 item.researchnote.unknown.1=不明な知識
 item.researchnote.unknown.2=<右クリックで解放>
 item.discovery.name=§5研究成果
-item.curio.basic.name=Basic Curiosity
-item.curio.crimson.name=紅の儀典
 #
+tc.research.copy=研究成果を複製するためのコスト:
+tc.research.copy.failure=複製するには %s が不足しています。
 researchnote.complete=研究が完了しました!
 researchnote.click=§o§7クリックで獲得。
+researchnote.missing.tools=研究ノートを作成するためには筆記具が必要です。
+researchnote.missing.paper=研究ノートを作成するためには紙が必要です。
 tc.addaspectdiscovery=%s を発見した!
 tc.addaspectpool=%2$s の研究ポイントを %1$s ポイント獲得しました!
 tc.discoveryerror=これを理解するには %s を研究する必要があります。
 tc.unknownobject=これから学べるものはありません。
 tc.researchtheory=%s 理論
+#
+tc.inventoryscan.scanning=調査中
+tc.inventoryscan.tooltip=インベントリ内調査が有効です
+tc.inventoryscan.tooltip.more=ソーモメーターをアイテムの上に\n持っていくこどで調査できます
 #
 tc.forbidden=§l§5禁じられた研究 (%n)§0
 tc.forbidden.level.1=無視できる
@@ -53,7 +59,7 @@ tc.aspect.help.meto=農業
 tc.aspect.help.metallum=金属
 tc.aspect.help.perfodio=採掘
 tc.aspect.help.instrumentum=道具
-tc.aspect.help.aversio=武器
+tc.aspect.help.telum=武器
 tc.aspect.help.gelum=冷たい物
 tc.aspect.help.vitreus=結晶
 tc.aspect.help.sano=治癒

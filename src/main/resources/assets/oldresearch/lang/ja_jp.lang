@@ -22,7 +22,7 @@ tc.inventoryscan.scanning=調査中
 tc.inventoryscan.tooltip=インベントリ内調査が有効です
 tc.inventoryscan.tooltip.more=ソーモメーターをアイテムの上に\n持っていくことで調査できます
 #
-tc.forbidden=§l§5禁じられた研究 (%n)§0
+tc.forbidden=§l§5禁断の知識 (%n)§0
 tc.forbidden.level.1=無視できる
 tc.forbidden.level.2=小さい
 tc.forbidden.level.3=普通

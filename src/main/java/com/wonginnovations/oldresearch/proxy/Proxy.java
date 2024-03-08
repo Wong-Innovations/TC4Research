@@ -10,6 +10,7 @@ import com.wonginnovations.oldresearch.common.lib.research.PlayerKnowledge;
 import com.wonginnovations.oldresearch.common.lib.research.OldResearchManager;
 import com.wonginnovations.oldresearch.common.tiles.TileResearchTable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -25,8 +26,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.blocks.BlocksTC;
+import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.api.research.ResearchCategories;
+import thaumcraft.common.lib.crafting.DustTriggerSimple;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -84,6 +87,7 @@ public class Proxy implements IGuiHandler {
         OldResearchManager.patchResearch();
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.RESEARCHTABLE, 1, 32767), new AspectList(new ItemStack(BlocksTC.researchTable)));
         OldResearchManager.computeAspectComplexity();
+        IDustTrigger.registerDustTrigger(new DustTriggerSimple("", BlocksTC.tableWood, new ItemStack(BlocksTC.researchTable)));
     }
 
     public void registerDisplayInformation() {

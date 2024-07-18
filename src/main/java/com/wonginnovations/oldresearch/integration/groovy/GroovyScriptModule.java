@@ -21,6 +21,6 @@ public class GroovyScriptModule implements GroovyPlugin {
 
     @Override
     public void onCompatLoaded(GroovyContainer<?> container) {
-        container.getVirtualizedRegistrar().addFieldsOf(this);
+        container.addPropertiesOfFields(this, false);
     }
 }

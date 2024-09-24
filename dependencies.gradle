@@ -29,7 +29,8 @@ dependencies {
 
     // Soft Deps
     implementation rfg.deobf('curse.maven:baubles-227083:2518667')
-    implementation rfg.deobf('curse.maven:codechickenlib-242818:2779848')
+//    implementation rfg.deobf('curse.maven:codechickenlib-242818:2779848')
 
-    implementation rfg.deobf('curse.maven:groovyscript-687577:5120928')
+//    implementation rfg.deobf('curse.maven:groovyscript-687577:5120928')
+    implementation rfg.deobf('com.cleanroommc:groovyscript:1.1.1')
 }
